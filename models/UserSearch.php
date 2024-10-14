@@ -38,6 +38,9 @@ class UserSearch extends User
 
         $this->load($params);
 
+        // show only active user
+        $this->is_deleted = 0;
+
         // add conditions that should always apply here
 
         // grid filtering conditions
