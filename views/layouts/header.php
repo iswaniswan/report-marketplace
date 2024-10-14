@@ -160,11 +160,12 @@ use app\components\Session;
                 </div>
 
                 <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
+                <a href="<?= \yii\helpers\Url::to(['/user/view/', 'id' => Session::getIdUser()]) ?>" class="dropdown-item notify-item">
                     <i class="mdi mdi-account-outline"></i>
                     <span>Profile</span>
                 </a>
 
+                <?php /*
                 <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item">
                     <i class="mdi mdi-settings-outline"></i>
@@ -176,6 +177,7 @@ use app\components\Session;
                     <i class="mdi mdi-lock-outline"></i>
                     <span>Lock Screen</span>
                 </a>
+                */ ?>
 
                 <div class="dropdown-divider"></div>
 

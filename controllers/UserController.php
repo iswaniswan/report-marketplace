@@ -3,12 +3,14 @@
 namespace app\controllers;
 
 use app\components\Mode;
+use app\components\Session;
 use Yii;
 use app\models\User;
 use app\models\UserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /* custom controller, theme uplon integrated */
 /**
@@ -19,19 +21,41 @@ class UserController extends Controller
     /**
      * @inheritDoc
      */
+    // public function behaviors()
+    // {
+    //     return array_merge(
+    //         parent::behaviors(),
+    //         [
+    //             'verbs' => [
+    //                 'class' => VerbFilter::className(),
+    //                 'actions' => [
+    //                     'delete' => ['POST'],
+    //                 ],
+    //             ],
+    //         ]
+    //     );
+    // }
+
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['index', 'view', 'update', 'delete'], // Specify the actions you want to control
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'update', 'delete'],
+                        'roles' => ['@'], // This means the user must be logged in
+                        'matchCallback' => function ($rule, $action) {
+                            // Check if the user is an admin or the logged-in user accessing their own data
+                            $userId = Yii::$app->user->id;
+                            return Session::isAdmin() || Yii::$app->request->get('id') == $userId;
+                        },
                     ],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -58,6 +82,12 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+        $isValid = Session::getIdUser() == $id || Session::isAdmin();
+        if (!$isValid) {
+            Yii::$app->session->setFlash('error', 'Forbidden AcCcess');
+            return $this->redirect(['site/index']);
+        }
+
         $referrer = $this->request->referrer;
         return $this->render('view', [
             'model' => $this->findModel($id),

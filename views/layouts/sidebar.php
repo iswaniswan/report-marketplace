@@ -8,24 +8,25 @@ $itemsAdmin = [
     ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']],
     ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
         ['label' => 'User', 'url' =>['/user']],
-        ['label' => 'Menu', 'url' =>['/menu']],
-        ['label' => 'Access', 'url' =>['/access']],
-        ['label' => 'Role', 'url' =>['/role']],
-        ['label' => 'Approval Stage', 'url' =>['/approval-stage']],
+        // ['label' => 'Menu', 'url' =>['/menu']],
+        // ['label' => 'Access', 'url' =>['/access']],
+        // ['label' => 'Role', 'url' =>['/role']],
+        // ['label' => 'Approval Stage', 'url' =>['/approval-stage']],
     ]],
+    ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],
 ];
 
 if (Session::isAdmin() === false) {
     $itemsAdmin = [];
 }
 
-$items = [
-    ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],
-];
+// $items = [
+//     ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],
+// ];
 
-foreach ($itemsAdmin as $item) {
-    array_push($items, $item);
-}
+// foreach ($itemsAdmin as $item) {
+//     array_push($items, $item);
+// }
 
 ?>
 
@@ -38,7 +39,7 @@ foreach ($itemsAdmin as $item) {
         <div id="sidebar-menu">
 
             <?= UplonMenu::widget([
-                'items' => $items
+                'items' => $itemsAdmin
             ]) ?>
         </div>
         <!-- End Sidebar -->

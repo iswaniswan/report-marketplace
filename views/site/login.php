@@ -133,7 +133,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         <?php ActiveForm::end(); ?>
         <!-- end card -->
-        <div class="row mt-3">
+        <div class="row mt-3 d-none">
             <div class="col-12 text-center">
                 <p class="text-primary">Don't have an account? <a href="<?= \yii\helpers\Url::to(['/site/register']) ?>" class="text-primary ml-1"><b>Register</b></a></p>
             </div> <!-- end col -->
