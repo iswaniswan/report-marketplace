@@ -53,7 +53,7 @@ echo \app\widgets\Breadcrumbs::widget([
                 'columns' => 
                 [
                     [
-                    'class' => 'yii\grid\serialColumn',
+                    'class' => 'yii\grid\SerialColumn',
                     'headerOptions' => ['style' => 'text-align:left;'],
                     'contentOptions' => ['style' => 'text-align:left'],
                     ],
