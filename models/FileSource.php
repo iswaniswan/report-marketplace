@@ -47,4 +47,11 @@ class FileSource extends \yii\db\ActiveRecord
             'date_updated' => 'Date Updated',
         ];
     }
+
+    public static function isFileExists($filename)
+    {
+        return FileSource::find()->where([
+            'filename' => $filename
+        ])->one();
+    }
 }

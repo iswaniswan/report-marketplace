@@ -139,7 +139,10 @@ class FileSourceController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->delete()) {
+        $fileUploadForm = new FileUploadForm();
+        $isDeleted = $fileUploadForm->deleteFile($model->filename);
+
+        if ($isDeleted && $model->delete()) {
             Yii::$app->session->setFlash('success', 'Delete success');
         } else {
             Yii::$app->session->setFlash('error', 'An error occured when delete.');
@@ -172,8 +175,23 @@ class FileSourceController extends Controller
             $model->file = UploadedFile::getInstance($model, 'file');
             if ($model->upload()) {
                 // file is uploaded successfully
+                $filename = $model->file->baseName . '.'. $model->file->extension;
+                $fileSourceExists = FileSource::isFileExists($filename);
+
+                if ($fileSourceExists) {                    
+                    $fileSourceExists->updateAttributes([
+                        'date_updated' => date('Y-m-d H:i:s')
+                    ]);
+                } else {                    
+                    $fileSource = new FileSource([
+                        'filename' => $filename,
+                        'path' => $model->path
+                    ]);
+                    $fileSource->save();
+                }
+
                 Yii::$app->session->setFlash('success', 'File uploaded successfully.');
-                return $this->redirect(['upload']);
+                return $this->redirect(['index']);
             }
         }
 
