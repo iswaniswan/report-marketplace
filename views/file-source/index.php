@@ -60,12 +60,12 @@ echo \app\widgets\Breadcrumbs::widget([
                         'headerOptions' => ['style' => 'text-align:left;'],
                         'contentOptions' => ['style' => 'text-align:left'],
                         ],
-                                    [
-                        'attribute' => 'path',
-                        'format' => 'raw',
-                        'headerOptions' => ['style' => 'text-align:left;'],
-                        'contentOptions' => ['style' => 'text-align:left'],
-                        ],
+                        //             [
+                        // 'attribute' => 'path',
+                        // 'format' => 'raw',
+                        // 'headerOptions' => ['style' => 'text-align:left;'],
+                        // 'contentOptions' => ['style' => 'text-align:left'],
+                        // ],
                                     [
                         'attribute' => 'date_created',
                         'format' => 'raw',
@@ -80,9 +80,12 @@ echo \app\widgets\Breadcrumbs::widget([
                         ],
                                      [
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view} {update} {delete}',
-                    'visibleButtons' => ['view' => true, 'update' => true, 'delete' => true],
+                    'template' => '{download} {view} {update} {delete}',
+                    'visibleButtons' => ['download' => true, 'view' => false, 'update' => false, 'delete' => true],
                     'buttons' => [
+                        'download' => function ($url, $model) {
+                            return Html::a('<i class="ti-download"></i>', ['download', 'id' => @$model->id], ['title' => 'Download', 'target' => '_blank']);
+                        },
                         'view' => function ($url, $model) {
                             return Html::a('<i class="ti-eye"></i>', ['view', 'id' => @$model->id], ['title' => 'Detail', 'data-pjax' => '0']);
                         },

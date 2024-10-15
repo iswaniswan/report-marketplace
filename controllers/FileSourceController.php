@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use app\models\FileUploadForm;
+use yii\helpers\Url;
 
 /* custom controller, theme uplon integrated */
 /**
@@ -196,6 +197,15 @@ class FileSourceController extends Controller
         }
 
         return $this->render('upload', ['model' => $model]);
+    }
+
+    public function actionDownload($id) {
+        $model = $this->findModel($id);
+        if ($model) {
+            return Yii::$app->response->sendFile(Yii::getAlias('@webroot') . '/uploads/' . $model->filename);
+        }
+
+        die('file not found');
     }
 
 }
