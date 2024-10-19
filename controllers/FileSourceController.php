@@ -172,7 +172,7 @@ class FileSourceController extends Controller
     {
         $model = new FileUploadForm();
 
-        if (Yii::$app->request->isPost) {
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             $model->file = UploadedFile::getInstance($model, 'file');
             if ($model->upload()) {
                 // file is uploaded successfully
