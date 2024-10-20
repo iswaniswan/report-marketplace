@@ -15,7 +15,7 @@ class m241020_075300_add_unique_index_upload_ginee_table extends Migration
         $this->createIndex(
             'unique_ginee',        // Index name
             'ginee',          // Table name
-            ['id_pesanan', 'sku'],     // Columns for unique index
+            ['id_pesanan(255)', 'sku(255)'],     // Columns for unique index
             true                       // Unique index flag
         );
     }

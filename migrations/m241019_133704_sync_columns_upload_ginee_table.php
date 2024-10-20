@@ -85,7 +85,12 @@ class m241019_133704_sync_columns_upload_ginee_table extends Migration
         foreach ($headers as $header) {
             $columnName = strtolower(str_replace(' ', '_', $header));
             if (!$this->db->schema->getTableSchema($this->tableName)->getColumn($columnName)) {
-                $this->addColumn($this->tableName, $columnName, $this->text()->null());
+                // dipakai untuk index
+                if ($columnName == 'id_pesanan' || $columnName == 'sku') {
+                    $this->addColumn($this->tableName, $columnName, $this->string(255)->null());
+                } else {
+                    $this->addColumn($this->tableName, $columnName, $this->text()->null());
+                }
             }
         }
     }
