@@ -3,6 +3,8 @@
 namespace app\widgets;
 
 use app\assets\DataTableAsset;
+use Yii;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
@@ -83,9 +85,37 @@ class DataTables extends \yii\grid\GridView
 
         //disable pagination by grid view
         $this->dataProvider->pagination = false;
+        // Enable pagination by grid view with a default configuration
+        // $this->dataProvider->pagination = new Pagination([
+        //     'pageSize' => 10, // Set the desired number of items per page
+        //     'pageSizeLimit' => [1, 100], // Optional: limit the page sizes allowed
+        // ]);
 
+        // $this->clientOptions = [
+        //     'serverSide' => true, // Enable server-side processing
+        //     'processing' => true, // Show processing indicator
+        //     'ajax' => \yii\helpers\Url::to(['ginee/serverside']),
+        //     'paging' => true,
+        //     'searching' => 'true',
+        //     'info' => true,
+        //     'lengthChange' => true,
+        //     'pageLength' => 10,
+        //     'dom' => 'lfrtipB',
+        //     'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print'],
+        //     'columns' => [
+        //         ['data' => 'id_pesanan'],
+        //         ['data' => 'nama_toko'],
+        //         ['data' => 'nama_produk'],
+        //         ['data' => 'variant_produk'],
+        //         ['data' => 'jumlah'],
+        //         ['data' => 'total'],
+        //         ['data' => 'action']
+        //     ],
+        // ];
+        $this->clientOptions = [];
         //layout showing only items
         $this->layout = "{items}";
+        // $this->layout = "{searchBox}\n{items}\n{summary}\n{pager}";
 
         //the table id must be set
         if (!isset($this->tableOptions['id'])) {

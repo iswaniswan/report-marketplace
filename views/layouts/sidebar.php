@@ -6,7 +6,11 @@ use app\widgets\UplonMenu;
 $itemsAdmin = [
     ['label' => 'Administrator','header' => true],
     ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']],
-    ['label' => 'File Source', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
+    ['label' => 'Tabel', 'icon' => 'ti-server', 'items' => [
+        ['label' => 'Ginee', 'url' => ['/ginee/index']]    
+    ]
+    ],
+    ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
     ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
         ['label' => 'User', 'url' =>['/user']],
         // ['label' => 'Menu', 'url' =>['/menu']],

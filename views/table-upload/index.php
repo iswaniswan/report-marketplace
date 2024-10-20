@@ -1,5 +1,6 @@
 <?php
 
+use app\models\TableUpload;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -8,22 +9,22 @@ use yii\grid\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 
-$this->title = 'Daftar File Unggah';
+$this->title = 'Daftar Tabel';
 // $this->params['breadcrumbs'][] = $this->title;
 
 $this->params['breadcrumbs'][] = ['label' => 'Home', 'url' => ['site/index']];
-$this->params['breadcrumbs'][] = ['label' => 'File Unggah'];
+$this->params['breadcrumbs'][] = ['label' => 'Tabel'];
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'File Unggah'    ],
+        'title' => 'Tabel'    ],
 ]) ?>
 
 <div class="row mb-4">
     <div class="container-fluid">
         <div class="dt-button-wrapper">
-            <?= Html::a('<i class="ti-plus mr-2"></i> Add', ['upload'], ['class' => 'btn btn-primary mb-1']) ?>
+            <?php /* Html::a('<i class="ti-plus mr-2"></i> Add', ['upload'], ['class' => 'btn btn-primary mb-1']) */ ?>
             <?= Html::a('<i class="ti-printer mr-2"></i> Print', ['#'], ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
             <div class="btn-group mr-1">
                 <?= Html::a('<i class="ti-download mr-2"></i> Export', ['#'], [
@@ -44,7 +45,27 @@ echo \app\widgets\Breadcrumbs::widget([
                 </h4>
             </div>
             <div class="table-responsive">
-                <?= \app\widgets\DataTables::widget([
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="width: 3%;">#</th>
+                            <th>Nama</th>
+                            <th style="width: 20%;">Jumlah Baris</th>
+                            <th style="width: 10%;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $index = 0; foreach (TableUpload::getList() as $key => $value) { ?>
+                            <tr>
+                                <td><?= $index +1 ?></td>
+                                <td><?= $value ?></td>
+                                <td><?= TableUpload::getCountRows($key, $formatted=true) ?></td>
+                                <td><?= Html::a('<i class="ti-shift-right"></i>', ['ginee/index', 'id' => @$key], ['title' => 'Tampilkan']); ?></td>
+                            </tr>
+                        <?php $index++; } ?>
+                    </tbody>
+                </table>
+                <?php /* \app\widgets\DataTables::widget([
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
                 'tableOptions' => ['class' => 'table table-hover table-bordered'],
@@ -98,7 +119,7 @@ echo \app\widgets\Breadcrumbs::widget([
                     ],
                 ],
                 ],
-                ]);?>
+                ]); */?>
             </div>
         </div>
     </div>

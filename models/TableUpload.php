@@ -59,4 +59,24 @@ class TableUpload extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getCountRows($idTable, $formatted=false)
+    {
+        $count = 0;
+
+        switch ($idTable) {
+            case static::GINEE: {
+                $count = Ginee::getCountRows();
+                break;
+            }
+
+            default: break;
+        }
+
+        if ($formatted) {
+            return number_format($count, 0);
+        }
+
+        return $count;
+    }
+
 }
