@@ -193,6 +193,9 @@ class FileSourceController extends Controller
 
                 Yii::$app->session->setFlash('success', 'File uploaded successfully.');
                 return $this->redirect(['index']);
+            } else {
+                var_dump($model->errors); die();
+                Yii::$app->session->setFlash('error', 'Terjadi kesalahan');
             }
         }
 

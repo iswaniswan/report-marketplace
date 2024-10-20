@@ -3,6 +3,9 @@ use yii\widgets\ActiveForm;
 use kartik\file\FileInput;
 use yii\helpers\Html;
 use app\assets\DropifyAsset;
+use app\assets\Select2Asset;
+use app\models\TableUpload;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FileUploadForm */
@@ -12,7 +15,25 @@ $this->params['breadcrumbs'][] = ['label' => 'Members', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Upload';
 
 DropifyAsset::register($this);
+Select2Asset::register($this);
 
+$style = <<<CSS
+    .select2 .selection span.selection > span {
+        /* display: flex;
+        justify-content: space-between;
+        align-items: center; */
+    }
+    #select2-fileuploadform-id_table-container, .select2-selection__rendered {
+        /* display: flex;
+        justify-content: space-between;
+        align-items: center; */
+        /* flex-direction: row-reverse; */
+        /* width: 100%;
+        padding: .25rem .5rem; */
+    }
+CSS;
+
+// $this->registerCss($style);
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
@@ -30,9 +51,21 @@ echo \app\widgets\Breadcrumbs::widget([
             <div class="file-upload">
                 <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Pengaturan</label>
+                <div class="row mb-4">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="exampleSelect1">Import data ke tabel</label>
+                            <select class="form-control" name="FileUploadForm[id_table]" placeholder="Pilih tabel">
+                                <option value="">Pilih Tabel</option>
+                                <?php foreach (TableUpload::getList() as $key => $value) { ?>
+                                    <option value="<?= $key ?>"><?= $value ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>                    
                 </div>
+
+                <?php /*
                 <div class="row mb-4">
                     <div class="col-3">
                         <div class="form-group form-check">
@@ -53,7 +86,7 @@ echo \app\widgets\Breadcrumbs::widget([
                         </div>
                     </div>
                 </div>
-                
+                */ ?>                
 
                 <?= $form->field($model, 'file')->widget(FileInput::classname(), [
                     'pluginOptions' => [
