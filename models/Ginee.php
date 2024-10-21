@@ -199,4 +199,26 @@ class Ginee extends \yii\db\ActiveRecord
         return static::find()->count();
     }
 
+    public static function getSum($columnName, $conditions = [], $notConditions = [])
+    {
+        if ($columnName == null || $columnName == '') {
+            return 0;
+        }
+
+        $query = static::find();
+
+        // Apply conditions if any
+        if (!empty($conditions)) {
+            $query->andWhere($conditions);
+        }
+
+        // Apply NOT conditions if any
+        if (!empty($notConditions)) {
+            $query->andWhere(['not', $notConditions]);
+        }
+
+
+        return $query->sum($columnName);
+    }
+
 }

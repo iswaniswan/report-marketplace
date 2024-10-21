@@ -54,9 +54,8 @@ class GineeSearch extends Ginee
             $searchValue = $params['search']['value'];
             $query->andFilterWhere(['or',
                 ['like', 'id_pesanan', $searchValue],
-                ['like', 'nama_toko', $searchValue],
-                ['like', 'nama_produk', $searchValue],
-                ['like', 'variant_produk', $searchValue]
+                ['like', 'status', $searchValue],
+                ['like', 'channel', $searchValue]
                 // Add more fields that you want to include in the search
             ]);
         }

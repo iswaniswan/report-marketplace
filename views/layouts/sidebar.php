@@ -6,10 +6,25 @@ use app\widgets\UplonMenu;
 $itemsAdmin = [
     ['label' => 'Administrator','header' => true],
     ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']],
-    ['label' => 'Tabel', 'icon' => 'ti-server', 'items' => [
-        ['label' => 'Ginee', 'url' => ['/ginee/index-serverside']]    
-    ]
+    // ['label' => 'Tabel', 'icon' => 'ti-server', 'items' => [
+    //     ['label' => 'Ginee', 'url' => ['/ginee/index-serverside']]
+    // ]
+    // ],
+    ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
+        ['label' => 'Ginee', 'items' => [
+            ['label' => 'Summary', 'url' =>['/ginee/index-summary']],
+            ['label' => 'Tabel', 'url' =>['/ginee/index-serverside']]
+        ],
+        // ['label' => 'Menu', 'url' =>['/menu']],
+        // ['label' => 'Access', 'url' =>['/access']],
+        // ['label' => 'Role', 'url' =>['/role']],
+        // ['label' => 'Approval Stage', 'url' =>['/approval-stage']],
     ],
+        // ['label' => 'Menu', 'url' =>['/menu']],
+        // ['label' => 'Access', 'url' =>['/access']],
+        // ['label' => 'Role', 'url' =>['/role']],
+        // ['label' => 'Approval Stage', 'url' =>['/approval-stage']],
+    ]],
     ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
     ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
         ['label' => 'User', 'url' =>['/user']],

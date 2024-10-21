@@ -56,6 +56,20 @@ class GineeController extends Controller
         return $this->render('index-serverside');
     }
 
+    public function actionIndexSummary()
+    {        
+        $produkTerjual = Ginee::getSum('jumlah', [], [
+            'status' => 'Dibatalkan'
+        ]);
+
+        $hargaTotalPromosi = Ginee::getSum('harga_total_promosi');
+
+        return $this->render('index-summary', [
+            'produkTerjual' => $produkTerjual,
+            'hargaTotalPromosi' => $hargaTotalPromosi
+        ]);
+    }
+
     /**
      * Displays a single Ginee model.
      * @param int $id ID
@@ -188,6 +202,7 @@ class GineeController extends Controller
         ]);
 
         // Handle ordering if order data is provided
+        $modelClass = $dataProvider->query->modelClass;
         if (!empty($orderData)) {
             foreach ($orderData as $order) {
                 $columnIndex = intval($order['column']);
@@ -197,7 +212,7 @@ class GineeController extends Controller
                 if (isset($columns[$columnIndex]['data']) && !empty($columns[$columnIndex]['data'])) {
                     $columnName = $columns[$columnIndex]['data'];
                     // Apply ordering to the query
-                    if ($dataProvider->query->hasAttribute($columnName)) {
+                    if ($modelClass::hasAttribute($columnName)) {
                         $dataProvider->query->addOrderBy([$columnName => $direction]);
                     }
                 }
@@ -209,12 +224,21 @@ class GineeController extends Controller
         foreach ($dataProvider->getModels() as $model) {
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
+                'tanggal_pembuatan' => date('d-m-Y', strtotime($model->tanggal_pembuatan)),
                 'id_pesanan' => $model->id_pesanan,
-                'nama_toko' => $model->nama_toko,
-                'nama_produk' => $model->nama_produk,
-                'variant_produk' => $model->variant_produk,
+                'status' => $model->status,
+                'channel' => $model->channel,
+                'harga_awal_produk' => number_format($model->harga_awal_produk, 2),
+                'harga_promosi' => number_format($model->harga_promosi, 2),
                 'jumlah' => $model->jumlah,
-                'total' => $model->mata_uang . ' ' . number_format($model->total, 2),
+                'harga_total_promosi' => number_format($model->harga_total_promosi, 2),
+                'subtotal' => number_format($model->subtotal, 2),
+                'total' => number_format($model->total, 2),
+                // 'nama_toko' => $model->nama_toko,
+                // 'nama_produk' => $model->nama_produk,
+                // 'variant_produk' => $model->variant_produk,
+                // 'jumlah' => $model->jumlah,
+                // 'total' => $model->mata_uang . ' ' . number_format($model->total, 2),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];
         }

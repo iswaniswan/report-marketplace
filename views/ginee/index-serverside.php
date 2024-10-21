@@ -11,14 +11,30 @@ use yii\helpers\Url;
 
 DataTableAsset::register($this);
 
-$this->title = 'Daftar Ginee';
+$this->title = 'Tabel Ginee';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Ginee'    ],
-]) ?>
+        'title' => 'Ginee'
+    ],
+]);
+
+$style = <<<CSS
+    #table-serverside tbody tr td:nth-child(6),
+    #table-serverside tbody tr td:nth-child(7), 
+    #table-serverside tbody tr td:nth-child(8),
+    #table-serverside tbody tr td:nth-child(9),
+    #table-serverside tbody tr td:nth-child(10),
+    #table-serverside tbody tr td:nth-child(11) {
+        text-align: right
+    }
+CSS;
+
+$this->registerCss($style);
+
+?>
 
 <div class="row mb-4">
     <div class="container-fluid">
@@ -48,11 +64,15 @@ echo \app\widgets\Breadcrumbs::widget([
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Tanggal<br/>Pembuatan</th>
                             <th>ID Pesanan</th>
-                            <th>Nama Toko</th>
-                            <th>Nama Produk</th>
-                            <th>Variant Produk</th>
+                            <th>Status</th>
+                            <th>Channel</th>
+                            <th>Harga<br/>Awal Produk</th>
+                            <th>Harga<br/>Promosi</th>
                             <th>Jumlah</th>
+                            <th>Harga<br/>Total Promosi</th>
+                            <th>Subtotal</th>
                             <th>Total</th>
                             <th>Action</th>
                         </tr>
@@ -94,11 +114,15 @@ $script = <<<JS
         },
         columns: [
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
+            { data: 'tanggal_pembuatan' },
             { data: 'id_pesanan' },
-            { data: 'nama_toko' },
-            { data: 'nama_produk' },
-            { data: 'variant_produk' },
+            { data: 'status' },
+            { data: 'channel' },
+            { data: 'harga_awal_produk' },
+            { data: 'harga_promosi' },
             { data: 'jumlah' },
+            { data: 'harga_total_promosi' },
+            { data: 'subtotal' },
             { data: 'total' },
             { data: 'action'},
         ],
