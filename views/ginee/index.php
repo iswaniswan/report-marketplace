@@ -46,24 +46,24 @@ echo \app\widgets\Breadcrumbs::widget([
                 'filterModel' => $searchModel,
                 'tableOptions' => ['class' => 'table table-hover table-bordered'],
                 'clientOptions' => [
-                    // 'serverSide' => true,
-                    // 'processing' => true,
-                    // 'ajax' => \yii\helpers\Url::to(['ginee/serverside']),
-                    // 'dom' => 'lfrtipB',
-                    // 'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print'],
-                    // 'columns' => [
-                    //     ['data' => 'id_pesanan', 'title' => 'ID Pesanan'],
-                    //     ['data' => 'nama_toko', 'title' => 'Nama Toko'],
-                    //     ['data' => 'nama_produk', 'title' => 'Nama Produk'],
-                    //     ['data' => 'variant_produk', 'title' => 'Variant Produk'],
-                    //     ['data' => 'jumlah', 'title' => 'Jumlah'],
-                    //     ['data' => 'total', 'title' => 'Total'],
-                    //     ['data' => 'action', 'title' => 'Actions', 'orderable' => false, 'searchable' => false]
-                    // ],
-                    // 'paging' => true, // Enable paging
-                    // 'searching' => true,
-                    // 'info' => true,
-                    // 'pageLength' => 10, 
+                    'serverSide' => true,
+                    'processing' => true,
+                    'ajax' => \yii\helpers\Url::to(['ginee/serverside']),
+                    'dom' => 'lfrtipB',
+                    'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print'],
+                    'columns' => [
+                        ['data' => 'id_pesanan', 'title' => 'ID Pesanan'],
+                        ['data' => 'nama_toko', 'title' => 'Nama Toko'],
+                        ['data' => 'nama_produk', 'title' => 'Nama Produk'],
+                        ['data' => 'variant_produk', 'title' => 'Variant Produk'],
+                        ['data' => 'jumlah', 'title' => 'Jumlah'],
+                        ['data' => 'total', 'title' => 'Total'],
+                        ['data' => 'action', 'title' => 'Actions', 'orderable' => false, 'searchable' => false]
+                    ],
+                    'paging' => true, // Enable paging
+                    'searching' => true,
+                    'info' => true,
+                    'pageLength' => 10, 
                 ],
                 'columns' => [
                         ['class' => 'yii\grid\SerialColumn'],

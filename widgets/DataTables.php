@@ -38,6 +38,8 @@ class DataTables extends \yii\grid\GridView
     public function run()
     {
         $clientOptions = $this->getClientOptions();
+        // echo '<pre>'; var_dump($clientOptions); echo '</pre>'; die();
+        
         $view = $this->getView();
         $id = $this->tableOptions['id'];
 
@@ -112,7 +114,7 @@ class DataTables extends \yii\grid\GridView
         //         ['data' => 'action']
         //     ],
         // ];
-        $this->clientOptions = [];
+        // $this->clientOptions = [];
         //layout showing only items
         $this->layout = "{items}";
         // $this->layout = "{searchBox}\n{items}\n{summary}\n{pager}";

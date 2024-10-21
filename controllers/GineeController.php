@@ -51,6 +51,11 @@ class GineeController extends Controller
         ]);
     }
 
+    public function actionIndexServerside()
+    {        
+        return $this->render('index-serverside');
+    }
+
     /**
      * Displays a single Ginee model.
      * @param int $id ID
@@ -166,63 +171,60 @@ class GineeController extends Controller
     public function actionServerside()
     {
         $searchModel = new GineeSearch();
+        $searchModel->isServerside = true;
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        // Set pagination based on DataTables parameters
-        // $pageSize = Yii::$app->request->get('length', 10);
-        // $page = Yii::$app->request->get('start', 0) / $pageSize;
-
-        // $dataProvider->setPagination([
-        //     'pageSize' => $pageSize,
-        //     'page' => $page,
-        // ]);
-
-        $response = [
-            'draw' => intval(Yii::$app->request->post('draw')),
-            'recordsTotal' => $dataProvider->getTotalCount(),
-            'recordsFiltered' => $dataProvider->getTotalCount(), // Adjust based on filtered records
-            'data' => [], // This will hold the actual data to return
-        ];
-    
         // Extract order information from the request
-        $orderData = Yii::$app->request->post('order', []);
-        $columns = Yii::$app->request->post('columns', []);
+        $orderData = Yii::$app->request->get('order', []);
+        $columns = Yii::$app->request->get('columns', []);
 
+        // Set pagination based on DataTables parameters
+        $pageSize = Yii::$app->request->get('length', 10);
+        $page = Yii::$app->request->get('start', 0) / $pageSize;
+
+        $dataProvider->setPagination([
+            'pageSize' => $pageSize,
+            'page' => $page,
+        ]);
+
+        // Handle ordering if order data is provided
         if (!empty($orderData)) {
             foreach ($orderData as $order) {
                 $columnIndex = intval($order['column']);
                 $direction = $order['dir'] === 'asc' ? SORT_ASC : SORT_DESC;
-    
-                // Ensure the column name corresponds to the correct attribute
-                if (isset($columns[$columnIndex]['data'])) {
+
+                // Ensure the column name corresponds to a valid attribute from the model
+                if (isset($columns[$columnIndex]['data']) && !empty($columns[$columnIndex]['data'])) {
                     $columnName = $columns[$columnIndex]['data'];
                     // Apply ordering to the query
-                    $dataProvider->query->addOrderBy([$columnName => $direction]);
+                    if ($dataProvider->query->hasAttribute($columnName)) {
+                        $dataProvider->query->addOrderBy([$columnName => $direction]);
+                    }
                 }
             }
         }
 
+        $number = $page * $pageSize; // Adjust the sequence number based on the page
         $data = [];
         foreach ($dataProvider->getModels() as $model) {
             $data[] = [
+                'number' => ++$number, // Increment the sequence number for each row
                 'id_pesanan' => $model->id_pesanan,
                 'nama_toko' => $model->nama_toko,
                 'nama_produk' => $model->nama_produk,
                 'variant_produk' => $model->variant_produk,
                 'jumlah' => $model->jumlah,
                 'total' => $model->mata_uang . ' ' . number_format($model->total, 2),
-                'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0'])
+                'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];
         }
 
-        return json_encode($response);
-
-        // return \yii\helpers\Json::encode([
-        //     'draw' => Yii::$app->request->get('draw'),
-        //     'recordsTotal' => $dataProvider->getTotalCount(),
-        //     'recordsFiltered' => $dataProvider->getTotalCount(),
-        //     'data' => $data,
-        // ]);
+        return \yii\helpers\Json::encode([
+            'draw' => Yii::$app->request->get('draw'),
+            'recordsTotal' => $dataProvider->getTotalCount(),
+            'recordsFiltered' => $dataProvider->getTotalCount(),
+            'data' => $data,
+        ]);
     }
 
 

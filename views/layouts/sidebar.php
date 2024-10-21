@@ -7,7 +7,7 @@ $itemsAdmin = [
     ['label' => 'Administrator','header' => true],
     ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']],
     ['label' => 'Tabel', 'icon' => 'ti-server', 'items' => [
-        ['label' => 'Ginee', 'url' => ['/ginee/index']]    
+        ['label' => 'Ginee', 'url' => ['/ginee/index-serverside']]    
     ]
     ],
     ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
