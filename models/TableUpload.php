@@ -19,6 +19,10 @@ class TableUpload extends \yii\db\ActiveRecord
     public $menu;
 
     const GINEE = 1;
+    const LAZADA = 2;
+    const SHOPEE = 3;
+    const TIKTOK = 4;
+    const TOKOPEDIA = 5;
 
     /**
      * {@inheritdoc}
@@ -55,7 +59,11 @@ class TableUpload extends \yii\db\ActiveRecord
     public static function getList()
     {
         return [
-            static::GINEE => 'ginee'
+            static::GINEE => 'ginee',
+            static::LAZADA => 'lazada',
+            static::SHOPEE => 'shopee',
+            static::TIKTOK => 'tiktok',
+            static::TOKOPEDIA => 'tokopedia',
         ];
     }
 

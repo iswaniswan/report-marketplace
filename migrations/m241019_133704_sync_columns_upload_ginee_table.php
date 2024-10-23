@@ -11,7 +11,7 @@ use app\utils\StringHelper as UtilsStringHelper;
 class m241019_133704_sync_columns_upload_ginee_table extends Migration
 {
     private $tableName = 'ginee';
-    private $filename = 'ginee.xlsx';
+    private $filename = 'ginee-header.xlsx';
     private $filePath;
 
 

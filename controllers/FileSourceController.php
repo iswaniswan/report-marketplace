@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use app\models\FileUploadForm;
+use app\models\TableUpload;
 use yii\helpers\Url;
 
 /* custom controller, theme uplon integrated */
@@ -67,6 +68,27 @@ class FileSourceController extends Controller
             'referrer' => $referrer,
             'mode' => Mode::READ
         ]);
+    }
+
+    public function actionShow($id)
+    {
+        $model = $this->findModel($id);
+        if ($model != null) {
+            $route = TableUpload::getList()[$model->id_table];
+            $route .= '/index-serverside';
+
+            $date_start = date('Y-m-d', strtotime($model->getYear() . '-' . $model->getMonth() . '-01'));
+            $date_end = date('Y-m-t', strtotime($model->getYear() . '-' . $model->getMonth() . '-01'));
+            $params = [
+                'date_start' => $date_start,
+                'date_end' => $date_end
+            ];
+
+            return $this->redirect([$route, $params]);
+        }
+        
+        Yii::$app->session->setFlash('error', 'Data tidak ditemukan');
+        return $this->redirect(['index']);
     }
 
     /**
@@ -168,38 +190,54 @@ class FileSourceController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionUpload()
+    public function actionUpload($id=null)
     {
         $model = new FileUploadForm();
+        $fileSource = new FileSource();
+        if ($id != null) {
+            $fileSource = FileSource::findOne($id);
+        }
 
         if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
             $model->file = UploadedFile::getInstance($model, 'file');
-            if ($model->upload()) {
-                // file is uploaded successfully
-                $filename = $model->file->baseName . '.'. $model->file->extension;
-                $fileSourceExists = FileSource::isFileExists($filename);
+            
+            $filename = $model->file->baseName . '.'. $model->file->extension;
+            $codeName = $model->getCodeName();
+            $fileSourceExists = FileSource::isFileExists($codeName);
 
-                if ($fileSourceExists) {                    
-                    $fileSourceExists->updateAttributes([
-                        'date_updated' => date('Y-m-d H:i:s')
-                    ]);
-                } else {                    
-                    $fileSource = new FileSource([
-                        'filename' => $filename,
-                        'path' => $model->path
-                    ]);
-                    $fileSource->save();
+            if ($fileSourceExists) {                    
+                $fileSourceExists->updateAttributes([
+                    'date_updated' => date('Y-m-d H:i:s')
+                ]);
+            } else {   
+                $fileSource = new FileSource();
+                $fileSource->id_table = $model->id_table;
+                $fileSource->periode = $model->periode;
+                $fileSource->filename = $filename;
+                $fileSource->path = $model->path;
+                $code_name = TableUpload::getList()[$fileSource->id_table];
+                $fileSource->code_name = $code_name . $fileSource->getYear() . $fileSource->getMonth();
+                if ($fileSource->save()) {
+                    $fileSourceExists = $fileSource;
                 }
-
+            }
+            
+            $model->id_file_source = $fileSourceExists->id;
+            // file is uploaded successfully
+            if ($model->upload()) {
                 Yii::$app->session->setFlash('success', 'File uploaded successfully.');
                 return $this->redirect(['index']);
             } else {
-                var_dump($model->errors); die();
+                $fileSourceExists->delete();
+                // var_dump($model->errors); die();
                 Yii::$app->session->setFlash('error', 'Terjadi kesalahan');
             }
         }
 
-        return $this->render('upload', ['model' => $model]);
+        return $this->render('upload', [
+            'model' => $model,
+            'fileSource' => $fileSource
+        ]);
     }
 
     public function actionDownload($id) {

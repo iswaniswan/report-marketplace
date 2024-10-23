@@ -35,6 +35,8 @@ CSS;
 
 // $this->registerCss($style);
 
+// var_dump($fileSource);
+
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
@@ -54,15 +56,31 @@ echo \app\widgets\Breadcrumbs::widget([
                 <div class="row mb-4">
                     <div class="col-3">
                         <div class="form-group">
-                            <label for="exampleSelect1">Import data ke tabel</label>
-                            <select class="form-control" name="FileUploadForm[id_table]" placeholder="Pilih tabel">
+                            <label for="id_table">Import data ke tabel</label>
+                            <select class="form-control" id="id_table" name="FileUploadForm[id_table]" placeholder="Pilih tabel">
                                 <option value="">Pilih Tabel</option>
                                 <?php foreach (TableUpload::getList() as $key => $value) { ?>
-                                    <option value="<?= $key ?>"><?= $value ?></option>
+                                    <?php $isSelected = (@$fileSource->id_table != null && $fileSource->id_table == $key) ? 'selected' : ''; ?>
+                                    <option value="<?= $key ?>" <?= $isSelected ?>><?= $value ?></option>
                                 <?php } ?>
                             </select>
                         </div>
-                    </div>                    
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="periode">Periode</label>
+                            <?php $periode = ''; if (@$fileSource->month != null && @$fileSource->year != null) {
+                                $periode = $fileSource->year . '-' . str_pad($fileSource->month, 2, '0', STR_PAD_LEFT);
+                            } ?>
+                            <input type="month" id="periode" name="FileUploadForm[periode]" min="2020-01" max="2030-12" value="<?= $periode ?>" class="form-control" onclick="this.showPicker();">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="periode">Info</label>
+                            <p class="text-secondary font-italic">File yang diunggah akan memperbarui <strong>(replace)</strong> file sebelumnya sesuai dengan periode yang dipilih.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <?php /*
@@ -97,7 +115,7 @@ echo \app\widgets\Breadcrumbs::widget([
                         'showCaption' => true,
                         'showCancel' => true,
                         'showUpload' => true,
-                        'uploadClass' => 'btn btn-primary float-right',
+                        'uploadClass' => 'btn btn-warning float-right',
                         'removeClass' => 'btn btn-danger',
                         'removeIcon' => '<span class="ti-trash"></span> ',
                         'allowedFileExtensions' => ['xls', 'xlsx'],
@@ -109,6 +127,7 @@ echo \app\widgets\Breadcrumbs::widget([
                     ]
                 ]); ?>
 
+                <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['index'], ['class' => 'btn btn-info mb-1 mt-4']) ?>
                 <?php ActiveForm::end(); ?>
             </div>            
         </div>
@@ -121,3 +140,35 @@ echo \app\widgets\Breadcrumbs::widget([
         display: none !important;
     }
 </style>
+
+<?php 
+
+$script = <<<JS
+    $(document).ready(function() {
+        $('button[type="submit"]').on('click', function() {
+            const idTable = $('#id_table').val();
+            const periode = $('#periode').val();
+            const file = $('input[type="file"]').val();
+
+            if (idTable == '') {
+                alert('Tabel belum pilih!');
+                return false;
+            }
+
+            if (periode == '') {
+                alert('Periode belum dipilih!');
+                return false;
+            }
+
+            if (file == '') {
+                alert('File belum dipilih!');
+                return false;
+            }
+            
+        })
+    });
+JS;
+
+$this->registerJs($script);
+
+?>

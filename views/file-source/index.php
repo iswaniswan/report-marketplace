@@ -1,5 +1,6 @@
 <?php
 
+use app\models\TableUpload;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -53,47 +54,88 @@ echo \app\widgets\Breadcrumbs::widget([
                 'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print']
                 ],
                 'columns' => [
-                                                        ['class' => 'yii\grid\SerialColumn'],
+                        ['class' => 'yii\grid\SerialColumn'],
+                        [
+                            'attribute' => 'id_table',
+                            'header' => 'Tabel',
+                            'format' => 'raw',
+                            'headerOptions' => ['style' => 'text-align:left;'],
+                            'contentOptions' => ['style' => 'text-align:left'],
+                            'value' => function ($model) {
+                                if ($model->id_table != null) {
+                                    $text = TableUpload::getList()[$model->id_table];
+                                    return '<span class="badge badge-pill badge-purple px-2 py-1">'. $text .'</span>';
+                                }
+                            }
+                            ],
                                     [
                         'attribute' => 'filename',
+                        'header' => 'Nama File',
                         'format' => 'raw',
                         'headerOptions' => ['style' => 'text-align:left;'],
                         'contentOptions' => ['style' => 'text-align:left'],
                         ],
+                        [
+                            'attribute' => 'year',
+                            'header' => 'Tahun',
+                            'format' => 'raw',
+                            'headerOptions' => ['style' => 'text-align:left;'],
+                            'contentOptions' => ['style' => 'text-align:left'],
+                            ],
+                        [
+                            'attribute' => 'month',
+                            'header' => 'Bulan',
+                            'format' => 'raw',
+                            'headerOptions' => ['style' => 'text-align:left;'],
+                            'contentOptions' => ['style' => 'text-align:left'],
+                            'value' => function ($model) {
+                                    if ($model->month != null) {
+                                        return $model->month . '. ' . date("F", strtotime(date("Y") ."-". $model->month ."-01"));
+                                    }
+                                }
+                            ],
                         //             [
                         // 'attribute' => 'path',
                         // 'format' => 'raw',
                         // 'headerOptions' => ['style' => 'text-align:left;'],
                         // 'contentOptions' => ['style' => 'text-align:left'],
                         // ],
-                                    [
-                        'attribute' => 'date_created',
-                        'format' => 'raw',
-                        'headerOptions' => ['style' => 'text-align:left;'],
-                        'contentOptions' => ['style' => 'text-align:left'],
-                        ],
+                        //             [
+                        // 'attribute' => 'date_created',
+                        // 'format' => 'raw',
+                        // 'headerOptions' => ['style' => 'text-align:left;'],
+                        // 'contentOptions' => ['style' => 'text-align:left'],
+                        // ],
                                     [
                         'attribute' => 'date_updated',
+                        'header' => 'Tanggal Unggah',
                         'format' => 'raw',
                         'headerOptions' => ['style' => 'text-align:left;'],
                         'contentOptions' => ['style' => 'text-align:left'],
+                        'value' => function ($model) {
+                            return $model->date_updated ?? $model->date_created;
+                        }
                         ],
                                      [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{download} {view} {update} {delete}',
-                    'visibleButtons' => ['download' => true, 'view' => false, 'update' => false, 'delete' => true],
+                    'header' => 'Aksi',
+                    'visibleButtons' => ['download' => true, 'view' => true, 'update' => true, 'delete' => true],
                     'buttons' => [
                         'download' => function ($url, $model) {
-                            return Html::a('<i class="ti-download"></i>', ['download', 'id' => @$model->id], ['title' => 'Download', 'target' => '_blank']);
+                            return Html::a('<i class="ti-download"></i>', ['download', 'id' => @$model->id], ['title' => 'Download', 'target' => '_blank', 'class' => 'pr-1']);
                         },
                         'view' => function ($url, $model) {
-                            return Html::a('<i class="ti-eye"></i>', ['view', 'id' => @$model->id], ['title' => 'Detail', 'data-pjax' => '0']);
+                            return Html::a('<i class="ti-server"></i>', ['show', 'id' => @$model->id], ['title' => 'Lihat tabel', 'target' => '_blank', 'data-pjax' => '0', 'class' => 'px-1 text-warning']);
                         },
                         'update' => function ($url, $model) {
-                            return Html::a('<i class="ti-pencil"></i>', ['update', 'id' => @$model->id], ['title' => 'Detail', 'data-pjax' => '0']);
+                            return Html::a('<i class="ti-pencil-alt"></i>', ['upload', 'id' => @$model->id], ['title' => 'Detail', 'data-pjax' => '0', 'class' => 'text-success', 'class' => 'px-1 text-success']);
                             },
                         'delete' => function ($url, $model) {
-                            return Html::a('<i class="ti-trash"></i>', ['delete', 'id' => @$model->id],['title' => 'Delete', 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'), 'data-method'  => 'post']);
+                            return Html::a('<i class="ti-trash"></i>', ['delete', 'id' => @$model->id],[
+                                'class' => 'text-danger',
+                                'title' => 'Delete', 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'), 'data-method'  => 'post'
+                            ]);
                             },
                     ],
                 ],

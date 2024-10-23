@@ -53,20 +53,44 @@ class GineeController extends Controller
 
     public function actionIndexServerside()
     {        
-        return $this->render('index-serverside');
+        $request = Yii::$app->request->get();
+        $params = [
+            'date_start' => $request[1]['date_start'] ?? null,
+            'date_end' => $request[1]['date_end'] ?? null,
+            'status' => $request[1]['status'] ?? null,
+            'channel' => $request[1]['channel'] ?? null,
+        ];
+
+        return $this->render('index-serverside', $params);
     }
 
     public function actionIndexSummary()
     {        
-        $produkTerjual = Ginee::getSum('jumlah', [], [
-            'status' => 'Dibatalkan'
-        ]);
+        $produkTerjual = Ginee::getSum('jumlah', [], []);
 
-        $hargaTotalPromosi = Ginee::getSum('harga_total_promosi');
+        $produkSelesai = Ginee::getSum('jumlah', [
+            'status' => 'Selesai',
+        ], []);
+
+        $produkBatal = Ginee::getSum('jumlah', [
+            'status' => ['Dibatalkan', 'Return/Refund'],
+        ], []);
+
+        $produkDikirim = Ginee::getSum('jumlah', [
+            'status' => 'Sedang dikirim',
+        ], []);
+
+        $totalHargaTotalPromosi = Ginee::getSum('harga_total_promosi');
+
+        $totalTotal = Ginee::getSum('total');
 
         return $this->render('index-summary', [
             'produkTerjual' => $produkTerjual,
-            'hargaTotalPromosi' => $hargaTotalPromosi
+            'produkSelesai' => $produkSelesai,
+            'produkBatal' => $produkBatal,
+            'produkDikirim' => $produkDikirim,
+            'totalHargaTotalPromosi' => $totalHargaTotalPromosi,
+            'totalTotal' => $totalTotal
         ]);
     }
 
@@ -186,6 +210,15 @@ class GineeController extends Controller
     {
         $searchModel = new GineeSearch();
         $searchModel->isServerside = true;
+
+        // optional parameter
+        // $searchModel->year = Yii::$app->request->get('year') ?? null;
+        // $searchModel->month = Yii::$app->request->get('month') ?? null;
+        $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
+        $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->channel = Yii::$app->request->get('channel') ?? null;
+        
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         // Extract order information from the request
@@ -202,7 +235,7 @@ class GineeController extends Controller
         ]);
 
         // Handle ordering if order data is provided
-        $modelClass = $dataProvider->query->modelClass;
+        // $modelClass = $dataProvider->query->modelClass;
         if (!empty($orderData)) {
             foreach ($orderData as $order) {
                 $columnIndex = intval($order['column']);
@@ -212,9 +245,7 @@ class GineeController extends Controller
                 if (isset($columns[$columnIndex]['data']) && !empty($columns[$columnIndex]['data'])) {
                     $columnName = $columns[$columnIndex]['data'];
                     // Apply ordering to the query
-                    if ($modelClass::hasAttribute($columnName)) {
-                        $dataProvider->query->addOrderBy([$columnName => $direction]);
-                    }
+                    $dataProvider->query->addOrderBy([$columnName => $direction]);
                 }
             }
         }

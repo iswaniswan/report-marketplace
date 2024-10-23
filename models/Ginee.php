@@ -221,4 +221,20 @@ class Ginee extends \yii\db\ActiveRecord
         return $query->sum($columnName);
     }
 
+    public static function getListStatus()
+    {
+        return static::find()
+            ->select('status')
+            ->groupBy('status')
+            ->column();
+    }
+
+    public static function getListChannel()
+    {
+        return static::find()
+            ->select('channel')
+            ->groupBy('channel')
+            ->column();
+    }
+
 }

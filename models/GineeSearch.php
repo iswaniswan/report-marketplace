@@ -14,7 +14,12 @@ class GineeSearch extends Ginee
 {
 
     public $isServerside = false;
-
+    public $year;
+    public $month;
+    public $date_start;
+    public $date_end;
+    public $status;
+    public $channel;
 
 
     /**
@@ -41,7 +46,55 @@ class GineeSearch extends Ginee
     {
         $query = Ginee::find();
 
-        $this->load($params);
+        $this->load($params);       
+
+        // if ($this->year != null && $this->month != null) {
+        //     $dateStart = date('Y-m-d', strtotime($this->year . '-' . $this->month . '-01'));
+        //     $dateEnd = date('Y-m-t', strtotime($this->year . '-' . $this->month . '-01'));
+
+        //     // Adding the BETWEEN clause to filter by date range
+        //     $query->andFilterWhere(['between', 
+        //         new \yii\db\Expression("STR_TO_DATE(tanggal_pembuatan, '%d-%m-%Y')"), 
+        //         $dateStart, 
+        //         $dateEnd
+        //     ]);
+        // }
+
+        if ($this->date_start != null && $this->date_end != null) {
+            // Adding the BETWEEN clause to filter by date range
+            $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(tanggal_pembuatan, '%d-%m-%Y')"), 
+                $this->date_start, 
+                $this->date_end
+            ]);
+        } else {
+
+            if ($this->date_start != null) {
+                $query->andFilterWhere(['>=', 
+                    new \yii\db\Expression("STR_TO_DATE(tanggal_pembuatan, '%d-%m-%Y')"), 
+                    date('Y-m-d', strtotime($this->date_start))
+                ]);
+            }
+
+            if ($this->date_end != null) {
+                $query->andFilterWhere(['<=', 
+                    new \yii\db\Expression("STR_TO_DATE(tanggal_pembuatan, '%d-%m-%Y')"), 
+                    date('Y-m-d', strtotime($this->date_end))
+                ]);
+            }
+        }
+
+        if ($this->status != null) {
+            $query->andFilterWhere(['and',
+                ['like', 'status', $this->status]
+            ]);
+        }
+
+        if ($this->channel != null) {
+            $query->andFilterWhere(['and',
+                ['like', 'channel', $this->channel]
+            ]);
+        }
 
         // add conditions that should always apply here
 

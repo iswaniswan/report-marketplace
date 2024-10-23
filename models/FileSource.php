@@ -12,9 +12,16 @@ use Yii;
  * @property string|null $path
  * @property string $date_created
  * @property string|null $date_updated
+ * @property int|null $year
+ * @property int|null $month
+ * @property int|null $id_table
+ * @property string|null $code_name
  */
 class FileSource extends \yii\db\ActiveRecord
 {
+
+    public $periode;
+
     /**
      * {@inheritdoc}
      */
@@ -29,8 +36,9 @@ class FileSource extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_created', 'date_updated'], 'safe'],
-            [['filename', 'path'], 'string', 'max' => 255],
+            [['date_created', 'date_updated', 'periode'], 'safe'],
+            [['year', 'month', 'id_table'], 'integer'],
+            [['filename', 'path', 'code_name'], 'string', 'max' => 255],
         ];
     }
 
@@ -45,13 +53,47 @@ class FileSource extends \yii\db\ActiveRecord
             'path' => 'Path',
             'date_created' => 'Date Created',
             'date_updated' => 'Date Updated',
+            'year' => 'Year',
+            'month' => 'Month',
+            'id_table' => 'Id Table',
+            'code_name' => 'Code Name',
         ];
     }
-
-    public static function isFileExists($filename)
+    public static function isFileExists($code_name=null)
     {
-        return FileSource::find()->where([
-            'filename' => $filename
+        $query = FileSource::find();
+
+        return $query->where([
+            'code_name' => $code_name
         ])->one();
     }
+
+    public function getYear()
+    {
+        if ($this->year == null && $this->periode != null) {
+            $this->year = explode('-', $this->periode)[0];
+        }
+        return $this->year;
+    }
+
+    public function getMonth()
+    {
+        if ($this->month == null && $this->periode != null) {
+            $this->month = explode('-', $this->periode)[1];
+        }
+        return $this->month;
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($insert) {
+            // This code will run before inserting a new record
+            $this->year = (int) $this->getYear();
+            $this->month = (int) $this->getMonth();
+        }
+
+        // Call the parent implementation which will continue the save process
+        return parent::beforeSave($insert);
+    }
+
 }

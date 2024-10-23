@@ -15,6 +15,7 @@ class m241019_132028_create_ginee_table extends Migration
     {        
         $this->createTable('{{%ginee}}', [
             'id' => $this->primaryKey(),
+            'id_file_source' => $this->integer()->null(),  // Add column with integer type and default null
         ]);
     }
 

@@ -10,25 +10,30 @@ class m241020_075300_add_unique_index_upload_ginee_table extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
-    {
-        $this->createIndex(
-            'unique_ginee',        // Index name
-            'ginee',          // Table name
-            ['id_pesanan(255)', 'sku(255)'],     // Columns for unique index
-            true                       // Unique index flag
-        );
-    }
+    // public function safeUp()
+    // {
+    //     $this->createIndex(
+    //         'unique_ginee',        // Index name
+    //         'ginee',          // Table name
+    //         ['id_pesanan(255)', 'sku(255)'],     // Columns for unique index
+    //         true                       // Unique index flag
+    //     );
+    // }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function safeDown()
-    {
-        echo "m241020_075300_add_unique_index_upload_ginee_table cannot be reverted.\n";
+    // /**
+    //  * {@inheritdoc}
+    //  */
+    // public function safeDown()
+    // {
+    //     // echo "m241020_075300_add_unique_index_upload_ginee_table cannot be reverted.\n";
 
-        return false;
-    }
+    //     // return false;
+
+    //     $this->dropIndex(
+    //         'unique_ginee',   // Index name
+    //         'ginee'           // Table name
+    //     );
+    // }
 
     /*
     // Use up()/down() to run migration code without a transaction.
