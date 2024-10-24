@@ -237,4 +237,18 @@ class Ginee extends \yii\db\ActiveRecord
             ->column();
     }
 
+    public static function getCountUnique($columnName, $parameter=[])
+    {
+        $query = static::find()
+            ->select($columnName)
+            ->distinct();
+
+        if (!empty($parameter)) {
+            $query->andWhere($parameter);
+        }
+
+        return $query->count();
+    }
+
+
 }

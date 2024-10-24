@@ -87,4 +87,15 @@ class TableUpload extends \yii\db\ActiveRecord
         return $count;
     }
 
+    public static function getListColorTheme()
+    {
+        return [
+            static::GINEE => 'purple',
+            static::LAZADA => 'primary',
+            static::SHOPEE => 'warning',
+            static::TIKTOK => 'dark',
+            static::TOKOPEDIA => 'success',
+        ];
+    }
+
 }

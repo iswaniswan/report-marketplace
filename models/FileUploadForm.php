@@ -8,6 +8,7 @@ use yii\base\Model;
 use yii\web\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
+
 class FileUploadForm extends Model
 {
     /**
@@ -28,6 +29,7 @@ class FileUploadForm extends Model
     public $id_file_source;
 
     protected $table_ginee = 'ginee';
+    protected $table_shopee = 'shopee';
 
     public function rules()
     {
@@ -63,6 +65,11 @@ class FileUploadForm extends Model
                 switch ($this->id_table) {
                     case TableUpload::GINEE: {
                         $this->importToGinee($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::SHOPEE: {
+                        $this->importToShopee($isDeleteInsert);
                         break;
                     }
 
@@ -217,14 +224,19 @@ class FileUploadForm extends Model
         $db->createCommand($sql)->execute();
     }
 
-    private function insertIgnoreBatch($header, $data)
+    private function insertIgnoreBatch($header, $data, $tableName=null)
     {
+        /** default table ginee */
+        if ($tableName == null) {
+            $tableName = $this->table_ginee;
+        }
+
         $db = Yii::$app->db;
         $batchSize = 1000; // Maximum batch size
 
         foreach (array_chunk($data, $batchSize) as $batch) {
             // Build the base SQL for batch insert using INSERT IGNORE
-            $sql = 'INSERT IGNORE INTO ' . $this->table_ginee . ' (' . implode(', ', $header) . ') VALUES ';
+            $sql = 'INSERT IGNORE INTO ' . $tableName . ' (' . implode(', ', $header) . ') VALUES ';
 
             // Build the values part of the SQL query
             $valuePlaceholders = [];
@@ -345,5 +357,79 @@ class FileUploadForm extends Model
 
         return $tableName . $this->getYear() . $this->getMonth();
     }
+
+    public function importToShopee($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            Shopee::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        // Read the header row
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            foreach ($cellIterator as $cell) {
+                // Standardize header values using a utility function if needed
+                $header[] = StringHelper::sanitizeColumnName($cell->getValue());
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_shopee);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_shopee);
+        }
+    }
+
 
 }

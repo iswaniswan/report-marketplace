@@ -4,8 +4,8 @@ namespace app\controllers;
 
 use Yii;
 use app\components\Mode;
-use app\models\Ginee;
-use app\models\GineeSearch;
+use app\models\Shopee;
+use app\models\ShopeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -13,9 +13,9 @@ use yii\helpers\Html;
 
 /* custom controller, theme uplon integrated */
 /**
- * GineeController implements the CRUD actions for Ginee model.
+ * ShopeeController implements the CRUD actions for Shopee model.
  */
-class GineeController extends Controller
+class ShopeeController extends Controller
 {
     /**
      * @inheritDoc
@@ -36,13 +36,13 @@ class GineeController extends Controller
     }
 
     /**
-     * Lists all Ginee models.
+     * Lists all Shopee models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new GineeSearch();
+        $searchModel = new ShopeeSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -66,56 +66,56 @@ class GineeController extends Controller
 
     public function actionIndexSummary()
     {        
-        $produkTerjual = Ginee::getSum('jumlah', [], []);
+        // $produkTerjual = Shopee::getSum('jumlah', [], []);
 
-        $produkSelesai = Ginee::getSum('jumlah', [
-            'status' => 'Selesai',
-        ], []);
+        // $produkSelesai = Shopee::getSum('jumlah', [
+        //     'status' => 'Selesai',
+        // ], []);
 
-        $produkBatal = Ginee::getSum('jumlah', [
-            'status' => ['Dibatalkan', 'Return/Refund'],
-        ], []);
+        // $produkBatal = Shopee::getSum('jumlah', [
+        //     'status' => ['Dibatalkan', 'Return/Refund'],
+        // ], []);
 
-        $produkDikirim = Ginee::getSum('jumlah', [
-            'status' => 'Sedang dikirim',
-        ], []);
+        // $produkDikirim = Shopee::getSum('jumlah', [
+        //     'status' => 'Sedang dikirim',
+        // ], []);
 
-        $totalHargaTotalPromosi = Ginee::getSum('harga_total_promosi');
+        // $totalHargaTotalPromosi = Shopee::getSum('harga_total_promosi');
 
-        $totalTotal = Ginee::getSum('total');
+        // $totalTotal = Shopee::getSum('total');
 
-        $jumlahTransaksi = Ginee::getCountUnique('id_pesanan', [
-            'status' => 'Selesai'
-        ]);
+        // $jumlahTransaksi = Shopee::getCountUnique('id_pesanan', [
+        //     'status' => 'Selesai'
+        // ]);
 
-        $jumlahSubtotal = Ginee::getSum('subtotal', [
-            'status' => 'Selesai'
-        ]);
+        // $jumlahSubtotal = Shopee::getSum('subtotal', [
+        //     'status' => 'Selesai'
+        // ]);
 
-        $jumlahTotal = Ginee::getSum('total', [
-            'status' => 'Selesai'
-        ]);
+        // $jumlahTotal = Shopee::getSum('total', [
+        //     'status' => 'Selesai'
+        // ]);
 
-        $feeMarketplace = $jumlahSubtotal - $jumlahTotal;
-        $persenFeeMarketplace = $feeMarketplace / $jumlahSubtotal * 100; 
+        // $feeMarketplace = $jumlahSubtotal - $jumlahTotal;
+        // $persenFeeMarketplace = $feeMarketplace / $jumlahSubtotal * 100; 
 
         return $this->render('index-summary', [
-            'produkTerjual' => $produkTerjual,
-            'produkSelesai' => $produkSelesai,
-            'produkBatal' => $produkBatal,
-            'produkDikirim' => $produkDikirim,
-            'totalHargaTotalPromosi' => $totalHargaTotalPromosi,
-            'totalTotal' => $totalTotal,
-            'jumlahTransaksi' => $jumlahTransaksi,
-            'jumlahSubtotal' => $jumlahSubtotal,
-            'jumlahTotal' => $jumlahTotal,
-            'feeMarketplace' => $feeMarketplace,
-            'persenFeeMarketplace' => $persenFeeMarketplace,
+            // 'produkTerjual' => $produkTerjual,
+            // 'produkSelesai' => $produkSelesai,
+            // 'produkBatal' => $produkBatal,
+            // 'produkDikirim' => $produkDikirim,
+            // 'totalHargaTotalPromosi' => $totalHargaTotalPromosi,
+            // 'totalTotal' => $totalTotal,
+            // 'jumlahTransaksi' => $jumlahTransaksi,
+            // 'jumlahSubtotal' => $jumlahSubtotal,
+            // 'jumlahTotal' => $jumlahTotal,
+            // 'feeMarketplace' => $feeMarketplace,
+            // 'persenFeeMarketplace' => $persenFeeMarketplace,
         ]);
     }
 
     /**
-     * Displays a single Ginee model.
+     * Displays a single Shopee model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -131,13 +131,13 @@ class GineeController extends Controller
     }
 
     /**
-     * Creates a new Ginee model.
+     * Creates a new Shopee model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Ginee();
+        $model = new Shopee();
 
         $referrer = Yii::$app->request->referrer;
 
@@ -160,7 +160,7 @@ class GineeController extends Controller
     }
 
     /**
-     * Updates an existing Ginee model.
+     * Updates an existing Shopee model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -191,7 +191,7 @@ class GineeController extends Controller
     }
 
     /**
-     * Deletes an existing Ginee model.
+     * Deletes an existing Shopee model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -211,15 +211,15 @@ class GineeController extends Controller
     }
 
     /**
-     * Finds the Ginee model based on its primary key value.
+     * Finds the Shopee model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Ginee the loaded model
+     * @return Shopee the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Ginee::findOne(['id' => $id])) !== null) {
+        if (($model = Shopee::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
@@ -228,7 +228,7 @@ class GineeController extends Controller
 
     public function actionServerside()
     {
-        $searchModel = new GineeSearch();
+        $searchModel = new ShopeeSearch();
         $searchModel->isServerside = true;
 
         // optional parameter
@@ -275,16 +275,14 @@ class GineeController extends Controller
         foreach ($dataProvider->getModels() as $model) {
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
-                'tanggal_pembuatan' => date('d-m-Y', strtotime($model->tanggal_pembuatan)),
-                'id_pesanan' => $model->id_pesanan,
-                'status' => $model->status,
-                'channel' => $model->channel,
-                'harga_awal_produk' => number_format($model->harga_awal_produk, 2),
-                'harga_promosi' => number_format($model->harga_promosi, 2),
-                'jumlah' => $model->jumlah,
-                'harga_total_promosi' => number_format($model->harga_total_promosi, 2),
-                'subtotal' => number_format($model->subtotal, 2),
-                'total' => number_format($model->total, 2),
+                'waktu_pesanan_dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
+                'no_pesanan' => $model->no_pesanan,
+                'status_pesanan' => $model->status_pesanan,
+                'harga_awal' => number_format($model->harga_awal, 2),
+                'total_diskon' => number_format($model->total_diskon, 2),
+                'jumlah_produk_di_pesan' => $model->jumlah_produk_di_pesan,
+                'total_harga_produk' => number_format($model->total_harga_produk, 2),
+                'total_pembayaran' => number_format($model->total_pembayaran, 2),
                 // 'nama_toko' => $model->nama_toko,
                 // 'nama_produk' => $model->nama_produk,
                 // 'variant_produk' => $model->variant_produk,
@@ -301,6 +299,5 @@ class GineeController extends Controller
             'data' => $data,
         ]);
     }
-
 
 }

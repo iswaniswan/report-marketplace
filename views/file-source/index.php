@@ -15,6 +15,8 @@ $this->title = 'Daftar File Unggah';
 $this->params['breadcrumbs'][] = ['label' => 'Home', 'url' => ['site/index']];
 $this->params['breadcrumbs'][] = ['label' => 'File Unggah'];
 
+$listColor = TableUpload::getListColorTheme();
+
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
@@ -61,10 +63,11 @@ echo \app\widgets\Breadcrumbs::widget([
                             'format' => 'raw',
                             'headerOptions' => ['style' => 'text-align:left;'],
                             'contentOptions' => ['style' => 'text-align:left'],
-                            'value' => function ($model) {
+                            'value' => function ($model) use($listColor) {
                                 if ($model->id_table != null) {
+                                    $color = $listColor[$model->id_table];
                                     $text = TableUpload::getList()[$model->id_table];
-                                    return '<span class="badge badge-pill badge-purple px-2 py-1">'. $text .'</span>';
+                                    return '<span class="badge badge-pill badge-'. $color .' px-2 py-1">'. $text .'</span>';
                                 }
                             }
                             ],
