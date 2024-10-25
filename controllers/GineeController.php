@@ -66,6 +66,12 @@ class GineeController extends Controller
 
     public function actionIndexSummary()
     {        
+        $request = Yii::$app->request->get();
+        
+        
+        $periode = $request[1]['periode'] ?? null;
+        $channel = $request[1]['channel'] ?? null;        
+
         $produkTerjual = Ginee::getSum('jumlah', [], []);
 
         $produkSelesai = Ginee::getSum('jumlah', [
@@ -100,6 +106,8 @@ class GineeController extends Controller
         $persenFeeMarketplace = $feeMarketplace / $jumlahSubtotal * 100; 
 
         return $this->render('index-summary', [
+            'periode' => $periode,
+            'channel' => $channel,
             'produkTerjual' => $produkTerjual,
             'produkSelesai' => $produkSelesai,
             'produkBatal' => $produkBatal,

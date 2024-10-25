@@ -11,11 +11,11 @@ $itemsAdmin = [
     // ]
     // ],
     ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
-            ['label' => 'Ginee', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/ginee/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/ginee/index-serverside']]
-                ],
-            ],
+            // ['label' => 'Ginee', 'items' => [
+            //         ['label' => 'Summary', 'url' =>['/ginee/index-summary']],
+            //         ['label' => 'Tabel', 'url' =>['/ginee/index-serverside']]
+            //     ],
+            // ],
             
             ['label' => 'Shopee', 'items' => [
                     ['label' => 'Summary', 'url' =>['/shopee/index-summary']],

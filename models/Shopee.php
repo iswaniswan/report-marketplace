@@ -197,4 +197,64 @@ class Shopee extends \yii\db\ActiveRecord
         return $query->count();
     }
 
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    {
+        $query = static::find()
+            ->select([
+                'tanggal' => new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+                'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
+                'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS int4))"),
+                'harga_awal' => new \yii\db\Expression(
+                    "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4))"
+                ),
+                'total_harga_produk' => new \yii\db\Expression(
+                    "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
+                ),
+                'fee_marketplace' => new \yii\db\Expression(
+                    "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4)) - 
+                     SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
+                ),
+            ])
+            ->where(['status_pesanan' => 'Selesai'])
+            ->andWhere([
+                'between',
+                new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+                $date_start,
+                $date_end
+            ])
+            ->groupBy(new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"))
+            ->orderBy(['tanggal' => SORT_ASC])
+            ->asArray();
+
+        
+        if ($is_total) {
+            $query = static::find()
+                ->select([
+                    'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
+                    'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS int4))"),
+                    'harga_awal' => new \yii\db\Expression(
+                        "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4))"
+                    ),
+                    'total_harga_produk' => new \yii\db\Expression(
+                        "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
+                    ),
+                    'fee_marketplace' => new \yii\db\Expression(
+                        "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4)) - 
+                        SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
+                    ),
+                ])
+                ->where(['status_pesanan' => 'Selesai'])
+                ->andWhere([
+                    'between',
+                    new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+                    $date_start,
+                    $date_end
+                ])
+                ->asArray();
+        }
+    
+        return $query->all();
+    }
+    
+
 }

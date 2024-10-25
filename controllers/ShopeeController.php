@@ -42,6 +42,8 @@ class ShopeeController extends Controller
      */
     public function actionIndex()
     {
+        return $this->actionIndexServerside();
+        
         $searchModel = new ShopeeSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -66,51 +68,68 @@ class ShopeeController extends Controller
 
     public function actionIndexSummary()
     {        
+        $request = Yii::$app->request->get();
+        
+        /** temporary periode karena data kosong */
+        // $periode = $request[1]['periode'] ?? date('Y-m');   
+        $periode = $request[1]['periode'] ?? '2024-09';
+
+        $date_start = date('Y-m-d', strtotime($periode. '-01'));
+        $date_end = date('Y-m-t', strtotime($periode. '-01'));
+        
+        $summaryByDateRange = Shopee::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        // echo '<pre>'; var_dump($summaryByDateRange); echo '</pre>'; die();
+        
+
         // $produkTerjual = Shopee::getSum('jumlah', [], []);
 
         // $produkSelesai = Shopee::getSum('jumlah', [
-        //     'status' => 'Selesai',
+        //     'status_pesanan' => 'Selesai',
         // ], []);
 
         // $produkBatal = Shopee::getSum('jumlah', [
-        //     'status' => ['Dibatalkan', 'Return/Refund'],
+        //     'status_pesanan' => ['Dibatalkan', 'Return/Refund'],
         // ], []);
 
         // $produkDikirim = Shopee::getSum('jumlah', [
-        //     'status' => 'Sedang dikirim',
+        //     'status_pesanan' => 'Sedang dikirim',
         // ], []);
 
         // $totalHargaTotalPromosi = Shopee::getSum('harga_total_promosi');
 
         // $totalTotal = Shopee::getSum('total');
 
-        // $jumlahTransaksi = Shopee::getCountUnique('id_pesanan', [
-        //     'status' => 'Selesai'
-        // ]);
+        $jumlahTransaksi = Shopee::getCountUnique('no_pesanan', [
+            'status_pesanan' => 'Selesai'
+        ]);
 
         // $jumlahSubtotal = Shopee::getSum('subtotal', [
-        //     'status' => 'Selesai'
+        //     'status_pesanan' => 'Selesai'
         // ]);
 
         // $jumlahTotal = Shopee::getSum('total', [
-        //     'status' => 'Selesai'
+        //     'status_pesanan' => 'Selesai'
         // ]);
 
         // $feeMarketplace = $jumlahSubtotal - $jumlahTotal;
         // $persenFeeMarketplace = $feeMarketplace / $jumlahSubtotal * 100; 
 
         return $this->render('index-summary', [
+            'periode' => $periode,
             // 'produkTerjual' => $produkTerjual,
             // 'produkSelesai' => $produkSelesai,
             // 'produkBatal' => $produkBatal,
             // 'produkDikirim' => $produkDikirim,
             // 'totalHargaTotalPromosi' => $totalHargaTotalPromosi,
             // 'totalTotal' => $totalTotal,
-            // 'jumlahTransaksi' => $jumlahTransaksi,
+            'jumlahTransaksi' => $jumlahTransaksi,
             // 'jumlahSubtotal' => $jumlahSubtotal,
             // 'jumlahTotal' => $jumlahTotal,
             // 'feeMarketplace' => $feeMarketplace,
             // 'persenFeeMarketplace' => $persenFeeMarketplace,
+            'summaryTotal' => $summaryTotal,
+            'summaryByDateRange' => $summaryByDateRange
         ]);
     }
 

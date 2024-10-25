@@ -30,4 +30,24 @@ class StringHelper
         // Replace spaces and invalid characters with an underscore
         return preg_replace('/[\'"\\%]+/', '', $value);
     }
+
+    public static function getDatesInPeriod($period, $format='Y-m-d')
+    {
+        // Convert the period to a DateTime object for the first day of the month
+        $startDate = new \DateTime($period . '-01');
+        
+        // Get the last day of the month
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month');
+
+        $dates = [];
+        // Loop from start date to end date
+        while ($startDate <= $endDate) {
+            $dates[] = $startDate->format($format); // Use the provided format
+            $startDate->modify('+1 day');
+        }
+
+        return $dates;
+    }
+
 }
