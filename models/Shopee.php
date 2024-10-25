@@ -203,15 +203,15 @@ class Shopee extends \yii\db\ActiveRecord
             ->select([
                 'tanggal' => new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
                 'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
-                'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS int4))"),
+                'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
                 'harga_awal' => new \yii\db\Expression(
-                    "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4))"
+                    "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
                 ),
                 'total_harga_produk' => new \yii\db\Expression(
                     "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
                 ),
                 'fee_marketplace' => new \yii\db\Expression(
-                    "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4)) - 
+                    "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
                      SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
                 ),
             ])
@@ -231,15 +231,15 @@ class Shopee extends \yii\db\ActiveRecord
             $query = static::find()
                 ->select([
                     'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
-                    'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS int4))"),
+                    'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
                     'harga_awal' => new \yii\db\Expression(
-                        "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4))"
+                        "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
                     ),
                     'total_harga_produk' => new \yii\db\Expression(
                         "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
                     ),
                     'fee_marketplace' => new \yii\db\Expression(
-                        "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS int4)) - 
+                        "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
                         SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
                     ),
                 ])
