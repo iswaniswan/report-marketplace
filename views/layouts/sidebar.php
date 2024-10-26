@@ -21,7 +21,14 @@ $itemsAdmin = [
                     ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
                     ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']]
                 ],
-            ],            
+            ], 
+            
+            ['label' => 'Tiktok', 'items' => [
+                    ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
+                    ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']]
+                ],
+            ],
+            
         ]
     ],
     ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],

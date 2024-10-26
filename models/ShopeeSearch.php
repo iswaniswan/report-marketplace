@@ -73,7 +73,7 @@ class ShopeeSearch extends Shopee
 
         if ($this->status != null) {
             $query->andFilterWhere(['and',
-                ['like', 'status', $this->status]
+                ['like', 'status_pesanan', $this->status]
             ]);
         }
 

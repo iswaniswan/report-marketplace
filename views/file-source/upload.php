@@ -60,6 +60,7 @@ echo \app\widgets\Breadcrumbs::widget([
                             <select class="form-control" id="id_table" name="FileUploadForm[id_table]" placeholder="Pilih tabel">
                                 <option value="">Pilih Tabel</option>
                                 <?php foreach (TableUpload::getList() as $key => $value) { ?>
+                                    <?php if ($value == 'ginee') {continue;} ?>
                                     <?php $isSelected = (@$fileSource->id_table != null && $fileSource->id_table == $key) ? 'selected' : ''; ?>
                                     <option value="<?= $key ?>" <?= $isSelected ?>><?= $value ?></option>
                                 <?php } ?>

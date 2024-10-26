@@ -50,4 +50,11 @@ class StringHelper
         return $dates;
     }
 
+    public static function sanitizeCurrency($input) {
+        // Remove non-numeric characters except for period
+        $numericValue = preg_replace('/[^\d]/', '', $input);
+        return (int)$numericValue;
+    }
+
+    
 }

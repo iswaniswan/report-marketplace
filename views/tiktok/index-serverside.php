@@ -1,7 +1,7 @@
 <?php
 
 use app\assets\DataTableAsset;
-use app\models\Shopee;
+use app\models\Tiktok;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
@@ -12,13 +12,13 @@ use yii\helpers\Url;
 
 DataTableAsset::register($this);
 
-$this->title = 'Tabel Shopee';
+$this->title = 'Tabel Tiktok';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Shopee'
+        'title' => 'Tiktok'
     ],
 ]);
 
@@ -36,7 +36,7 @@ CSS;
 $this->registerCss($style);
 
 ?>
-<form action="<?= Url::to(['shopee/index-serverside']) ?>" method="GET">
+<form action="<?= Url::to(['tiktok/index-serverside']) ?>" method="GET">
     <div class="row mb-4">
         <div class="container-fluid">
             <div class="member-index card-box shadow mb-4">
@@ -61,7 +61,7 @@ $this->registerCss($style);
                             <label for="status">Status</label>
                             <select name="1[status]" id="status" class="form-control">
                                 <option value="">Pilih Status</option>
-                                <?php foreach (Shopee::getListStatus() as $_status) { ?>
+                                <?php foreach (Tiktok::getListStatus() as $_status) { ?>
                                     <?php $isSelected = (@$status == $_status) ? 'selected' : '' ?>
                                     <option value="<?= $_status ?>" <?= $isSelected ?>><?= $_status ?></option>
                                 <?php } ?>
@@ -127,14 +127,19 @@ $this->registerCss($style);
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Tanggal<br/>Pembuatan</th>
-                            <th>ID Pesanan</th>
-                            <th>Status</th>
-                            <th>Harga<br/>Awal Produk</th>
-                            <th>Total<br/>Diskon</th>
-                            <th>Jumlah</th>
-                            <th>Total<br/>Harga Produk</th>
-                            <th>Total<br/>Pembayaran</th>
+                            <th>Order ID</th>
+                            <th>Order Status</th>
+                            <th>Order Substatus</th>
+                            <th>Cancelation<br/>Return Type</th>
+                            <th>Quantity</th>
+                            <th>SKU<br/>Quantity of<br/>Return</th>
+                            <th>SKU<br/>Unit Original<br/>Price</th>
+                            <th>SKU<br/>Subtotal Before<br/>Discount</th>
+                            <th>SKU<br/>Platform<br/>Discount</th>
+                            <th>SKU<br/>Seller<br/>Discount</th>
+                            <th>SKU<br/>Subtotal After<br/>Discount</th>
+                            <th>Created<br/>Time</th>
+                            <th>Paid<br/>Time</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -145,7 +150,7 @@ $this->registerCss($style);
 </div>
 
 <?php
-$urlServerside = Url::to(['shopee/serverside']);
+$urlServerside = Url::to(['tiktok/serverside']);
 
 if ($date_start == null) {
     $date_start = "";
@@ -194,14 +199,19 @@ $script = <<<JS
         },
         columns: [
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
-            { data: 'waktu_pesanan_dibuat', orderable: false},
-            { data: 'no_pesanan', orderable: false},
-            { data: 'status_pesanan', orderable: false},
-            { data: 'harga_awal', orderable: false},
-            { data: 'total_diskon', orderable: false},
-            { data: 'jumlah_produk_di_pesan', orderable: false},
-            { data: 'total_harga_produk', orderable: false},
-            { data: 'total_pembayaran', orderable: false},
+            { data: 'order_id', orderable: false},
+            { data: 'order_status', orderable: false},
+            { data: 'order_substatus', orderable: false},
+            { data: 'cancelation_return_type', orderable: false},
+            { data: 'quantity', orderable: false},
+            { data: 'sku_quantity_of_return', orderable: false},
+            { data: 'sku_unit_original_price', orderable: false},
+            { data: 'sku_subtotal_before_discount', orderable: false},
+            { data: 'sku_platform_discount', orderable: false},
+            { data: 'sku_seller_discount', orderable: false},
+            { data: 'sku_subtotal_after_discount', orderable: false},
+            { data: 'created_time', orderable: false},
+            { data: 'paid_time', orderable: false},
             { data: 'action', orderable: false},
         ],
         rowCallback: function(row, data, index) {

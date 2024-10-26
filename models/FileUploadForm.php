@@ -30,6 +30,14 @@ class FileUploadForm extends Model
 
     protected $table_ginee = 'ginee';
     protected $table_shopee = 'shopee';
+    protected $table_tiktok = 'tiktok';
+
+    private $tiktokColumnsNumeric = [
+        'quantity', 'sku_quantity_ofreturn', 'sku_unit_original_price', 'sku_subtotal_before_discount',
+        'sku_platform_discount', 'sku_seller_discount', 'sku_subtotal_after_discount', 'shipping_fee_after_discount',
+        'original_shipping_fee', 'shipping_fee_seller_discount', 'shipping_fee_platform_discount', 'payment_platform_discount',
+        'buyer_service_fee', 'taxes', 'order_amount', 'order_refund_amount'
+    ];
 
     public function rules()
     {
@@ -70,6 +78,11 @@ class FileUploadForm extends Model
 
                     case TableUpload::SHOPEE: {
                         $this->importToShopee($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::TIKTOK: {
+                        $this->importToTiktok($isDeleteInsert);
                         break;
                     }
 
@@ -428,6 +441,83 @@ class FileUploadForm extends Model
         if (!empty($data)) {
             // $this->insertOrUpdateBatch($header, $data);
             $this->insertIgnoreBatch($header, $data, $this->table_shopee);
+        }
+    }
+
+    public function importToTiktok($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            Tiktok::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        // Read the header row
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            foreach ($cellIterator as $cell) {
+                // Standardize header values using a utility function if needed
+                $header[] = StringHelper::sanitizeColumnName($cell->getValue());
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        // foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+        foreach ($worksheet->getRowIterator(3) as $row) { // 
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                if (in_array($headerValue, $this->tiktokColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrency($value);
+                }
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_tiktok);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_tiktok);
         }
     }
 
