@@ -114,11 +114,11 @@ $this->registerCss($style);
                <table class="table table-hover table-bordered" id="table-serverside">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Order<br/>Adjustment ID</th>
-                            <th>Order<br/>Created Time</th>
-                            <th>Order<br/>Settled Time</th>
-                            <th>Total<br/>Settlement Amount</th>
+                            <th style="width: 4%">#</th>
+                            <th style="width: 16%">Order<br/>Adjustment ID</th>
+                            <th style="width: 16%">Order<br/>Created Time</th>
+                            <th style="width: 16%">Order<br/>Settled Time</th>
+                            <th style="width:16%">Total<br/>Settlement Amount</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -173,8 +173,12 @@ $script = <<<JS
             { data: 'order_adjustment_id', orderable: false},
             { data: 'order_created_time_utc', orderable: false},
             { data: 'order_settled_time_utc', orderable: false},
-            { data: 'total_settlement_amount', orderable: false},
-            { data: 'action', orderable: false},
+            { data: 'total_settlement_amount', orderable: false, createdCell: function (td) {
+                $(td).css('text-align', 'right'); // Example right-align
+            }},
+            { data: 'action', orderable: false, createdCell: function (td) {
+                $(td).css('text-align', 'left'); // Example right-align
+            }},
         ],
         rowCallback: function(row, data, index) {
             var table = $('#table-serverside').DataTable();

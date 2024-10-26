@@ -27,7 +27,6 @@ if ($periode == null) {
     $periode = $periodeDefault;
 }
 
-$dateInPeriode = StringHelper::getDatesInPeriod($periode, 'd-m-Y');
 
 // var_dump($summaryTotal[0]); die();
 $summaryTotal = (object) $summaryTotal[0];
@@ -78,7 +77,7 @@ $summaryTotal = (object) $summaryTotal[0];
         <div class="card-box tilebox-two">
             <i class="icon-handbag float-right text-muted"></i>
             <h6 class="text-danger text-uppercase">Quantity</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah) ?></span></h3>
+            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->quantity) ?></span></h3>
         </div>
     </div> 
     <div class="col-xl-3 col-md-6">
@@ -92,8 +91,8 @@ $summaryTotal = (object) $summaryTotal[0];
         <div class="card-box tilebox-two">
             <i class="icon-paypal float-right text-muted"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
-            <?php if ((int) @$summaryTotal->harga_awal > 0) { ?>
-                <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->harga_awal * 100, 2) ?></span></h3>
+            <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
+                <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
             <?php } ?>
         </div>
     </div> 
@@ -104,17 +103,18 @@ $summaryTotal = (object) $summaryTotal[0];
         <div class="card-box tilebox-two">
             <i class="icon-credit-card float-right text-muted"></i>
             <h6 class="text-warning text-uppercase">Amount HJP</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->harga_awal) ?></span></h3>
+            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_hjp) ?></span></h3>
         </div>
     </div>
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
             <i class="icon-credit-card float-right text-muted"></i>
             <h6 class="text-success text-uppercase">Amount Net</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->total_harga_produk) ?></span></h3>
+            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->total_settlement_amount) ?></span></h3>
         </div>
     </div>   
 </div>
+
 
 <div class="row">
     <div class="col-12">
@@ -133,29 +133,29 @@ $summaryTotal = (object) $summaryTotal[0];
                     <tbody>
                         <?php 
                             $grand_jumlah_transaksi = 0;
-                            $grand_jumlah = 0;
-                            $grand_harga_awal = 0;
-                            $grand_total_harga_produk = 0;
+                            $grand_quantity = 0;
+                            $grand_amount_hjp = 0;
+                            $grand_total_settlement_amount = 0;
                             $grand_fee_marketplace = 0;
                         ?>
                         <?php foreach (@$summaryByDateRange as $result) { $result = (object) $result; ?>
                             <?php 
                                 $grand_jumlah_transaksi += $result->jumlah_transaksi;
-                                $grand_jumlah += $result->jumlah;
-                                $grand_harga_awal += $result->harga_awal;
-                                $grand_total_harga_produk += $result->total_harga_produk;
+                                $grand_quantity += $result->quantity;
+                                $grand_amount_hjp += $result->amount_hjp;
+                                $grand_total_settlement_amount += $result->total_settlement_amount;
                                 $grand_fee_marketplace += $result->fee_marketplace;
                             ?>
                             <tr>
                                 <td><?= date('d-m-Y', strtotime($result->tanggal)) ?></td>
                                 <td><?= number_format($result->jumlah_transaksi) ?></td>
-                                <td><?= number_format($result->jumlah) ?></td>
-                                <td><?= number_format($result->harga_awal) ?></td>
-                                <td><?= number_format($result->total_harga_produk) ?></td>
+                                <td><?= number_format($result->quantity) ?></td>
+                                <td><?= number_format($result->amount_hjp) ?></td>
+                                <td><?= number_format($result->total_settlement_amount) ?></td>
                                 <td><?= number_format($result->fee_marketplace) ?></td>
                                 <td>
-                                    <?php if ((int) @$result->harga_awal > 0) { ?>
-                                        <?= number_format($result->fee_marketplace/$result->harga_awal * 100, 2) ?>%
+                                    <?php if ((int) @$result->amount_hjp > 0) { ?>
+                                        <?= number_format($result->fee_marketplace/$result->amount_hjp * 100, 2) ?>%
                                     <?php } ?>
                                 </td>
                             </tr>
@@ -165,13 +165,13 @@ $summaryTotal = (object) $summaryTotal[0];
                         <tr class="bg-info text-white">
                             <th>#</th>
                             <th><?= number_format($grand_jumlah_transaksi) ?></th>
-                            <th><?= number_format($grand_jumlah) ?></th>
-                            <th><?= number_format($grand_harga_awal) ?></th>
-                            <th><?= number_format($grand_total_harga_produk) ?></th>
+                            <th><?= number_format($grand_quantity) ?></th>
+                            <th><?= number_format($grand_amount_hjp) ?></th>
+                            <th><?= number_format($grand_total_settlement_amount) ?></th>
                             <th><?= number_format($grand_fee_marketplace) ?></th>
                             <th>
-                                <?php if ((int) $grand_harga_awal > 0) { ?>
-                                    <?= number_format($grand_fee_marketplace/$grand_harga_awal * 100, 2) ?>%
+                                <?php if ((int) $grand_amount_hjp > 0) { ?>
+                                    <?= number_format($grand_fee_marketplace/$grand_amount_hjp * 100, 2) ?>%
                                 <?php } ?>
                             </th>
                         </tr>

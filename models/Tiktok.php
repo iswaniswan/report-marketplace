@@ -165,4 +165,85 @@ class Tiktok extends \yii\db\ActiveRecord
             ->column();
     }
 
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    {
+        $sql = <<<SQL
+                SELECT created_time AS tanggal, 
+                        sum(jumlah_transaksi) AS jumlah_transaksi, 
+                        sum(quantity) AS quantity, 
+                        sum(amount_hjp) AS amount_hjp,
+                        sum(total_settlement_amount) AS total_settlement_amount,
+                        (
+                            sum(amount_hjp)-sum(total_settlement_amount)
+                        ) AS fee_marketplace
+                FROM (
+                        SELECT STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
+                            count(DISTINCT a.order_id) AS jumlah_transaksi,
+                            sum(a.quantity) AS quantity,
+                            (
+                                sum(a.sku_subtotal_before_discount)
+                                - sum(a.sku_seller_discount)
+                            ) AS amount_hjp,
+                            0 AS total_settlement_amount 
+                        FROM tiktok a 
+                        WHERE sku_quantity_of_return = 0
+                        GROUP BY STR_TO_DATE(a.created_time, '%d/%m/%Y')
+                        UNION ALL
+                        SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
+                            FROM (
+                                SELECT DISTINCT a.order_id, STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time, 
+                                    b.total_settlement_amount
+                                FROM tiktok a 
+                                LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
+                                WHERE sku_quantity_of_return = 0
+                        ) a
+                        GROUP BY 1, 2
+                ) a
+                WHERE created_time BETWEEN '$date_start' AND '$date_end'
+                GROUP BY created_time
+                ORDER BY created_time
+        SQL;
+
+        if ($is_total) {
+            $sql = <<<SQL
+                        SELECT 
+                                sum(jumlah_transaksi) AS jumlah_transaksi, 
+                                sum(quantity) AS quantity, 
+                                sum(amount_hjp) AS amount_hjp,
+                                sum(total_settlement_amount) AS total_settlement_amount,
+                                (
+                                    sum(amount_hjp)-sum(total_settlement_amount)
+                                ) AS fee_marketplace
+                        FROM (
+                                SELECT STR_TO_DATE(a.created_time, '%d/%m/%Y') AS tanggal,
+                                    count(DISTINCT a.order_id) AS jumlah_transaksi,
+                                    sum(a.quantity) AS quantity,
+                                    (
+                                        sum(a.sku_subtotal_before_discount)
+                                        - sum(a.sku_seller_discount)
+                                    ) AS amount_hjp,
+                                    0 AS total_settlement_amount 
+                                FROM tiktok a 
+                                WHERE sku_quantity_of_return = 0
+                                GROUP BY STR_TO_DATE(a.created_time, '%d/%m/%Y')
+                                UNION ALL
+                                SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
+                                    FROM (
+                                        SELECT DISTINCT a.order_id, STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time, 
+                                            b.total_settlement_amount
+                                        FROM tiktok a 
+                                        LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
+                                        WHERE sku_quantity_of_return = 0
+                                ) a
+                                WHERE created_time BETWEEN '$date_start' AND '$date_end'
+                                GROUP BY 1, 2
+                        ) a
+            SQL;
+        }
+    
+        return Yii::$app->db->createCommand($sql)
+            ->queryAll(\PDO::FETCH_OBJ);
+    }    
+
+
 }

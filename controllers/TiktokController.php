@@ -65,6 +65,32 @@ class TiktokController extends Controller
         return $this->render('index-serverside', $params);
     }
 
+    public function actionIndexSummary()
+    {        
+        $request = Yii::$app->request->get();
+        
+        /** temporary periode karena data kosong */
+        // $periode = $request[1]['periode'] ?? date('Y-m');   
+        $periode = $request[1]['periode'] ?? '2024-09';
+
+        $date_start = date('Y-m-d', strtotime($periode. '-01'));
+        $date_end = date('Y-m-t', strtotime($periode. '-01'));
+        $summaryByDateRange = Tiktok::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+
+        // $jumlahTransaksi = Tiktok::getCountUnique('no_pesanan', [
+        //     'status_pesanan' => 'Selesai'
+        // ]);
+
+        return $this->render('index-summary', [
+            'periode' => $periode,
+            'date_start' => $date_start,
+            'date_end' => $date_end,
+            'summaryByDateRange' => $summaryByDateRange,
+            'summaryTotal' => $summaryTotal,
+        ]);
+    }
+
     /**
      * Displays a single Tiktok model.
      * @param int $id ID
