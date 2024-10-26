@@ -25,7 +25,7 @@ use yii\helpers\Url;
             <h6 class="text-muted text-uppercase mt-0">Shopee</h6>
             <h3 class="mb-4"><span>on progress</span></h3>
             <div class="progress progress-md">
-                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>
     </div>
