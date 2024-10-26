@@ -46,7 +46,7 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'id_file_source')->textInput() ?>
+                    <?php // $form->field($model, 'id_file_source')->textInput() ?>
 
 <?= $form->field($model, 'order_id')->textInput(['maxlength' => true]) ?>
 

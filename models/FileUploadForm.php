@@ -31,6 +31,7 @@ class FileUploadForm extends Model
     protected $table_ginee = 'ginee';
     protected $table_shopee = 'shopee';
     protected $table_tiktok = 'tiktok';
+    protected $table_tiktok_income = 'tiktok_income';
 
     private $tiktokColumnsNumeric = [
         'quantity', 'sku_quantity_ofreturn', 'sku_unit_original_price', 'sku_subtotal_before_discount',
@@ -38,6 +39,19 @@ class FileUploadForm extends Model
         'original_shipping_fee', 'shipping_fee_seller_discount', 'shipping_fee_platform_discount', 'payment_platform_discount',
         'buyer_service_fee', 'taxes', 'order_amount', 'order_refund_amount'
     ];
+
+    private $tiktokIncomeColumnsNumeric = [
+        'total_settlement_amount', 'total_revenue', 'subtotal_after_seller_discounts', 'subtotal_before_discounts', 'seller_discounts',
+        'refund_subtotal_after_seller_discounts', 'refund_subtotal_before_seller_discounts', 'refund_of_seller_discounts', 'total_fees',
+        'tiktok_shop_commission_fee', 'flat_fee', 'sales_fee', 'mall_service_fee', 'payment_fee', 'shipping_cost', 'shipping_costs_passed_on_to_the_logistics_provider',
+        'shipping_cost_borne_by_the_platform', 'shipping_cost_paid_by_the_customer', 'refunded_shipping_cost_paid_by_the_customer', 'return_shipping_costs_passed_on_to_the_customer',
+        'shipping_cost_subsidy', 'affiliate_commission', 'affiliate_partner_commission', 'affiliate_shop_ads_commission', 'sfp_service_fee', 
+        'live_specials_service_fee', 'bonus_cashback_service_fee', 'ajustment_amount', 'customer_payment', 'customer_refund', 'seller_co_funded_voucher_discount',
+        'refund_of_seller_co_funded_voucher_discount', 'platform_discounts', 'refund_of_platform_discounts', 'platform_co_funded_voucher_discounts', 'refund_of_platform_co_funded_voucher_discounts',
+        'seller_shipping_cost_discount', 'estimated_package_weight_g', 'actual_package_weight_g'
+    ];
+
+    private $emptyColumnCount = 0;
 
     public function rules()
     {
@@ -83,6 +97,11 @@ class FileUploadForm extends Model
 
                     case TableUpload::TIKTOK: {
                         $this->importToTiktok($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::TIKTOK_INCOME: {
+                        $this->importToTiktokIncome($isDeleteInsert);
                         break;
                     }
 
@@ -521,5 +540,109 @@ class FileUploadForm extends Model
         }
     }
 
+    public function importToTiktokIncome($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        $header = [];
+        $data = [];
 
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            TiktokIncome::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        $skippedColumns = [];
+        // Read the header row
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+            foreach ($cellIterator as $cell) {
+                $cellValue = $cell->getValue();
+                //  echo '<pre>'; var_dump($cellValue); echo '</pre>';
+                // Standardize header values using a utility function if needed
+                if ($cellValue === '' || $cellValue == NULL) {
+                    $skippedColumns[] = $columnIndex;
+                    continue;
+                    // $this->emptyColumnCount += 1;
+                    // $cellValue = $this->renameEmptyColumnName();
+                }
+                // echo '<pre>'; var_dump($cellValue); echo '</pre>';
+                $header[] = StringHelper::sanitizeColumnName($cellValue);
+                $columnIndex++;
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {    
+                // Skip columns if they are in the skippedColumns array
+                if (in_array($columnIndex, $skippedColumns)) {
+                    $columnIndex++;
+                    continue;
+                }
+                            
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value      
+                
+                if (in_array($headerValue, $this->tiktokIncomeColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
+                } else {
+                    $value = StringHelper::sanitizeValue($cell->getValue());
+                }
+
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_tiktok_income);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_tiktok_income);
+        }
+    }
+
+    private function renameEmptyColumnName() {
+        $text = '';
+        for ($i=0; $i<$this->emptyColumnCount; $i++) {
+            $text .= '#';
+        }
+
+        return $text;
+    }
 }

@@ -25,7 +25,8 @@ $itemsAdmin = [
             
             ['label' => 'Tiktok', 'items' => [
                     ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']]
+                    ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']],
+                    ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
                 ],
             ],
             

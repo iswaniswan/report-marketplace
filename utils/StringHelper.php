@@ -56,5 +56,11 @@ class StringHelper
         return (int)$numericValue;
     }
 
+    public static function sanitizeCurrencyAbs($input) {
+        // Remove non-numeric characters except for period and leading minus sign
+        $numericValue = preg_replace('/(?!^-)[^\d]/', '', $input);
+        return (int)$numericValue;
+    }
+
     
 }

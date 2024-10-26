@@ -23,6 +23,7 @@ class TableUpload extends \yii\db\ActiveRecord
     const SHOPEE = 3;
     const TIKTOK = 4;
     const TOKOPEDIA = 5;
+    const TIKTOK_INCOME = 6;
 
     /**
      * {@inheritdoc}
@@ -64,6 +65,7 @@ class TableUpload extends \yii\db\ActiveRecord
             static::SHOPEE => 'shopee',
             static::TIKTOK => 'tiktok',
             static::TOKOPEDIA => 'tokopedia',
+            static::TIKTOK_INCOME => 'tiktok income',
         ];
     }
 
@@ -95,6 +97,7 @@ class TableUpload extends \yii\db\ActiveRecord
             static::SHOPEE => 'warning',
             static::TIKTOK => 'dark',
             static::TOKOPEDIA => 'success',
+            static::TIKTOK_INCOME => 'dark',
         ];
     }
 
