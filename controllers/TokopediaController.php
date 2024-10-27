@@ -4,19 +4,18 @@ namespace app\controllers;
 
 use Yii;
 use app\components\Mode;
-use app\models\Tiktok;
-use app\models\TiktokSearch;
+use app\models\Tokopedia;
+use app\models\TokopediaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 
-
 /* custom controller, theme uplon integrated */
 /**
- * TiktokController implements the CRUD actions for Tiktok model.
+ * TokopediaController implements the CRUD actions for Tokopedia model.
  */
-class TiktokController extends Controller
+class TokopediaController extends Controller
 {
     /**
      * @inheritDoc
@@ -37,15 +36,15 @@ class TiktokController extends Controller
     }
 
     /**
-     * Lists all Tiktok models.
+     * Lists all Tokopedia models.
      *
      * @return string
      */
     public function actionIndex()
     {
         return $this->actionIndexServerside();
-        
-        $searchModel = new TiktokSearch();
+
+        $searchModel = new TokopediaSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -77,8 +76,8 @@ class TiktokController extends Controller
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
-        $summaryByDateRange = Tiktok::getSummaryByDateRange($date_start, $date_end);
-        $summaryTotal = Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        // $summaryByDateRange = Tokopedia::getSummaryByDateRange($date_start, $date_end);
+        // $summaryTotal = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
 
         // $jumlahTransaksi = Tiktok::getCountUnique('no_pesanan', [
         //     'status_pesanan' => 'Selesai'
@@ -88,13 +87,13 @@ class TiktokController extends Controller
             'periode' => $periode,
             'date_start' => $date_start,
             'date_end' => $date_end,
-            'summaryByDateRange' => $summaryByDateRange,
-            'summaryTotal' => $summaryTotal,
+            // 'summaryByDateRange' => $summaryByDateRange,
+            // 'summaryTotal' => $summaryTotal,
         ]);
     }
 
     /**
-     * Displays a single Tiktok model.
+     * Displays a single Tokopedia model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -110,13 +109,13 @@ class TiktokController extends Controller
     }
 
     /**
-     * Creates a new Tiktok model.
+     * Creates a new Tokopedia model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new Tiktok();
+        $model = new Tokopedia();
 
         $referrer = Yii::$app->request->referrer;
 
@@ -139,7 +138,7 @@ class TiktokController extends Controller
     }
 
     /**
-     * Updates an existing Tiktok model.
+     * Updates an existing Tokopedia model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -170,7 +169,7 @@ class TiktokController extends Controller
     }
 
     /**
-     * Deletes an existing Tiktok model.
+     * Deletes an existing Tokopedia model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -190,15 +189,15 @@ class TiktokController extends Controller
     }
 
     /**
-     * Finds the Tiktok model based on its primary key value.
+     * Finds the Tokopedia model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return Tiktok the loaded model
+     * @return Tokopedia the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Tiktok::findOne(['id' => $id])) !== null) {
+        if (($model = Tokopedia::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
@@ -207,7 +206,7 @@ class TiktokController extends Controller
 
     public function actionServerside()
     {
-        $searchModel = new TiktokSearch();
+        $searchModel = new TokopediaSearch();
         $searchModel->isServerside = true;
 
         // optional parameter
@@ -252,21 +251,16 @@ class TiktokController extends Controller
         $number = $page * $pageSize; // Adjust the sequence number based on the page
         $data = [];
         foreach ($dataProvider->getModels() as $model) {
+            $totalPenjualan = (int) $model->jumlah_produk_dibeli * (int) $model->harga_jual_idr;
+
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
-                'order_id' => $model->order_id,
-                'order_status' => $model->order_status,
-                'order_substatus' => $model->order_substatus,
-                'cancelation_return_type' => $model->cancelation_return_type,
-                'quantity' => number_format($model->quantity),
-                'sku_quantity_of_return' => number_format($model->sku_quantity_of_return),
-                'sku_unit_original_price' => number_format($model->sku_unit_original_price),
-                'sku_subtotal_before_discount' => number_format($model->sku_subtotal_before_discount),
-                'sku_platform_discount' => number_format($model->sku_platform_discount),
-                'sku_seller_discount' => number_format($model->sku_seller_discount),
-                'sku_subtotal_after_discount' => number_format($model->sku_subtotal_after_discount),
-                'created_time' => $model->created_time,
-                'paid_time' => $model->paid_time,
+                'nomor_invoice' => $model->nomor_invoice,
+                'tanggal_pembayaran' => $model->tanggal_pembayaran,
+                'status_terakhir' => $model->status_terakhir,
+                'jumlah_produk_dibeli' => number_format($model->jumlah_produk_dibeli),
+                'harga_jual_idr' => number_format($model->harga_jual_idr),
+                'total_penjualan' => number_format($totalPenjualan),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];
         }

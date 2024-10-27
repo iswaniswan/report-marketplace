@@ -29,6 +29,13 @@ $itemsAdmin = [
                     ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
                 ],
             ],
+
+            ['label' => 'Tokopedia', 'items' => [
+                    ['label' => 'Summary', 'url' =>['/tokopedia/index-summary']],
+                    ['label' => 'Tabel', 'url' =>['/tokopedia/index-serverside']],
+                    ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-penjualan/index-serverside']]
+                ],
+            ],
             
         ]
     ],

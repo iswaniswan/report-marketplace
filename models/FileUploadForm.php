@@ -32,6 +32,8 @@ class FileUploadForm extends Model
     protected $table_shopee = 'shopee';
     protected $table_tiktok = 'tiktok';
     protected $table_tiktok_income = 'tiktok_income';
+    protected $table_tokopedia = 'tokopedia';
+    protected $table_tokopedia_keuangan = 'tokopedia_keuangan';
 
     private $tiktokColumnsNumeric = [
         'quantity', 'sku_quantity_ofreturn', 'sku_unit_original_price', 'sku_subtotal_before_discount',
@@ -49,6 +51,35 @@ class FileUploadForm extends Model
         'live_specials_service_fee', 'bonus_cashback_service_fee', 'ajustment_amount', 'customer_payment', 'customer_refund', 'seller_co_funded_voucher_discount',
         'refund_of_seller_co_funded_voucher_discount', 'platform_discounts', 'refund_of_platform_discounts', 'platform_co_funded_voucher_discounts', 'refund_of_platform_co_funded_voucher_discounts',
         'seller_shipping_cost_discount', 'estimated_package_weight_g', 'actual_package_weight_g'
+    ];
+
+    private $tokopediaColumnsVarchar = [
+        'nomor_invoice', 'tanggal_pembayaran', 'status_terakhir', 'tanggal_pesanan_selesai', 'waktu_pesanan_selesai', 'tanggal_pesanan_dibatalkan',
+        'waktu_pesanan_dibatalkan', 'nama_produk', 'tipe_produk', 'nomor_sku', 'jenis_kupon_toko_terpakai', 'kode_kupon_toko_yang_digunakan', 
+        'biaya_pengiriman_tunai_idr', 'biaya_asuransi_pengiriman_idr', 'total_biaya_pengiriman_idr',
+        'nama_pembeli', 'no_telp_pembeli', 'nama_penerima', 'no_telp_penerima', 'alamat_pengiriman', 'kota', 'provinsi', 'nama_kurir','tipe_pengiriman_regular_same_day_etc',
+        'no_resi__kode_booking', 'tanggal_pengiriman_barang', 'waktu_pengiriman_barang', 'gudang_pengiriman',
+        'nama_campaign', 'nama_bundling', 'tipe_bebas_ongkir_bebas_ongkir_bebas_ongkir_dt',
+        'cod', 'jumlah_produk_yang_dikurangkan', 'total_pengurangan_idr','nama_penawaran_terpakai',
+        'tingkatan_promosi_terpakai','diskon_penawaran_terpakai_idr'
+    ];
+
+    private $tokopediaColumnsNumeric = [
+        'nomor', 'jumlah_produk_dibeli', 'harga_awal_idr', 'harga_satuan_bundling_idr', 'diskon_produk_idr', 'harga_jual_idr', 'jumlah_subsidi_tokopedia_idr',
+        'nilai_kupon_toko_terpakai_idr', 'total_penjualan_idr'
+    ];
+
+    private $tokopediaKeuanganColumnsVarchar = [
+        'nomor_invoice', 'tanggal_pembayaran', 'status_terakhir', 'tanggal_pesanan_selesai', 'waktu_pesanan_selesai',
+        'tanggal_pesanan_dibatalkan', 'waktu_pesanan_dibatalkan', 'nama_produk', 'jenis_kupon_toko_terpakai', 
+        'kode_kupon_toko_yang_digunakan', 'nama_biaya_layanan', 'persentase_biaya_layanan',
+
+    ];
+
+    private $tokopediaKeuanganColumnsNumeric = [
+        'nomor', 'jumlah_produk_dibeli', 'harga_jual_idr', 'jumlah_subsidi_tokopedia_idr', 'nilai_kupon_toko_terpakai_idr',
+        'jumlah_produk_yang_dikurangkan', 'total_pengurangan_idr', 'biaya_layanan_termasuk_ppn_dan_pph_idr', 
+        'biaya_layanan_di_luar_ppn_dan_pph_idr', 'ppn_idr', 'pph_idr'
     ];
 
     private $emptyColumnCount = 0;
@@ -102,6 +133,11 @@ class FileUploadForm extends Model
 
                     case TableUpload::TIKTOK_INCOME: {
                         $this->importToTiktokIncome($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::TOKOPEDIA: {
+                        $this->importToTokopedia($isDeleteInsert);
                         break;
                     }
 
@@ -202,8 +238,11 @@ class FileUploadForm extends Model
     }
     
 
-    public function unmergeCells($spreadsheet, $filePath)
+    public function unmergeCells($spreadsheet, $filePath, $sheetIndex=0)
     {        
+        if ($sheetIndex > 0) {
+            $spreadsheet->setActiveSheetIndex($sheetIndex);
+        }
         $worksheet = $spreadsheet->getActiveSheet();
         // Get all merged cell ranges in the sheet
         $mergedCells = $worksheet->getMergeCells();
@@ -645,4 +684,159 @@ class FileUploadForm extends Model
 
         return $text;
     }
+
+    /** tokopedia 2 sheet */
+    public function importToTokopedia($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        // sheet 1 -> Laporan Penjualan
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            Tokopedia::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        // Read the header row
+        foreach ($worksheet->getRowIterator(5, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            foreach ($cellIterator as $cell) {
+                // Standardize header values using a utility function if needed
+                $header[] = StringHelper::sanitizeColumnName($cell->getValue());
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        // foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+        foreach ($worksheet->getRowIterator(6) as $row) { // 
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                if (in_array($headerValue, $this->tokopediaColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrency($value);
+                }
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_tokopedia);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_tokopedia);
+        }
+
+        /* ========================================================================================= */
+        // sheet 2 -> Laporan Penjualan
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath, $sheetIndex=1);
+
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            TokopediaKeuangan::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        // Read the header row
+        foreach ($worksheet->getRowIterator(7, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            foreach ($cellIterator as $cell) {
+                // Standardize header values using a utility function if needed
+                $header[] = StringHelper::sanitizeColumnName($cell->getValue());
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        // foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+        foreach ($worksheet->getRowIterator(8) as $row) { // 
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                if (in_array($headerValue, $this->tokopediaKeuanganColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrency($value);
+                }
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_tokopedia_keuangan);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_tokopedia_keuangan);
+        }
+    }
+
 }
