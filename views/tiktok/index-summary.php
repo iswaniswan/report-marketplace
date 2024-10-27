@@ -122,13 +122,13 @@ $summaryTotal = (object) $summaryTotal[0];
             <div class="table-responsive">
                 <table class="table table-hover table-bordered">
                     <thead class="bg-info text-white">
-                        <th>Tanggal</th>
-                        <th>Jumlah<br/>Transaksi</th>
-                        <th>Qty</th>
-                        <th>Amount HJP</th>
-                        <th>Amount Net</th>
-                        <th>Fee<br/>Marketplace</th>
-                        <th>% Fee<br/>Marketplace</th>
+                        <th style="text-align: left;">Tanggal</th>
+                        <th style="text-align: center;">Jumlah Transaksi</th>
+                        <th style="text-align: center;">Qty</th>
+                        <th style="text-align: center;">Amount HJP</th>
+                        <th style="text-align: center;">Amount Net</th>
+                        <th style="text-align: center;">Fee Marketplace</th>
+                        <th style="text-align: center;">% Fee Marketplace</th>
                     </thead>
                     <tbody>
                         <?php 
@@ -147,13 +147,13 @@ $summaryTotal = (object) $summaryTotal[0];
                                 $grand_fee_marketplace += $result->fee_marketplace;
                             ?>
                             <tr>
-                                <td><?= date('d-m-Y', strtotime($result->tanggal)) ?></td>
-                                <td><?= number_format($result->jumlah_transaksi) ?></td>
-                                <td><?= number_format($result->quantity) ?></td>
-                                <td><?= number_format($result->amount_hjp) ?></td>
-                                <td><?= number_format($result->total_settlement_amount) ?></td>
-                                <td><?= number_format($result->fee_marketplace) ?></td>
-                                <td>
+                                <td style="text-align: left;"><?= date('d-m-Y', strtotime($result->tanggal)) ?></td>
+                                <td style="text-align: right;"><?= number_format($result->jumlah_transaksi) ?></td>
+                                <td style="text-align: right;"><?= number_format($result->quantity) ?></td>
+                                <td style="text-align: right;"><?= number_format($result->amount_hjp) ?></td>
+                                <td style="text-align: right;"><?= number_format($result->total_settlement_amount) ?></td>
+                                <td style="text-align: right;"><?= number_format($result->fee_marketplace) ?></td>
+                                <td style="text-align: right;">
                                     <?php if ((int) @$result->amount_hjp > 0) { ?>
                                         <?= number_format($result->fee_marketplace/$result->amount_hjp * 100, 2) ?>%
                                     <?php } ?>
@@ -164,12 +164,12 @@ $summaryTotal = (object) $summaryTotal[0];
                     <tfoot>
                         <tr class="bg-info text-white">
                             <th>#</th>
-                            <th><?= number_format($grand_jumlah_transaksi) ?></th>
-                            <th><?= number_format($grand_quantity) ?></th>
-                            <th><?= number_format($grand_amount_hjp) ?></th>
-                            <th><?= number_format($grand_total_settlement_amount) ?></th>
-                            <th><?= number_format($grand_fee_marketplace) ?></th>
-                            <th>
+                            <th style="text-align: right;"><?= number_format($grand_jumlah_transaksi) ?></th>
+                            <th style="text-align: right;"><?= number_format($grand_quantity) ?></th>
+                            <th style="text-align: right;"><?= number_format($grand_amount_hjp) ?></th>
+                            <th style="text-align: right;"><?= number_format($grand_total_settlement_amount) ?></th>
+                            <th style="text-align: right;"><?= number_format($grand_fee_marketplace) ?></th>
+                            <th style="text-align: right;">
                                 <?php if ((int) $grand_amount_hjp > 0) { ?>
                                     <?= number_format($grand_fee_marketplace/$grand_amount_hjp * 100, 2) ?>%
                                 <?php } ?>

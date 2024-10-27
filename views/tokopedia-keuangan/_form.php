@@ -46,9 +46,9 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'id_file_source')->textInput() ?>
+                    <?php // $form->field($model, 'id_file_source')->textInput() ?>
 
-<?= $form->field($model, 'nomor')->textInput() ?>
+<?php // $form->field($model, 'nomor')->textInput() ?>
 
 <?= $form->field($model, 'nomor_invoice')->textInput(['maxlength' => true]) ?>
 
@@ -102,9 +102,9 @@ if (@$mode == Mode::READ) {
 </div>
 <div class="row mb-5">
     <div class="container-fluid">
-        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['index'], ['class' => 'btn btn-info mb-1']) ?>
+        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', $referrer, ['class' => 'btn btn-info mb-1']) ?>
         <?php if ($mode == Mode::READ) { ?>
-            <?= Html::a('<i class="ti-pencil-alt"></i><span class="ml-2">Edit</span>', ['update', 'id' => $model->id], ['class' => 'btn btn-warning mb-1']) ?>
+            <?php // Html::a('<i class="ti-pencil-alt"></i><span class="ml-2">Edit</span>', ['update', 'id' => $model->id], ['class' => 'btn btn-warning mb-1']) ?>
         <?php } else { ?>
             <?= Html::submitButton('<i class="ti-check"></i><span class="ml-2">' . ucwords('update') .'</span>', ['class' => 'btn btn-primary mb-1']) ?>
         <?php } ?>

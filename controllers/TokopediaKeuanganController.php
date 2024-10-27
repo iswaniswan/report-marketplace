@@ -9,6 +9,7 @@ use app\models\TokopediaKeuanganSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 
 /* custom controller, theme uplon integrated */
 /**
@@ -41,6 +42,8 @@ class TokopediaKeuanganController extends Controller
      */
     public function actionIndex()
     {
+        return $this->actionIndexServerside();
+
         $searchModel = new TokopediaKeuanganSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -48,6 +51,18 @@ class TokopediaKeuanganController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionIndexServerside()
+    {        
+        $request = Yii::$app->request->get();
+        $params = [
+            'date_start' => $request[1]['date_start'] ?? null,
+            'date_end' => $request[1]['date_end'] ?? null,
+            'status' => $request[1]['status'] ?? null,
+        ];
+
+        return $this->render('index-serverside', $params);
     }
 
     /**
@@ -161,4 +176,71 @@ class TokopediaKeuanganController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionServerside()
+    {
+        $searchModel = new TokopediaKeuanganSearch();
+        $searchModel->isServerside = true;
+
+        // optional parameter
+        // $searchModel->year = Yii::$app->request->get('year') ?? null;
+        // $searchModel->month = Yii::$app->request->get('month') ?? null;
+        $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
+        $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        // Extract order information from the request
+        $orderData = Yii::$app->request->get('order', []);
+        $columns = Yii::$app->request->get('columns', []);
+
+        // Set pagination based on DataTables parameters
+        $pageSize = Yii::$app->request->get('length', 10);
+        $page = Yii::$app->request->get('start', 0) / $pageSize;
+
+        $dataProvider->setPagination([
+            'pageSize' => $pageSize,
+            'page' => $page,
+        ]);
+
+        // Handle ordering if order data is provided
+        // $modelClass = $dataProvider->query->modelClass;
+        if (!empty($orderData)) {
+            foreach ($orderData as $order) {
+                $columnIndex = intval($order['column']);
+                $direction = $order['dir'] === 'asc' ? SORT_ASC : SORT_DESC;
+
+                // Ensure the column name corresponds to a valid attribute from the model
+                if (isset($columns[$columnIndex]['data']) && !empty($columns[$columnIndex]['data'])) {
+                    $columnName = $columns[$columnIndex]['data'];
+                    // Apply ordering to the query
+                    $dataProvider->query->addOrderBy([$columnName => $direction]);
+                }
+            }
+        }
+
+        $number = $page * $pageSize; // Adjust the sequence number based on the page
+        $data = [];
+        foreach ($dataProvider->getModels() as $model) {
+
+            $data[] = [
+                'number' => ++$number, // Increment the sequence number for each row
+                'nomor_invoice' => $model->nomor_invoice,
+                'tanggal_pembayaran' => $model->tanggal_pembayaran,
+                'status_terakhir' => $model->status_terakhir,
+                'nilai_kupon_toko_terpakai_idr' => number_format($model->nilai_kupon_toko_terpakai_idr),
+                'biaya_layanan_termasuk_ppn_dan_pph_idr' => number_format($model->biaya_layanan_termasuk_ppn_dan_pph_idr),
+                'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
+            ];
+        }
+
+        return \yii\helpers\Json::encode([
+            'draw' => Yii::$app->request->get('draw'),
+            'recordsTotal' => $dataProvider->getTotalCount(),
+            'recordsFiltered' => $dataProvider->getTotalCount(),
+            'data' => $data,
+        ]);
+    }
+
 }

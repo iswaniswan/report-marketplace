@@ -2,7 +2,7 @@
 
 use app\assets\DataTableAsset;
 use app\models\Tokopedia;
-use app\models\TokopediaPenjualan;
+use app\models\TokopediaKeuangan;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
@@ -13,21 +13,21 @@ use yii\helpers\Url;
 
 DataTableAsset::register($this);
 
-$this->title = 'Tabel Tokopedia';
+$this->title = 'Tabel Tokopedia Keuangan';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Tokopedia'
+        'title' => 'Tokopedia Keuangan'
     ],
 ]);
 
 $style = <<<CSS
     #table-serverside tbody tr td:nth-child(5),
-    #table-serverside tbody tr td:nth-child(6),
-    #table-serverside tbody tr td:nth-child(7) 
-    /* #table-serverside tbody tr td:nth-child(8),
+    #table-serverside tbody tr td:nth-child(6)
+    /*#table-serverside tbody tr td:nth-child(7) 
+    #table-serverside tbody tr td:nth-child(8),
     #table-serverside tbody tr td:nth-child(9),
     #table-serverside tbody tr td:nth-child(10),
     #table-serverside tbody tr td:nth-child(11) */
@@ -39,7 +39,7 @@ CSS;
 $this->registerCss($style);
 
 ?>
-<form action="<?= Url::to(['tokopedia/index-serverside']) ?>" method="GET">
+<form action="<?= Url::to(['tokopedia-keuangan/index-serverside']) ?>" method="GET">
     <div class="row mb-4">
         <div class="container-fluid">
             <div class="member-index card-box shadow mb-4">
@@ -64,7 +64,7 @@ $this->registerCss($style);
                             <label for="status">Status</label>
                             <select name="1[status]" id="status" class="form-control">
                                 <option value="">Pilih Status</option>
-                                <?php foreach (Tokopedia::getListStatus() as $_status) { ?>
+                                <?php foreach (TokopediaKeuangan::getListStatus() as $_status) { ?>
                                     <?php $isSelected = (@$status == $_status) ? 'selected' : '' ?>
                                     <option value="<?= $_status ?>" <?= $isSelected ?>><?= $_status ?></option>
                                 <?php } ?>
@@ -133,9 +133,8 @@ $this->registerCss($style);
                             <th style="width: 24%;">Nomor Invoice</th>
                             <th style="width:16%;">Tanggal Pembayaran</th>
                             <th style="width:16%;">Status Terakhir</th>
-                            <th style="width: 8%;">Quantity</th>
-                            <th style="width: 8%;">Harga<br/>Jual</th>
-                            <th style="width: 8%;">Total<br/>Penjualan</th>
+                            <th style="width: 8%;">Nilai Voucher<br/>Toko Terpakai</th>
+                            <th style="width: 8%;">Biaya Layanan<br/>Termasuk PPN & PPH</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -146,7 +145,7 @@ $this->registerCss($style);
 </div>
 
 <?php
-$urlServerside = Url::to(['tokopedia/serverside']);
+$urlServerside = Url::to(['tokopedia-keuangan/serverside']);
 
 if ($date_start == null) {
     $date_start = "";
@@ -194,9 +193,8 @@ $script = <<<JS
             { data: 'nomor_invoice', orderable: false},
             { data: 'tanggal_pembayaran', orderable: false},
             { data: 'status_terakhir', orderable: false},
-            { data: 'jumlah_produk_dibeli', orderable: false},
-            { data: 'harga_jual_idr', orderable: false},
-            { data: 'total_penjualan', orderable: false},
+            { data: 'nilai_kupon_toko_terpakai_idr', orderable: false},
+            { data: 'biaya_layanan_termasuk_ppn_dan_pph_idr', orderable: false},
             { data: 'action', orderable: false},
         ],
         rowCallback: function(row, data, index) {

@@ -87,4 +87,13 @@ class TokopediaKeuangan extends \yii\db\ActiveRecord
             'pph_idr' => 'Pph Idr',
         ];
     }
+
+    public static function getListStatus()
+    {
+        return static::find()
+            ->select('status_terakhir')
+            ->groupBy('status_terakhir')
+            ->column();
+    }
+    
 }

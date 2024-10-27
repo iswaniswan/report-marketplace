@@ -48,7 +48,7 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'id_file_source')->textInput() ?>
 
-<?= $form->field($model, 'nomor')->textInput() ?>
+<?php // $form->field($model, 'nomor')->textInput() ?>
 
 <?= $form->field($model, 'nomor_invoice')->textInput(['maxlength' => true]) ?>
 

@@ -60,7 +60,6 @@ class TokopediaController extends Controller
             'date_start' => $request[1]['date_start'] ?? null,
             'date_end' => $request[1]['date_end'] ?? null,
             'status' => $request[1]['status'] ?? null,
-            'channel' => $request[1]['channel'] ?? null,
         ];
 
         return $this->render('index-serverside', $params);
@@ -76,8 +75,8 @@ class TokopediaController extends Controller
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
-        // $summaryByDateRange = Tokopedia::getSummaryByDateRange($date_start, $date_end);
-        // $summaryTotal = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        $summaryByDateRange = Tokopedia::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
 
         // $jumlahTransaksi = Tiktok::getCountUnique('no_pesanan', [
         //     'status_pesanan' => 'Selesai'
@@ -87,8 +86,8 @@ class TokopediaController extends Controller
             'periode' => $periode,
             'date_start' => $date_start,
             'date_end' => $date_end,
-            // 'summaryByDateRange' => $summaryByDateRange,
-            // 'summaryTotal' => $summaryTotal,
+            'summaryByDateRange' => $summaryByDateRange,
+            'summaryTotal' => $summaryTotal,
         ]);
     }
 
@@ -215,7 +214,6 @@ class TokopediaController extends Controller
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
         $searchModel->status = Yii::$app->request->get('status') ?? null;
-        $searchModel->channel = Yii::$app->request->get('channel') ?? null;
         
         $dataProvider = $searchModel->search($this->request->queryParams);
 

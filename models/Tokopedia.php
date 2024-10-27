@@ -147,4 +147,80 @@ class Tokopedia extends \yii\db\ActiveRecord
             ->column();
     }
 
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    {
+        $sql = <<<SQL
+                    SELECT 
+                        a.tanggal_pembayaran AS tanggal, 
+                        count(DISTINCT nomor_invoice) jumlah_transaksi,
+                        sum(jumlah_produk_dibeli) quantity, 
+                        sum(amount_hjp) amount_hjp, 
+                        sum(biaya_layanan_termasuk_ppn_dan_pph_idr) fee_marketplace,
+                        (
+                            sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
+                        ) amount_net
+                    FROM (
+                            SELECT 
+                                STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
+                                a.nomor_invoice,
+                                sum(a.jumlah_produk_dibeli) AS jumlah_produk_dibeli,			
+                                sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp,
+                                0 AS biaya_layanan_termasuk_ppn_dan_pph_idr
+                            FROM tokopedia a
+                            WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
+                            GROUP BY 1,2	
+                            UNION ALL 
+                            SELECT 
+                                STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
+                                a.nomor_invoice,
+                                0 AS jumlah_produk_dibeli,
+                                0 AS amount_hjp,
+                                sum(biaya_layanan_termasuk_ppn_dan_pph_idr) biaya_layanan_termasuk_ppn_dan_pph_idr
+                            FROM tokopedia_keuangan a
+                            WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
+                            GROUP BY 1, 2
+                    ) a
+                    WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
+                    GROUP BY tanggal_pembayaran
+        SQL;
+
+        if ($is_total) {
+            $sql = <<<SQL
+                        SELECT 
+                            count(DISTINCT nomor_invoice) jumlah_transaksi,
+                            sum(jumlah_produk_dibeli) quantity, 
+                            sum(amount_hjp) amount_hjp, 
+                            sum(biaya_layanan_termasuk_ppn_dan_pph_idr) fee_marketplace,
+                            (
+                                sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
+                            ) amount_net
+                        FROM (
+                                SELECT 
+                                    STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
+                                    a.nomor_invoice,
+                                    sum(a.jumlah_produk_dibeli) AS jumlah_produk_dibeli,			
+                                    sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp,
+                                    0 AS biaya_layanan_termasuk_ppn_dan_pph_idr
+                                FROM tokopedia a
+                                WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
+                                GROUP BY 1,2	
+                                UNION ALL 
+                                SELECT 
+                                    STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
+                                    a.nomor_invoice,
+                                    0 AS jumlah_produk_dibeli,
+                                    0 AS amount_hjp,
+                                    sum(biaya_layanan_termasuk_ppn_dan_pph_idr) biaya_layanan_termasuk_ppn_dan_pph_idr
+                                FROM tokopedia_keuangan a
+                                WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
+                                GROUP BY 1, 2
+                        ) a
+                        WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
+            SQL;
+        }
+    
+        return Yii::$app->db->createCommand($sql)
+            ->queryAll(\PDO::FETCH_OBJ);
+    }   
+
 }
