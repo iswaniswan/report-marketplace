@@ -36,6 +36,13 @@ $itemsAdmin = [
                     ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-keuangan/index-serverside']]
                 ],
             ],
+
+            ['label' => 'Lazada', 'items' => [
+                    ['label' => 'Summary', 'url' =>['/lazada/index-summary']],
+                    ['label' => 'Tabel', 'url' =>['/lazada/index-serverside']],
+                    ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
+                ],
+            ],
             
         ]
     ],

@@ -49,4 +49,14 @@ use yii\helpers\Url;
             </div>
         </div>
     </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <a href="<?= Url::to(['lazada/index-summary']) ?>" class="btn btn-sm btn-primary waves-effect waves-light float-right">View</a>
+            <h6 class="text-muted text-uppercase mt-0">Lazada</h6>
+            <h3 class="mb-4"><span>on progress</span></h3>
+            <div class="progress progress-md">
+                <div class="progress-bar progress-bar-striped bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
 </div>

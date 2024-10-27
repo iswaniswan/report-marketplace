@@ -62,5 +62,9 @@ class StringHelper
         return (int)$numericValue;
     }
 
-    
+    public static function camelToSnakeCase($input) {
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $input));
+    }    
+
+
 }

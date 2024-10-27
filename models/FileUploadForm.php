@@ -7,6 +7,7 @@ use yii;
 use yii\base\Model;
 use yii\web\UploadedFile;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use app\utils\StringHelper as UtilsStringHelper;
 
 
 class FileUploadForm extends Model
@@ -34,6 +35,8 @@ class FileUploadForm extends Model
     protected $table_tiktok_income = 'tiktok_income';
     protected $table_tokopedia = 'tokopedia';
     protected $table_tokopedia_keuangan = 'tokopedia_keuangan';
+    protected $table_lazada = 'lazada';
+    protected $table_lazada_income = 'lazada_income';
 
     private $tiktokColumnsNumeric = [
         'quantity', 'sku_quantity_ofreturn', 'sku_unit_original_price', 'sku_subtotal_before_discount',
@@ -81,6 +84,14 @@ class FileUploadForm extends Model
         'jumlah_produk_yang_dikurangkan', 'total_pengurangan_idr', 'biaya_layanan_termasuk_ppn_dan_pph_idr', 
         'biaya_layanan_di_luar_ppn_dan_pph_idr', 'ppn_idr', 'pph_idr'
     ];
+
+    private $lazadaColumnsNumeric = [
+        'paid_price', 'unit_price', 'seller_discount_total', 'shipping_fee', 'wallet_credit', 'bundle_discount', 'refund_amount'
+     ];
+
+     private $lazadaIncomeColumnsNumeric = [
+        'amount_include_tax', 'vat_amount', 'wht_amount'
+     ];
 
     private $emptyColumnCount = 0;
 
@@ -138,6 +149,16 @@ class FileUploadForm extends Model
 
                     case TableUpload::TOKOPEDIA: {
                         $this->importToTokopedia($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::LAZADA: {
+                        $this->importToLazada($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::LAZADA_INCOME: {
+                        $this->importToLazadaIncome($isDeleteInsert);
                         break;
                     }
 
@@ -836,6 +857,180 @@ class FileUploadForm extends Model
         if (!empty($data)) {
             // $this->insertOrUpdateBatch($header, $data);
             $this->insertIgnoreBatch($header, $data, $this->table_tokopedia_keuangan);
+        }
+    }
+
+    public function importToLazada($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            Lazada::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        // Read the header row
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            foreach ($cellIterator as $cell) {
+                // Standardize header values using a utility function if needed
+                $columnName = UtilsStringHelper::camelToSnakeCase($cell->getValue());
+                $header[] = StringHelper::sanitizeColumnName($columnName);
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                if (in_array($headerValue, $this->tiktokColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrency($value);
+                }
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_lazada);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_lazada);
+        }
+    }
+
+    public function importToLazadaIncome($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath);
+    
+        $header = [];
+        $data = [];
+
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            LazadaIncome::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        $skippedColumns = [];
+        // Read the header row
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+            foreach ($cellIterator as $cell) {
+                $cellValue = $cell->getValue();
+                //  echo '<pre>'; var_dump($cellValue); echo '</pre>';
+                // Standardize header values using a utility function if needed
+                if ($cellValue === '' || $cellValue == NULL) {
+                    $skippedColumns[] = $columnIndex;
+                    continue;
+                    // $this->emptyColumnCount += 1;
+                    // $cellValue = $this->renameEmptyColumnName();
+                }
+                // echo '<pre>'; var_dump($cellValue); echo '</pre>';
+                $header[] = StringHelper::sanitizeColumnName($cellValue);
+                $columnIndex++;
+            }
+        }
+            
+        $header[] = 'id_file_source';
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {    
+                // Skip columns if they are in the skippedColumns array
+                if (in_array($columnIndex, $skippedColumns)) {
+                    $columnIndex++;
+                    continue;
+                }
+                            
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value      
+                
+                if (in_array($headerValue, $this->tiktokIncomeColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
+                } else {
+                    $value = StringHelper::sanitizeValue($cell->getValue());
+                }
+
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_lazada_income);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_lazada_income);
         }
     }
 
