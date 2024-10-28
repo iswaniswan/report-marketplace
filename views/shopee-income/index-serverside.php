@@ -1,7 +1,7 @@
 <?php
 
 use app\assets\DataTableAsset;
-use yii\helpers\Html;;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
@@ -10,13 +10,13 @@ use yii\helpers\Url;
 
 DataTableAsset::register($this);
 
-$this->title = 'Tabel Tiktok Income';
+$this->title = 'Tabel Shopee Income';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Tiktok Income'
+        'title' => 'Shopee Income'
     ],
 ]);
 
@@ -34,7 +34,7 @@ CSS;
 $this->registerCss($style);
 
 ?>
-<form action="<?= Url::to(['tiktok-income/index-serverside']) ?>" method="GET">
+<form action="<?= Url::to(['shopee-income/index-serverside']) ?>" method="GET">
     <div class="row mb-4">
         <div class="container-fluid">
             <div class="member-index card-box shadow mb-4">
@@ -113,10 +113,12 @@ $this->registerCss($style);
                     <thead>
                         <tr>
                             <th style="width: 4%">#</th>
-                            <th style="width: 16%">Order<br/>Adjustment ID</th>
-                            <th style="width: 16%">Order<br/>Created Time</th>
-                            <th style="width: 16%">Order<br/>Settled Time</th>
-                            <th style="width:16%">Total<br/>Settlement Amount</th>
+                            <th>Tanggal<br/>Pembuatan</th>
+                            <th style="width: 16%">ID Pesanan</th>
+                            <th style="width: 16%">Harga Asli Produk</th>
+                            <th style="width: 16%">Total Diskon Produk</th>
+                            <th style="width: 16%">Total Pengeluaran</th>
+                            <th style="width: 16%">Total Penghasilan</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -127,7 +129,7 @@ $this->registerCss($style);
 </div>
 
 <?php
-$urlServerside = Url::to(['tiktok-income/serverside']);
+$urlServerside = Url::to(['shopee-income/serverside']);
 
 if ($date_start == null) {
     $date_start = "";
@@ -168,12 +170,12 @@ $script = <<<JS
         },
         columns: [
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
-            { data: 'order_adjustment_id', orderable: false},
-            { data: 'order_created_time_utc', orderable: false},
-            { data: 'order_settled_time_utc', orderable: false},
-            { data: 'total_settlement_amount', orderable: false, createdCell: function (td) {
-                $(td).css('text-align', 'right'); // Example right-align
-            }},
+            { data: 'waktu_pesanan_dibuat', orderable: false},
+            { data: 'no_pesanan', orderable: false},
+            { data: 'harga_asli_produk', orderable: false},
+            { data: 'total_diskon_produk', orderable: false},
+            { data: 'total_pengeluaran', orderable: false},
+            { data: 'total_penghasilan', orderable: false},
             { data: 'action', orderable: false, createdCell: function (td) {
                 $(td).css('text-align', 'left'); // Example right-align
             }},

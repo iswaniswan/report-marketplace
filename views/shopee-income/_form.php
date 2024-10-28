@@ -46,7 +46,7 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'id_file_source')->textInput() ?>
+                    <?php // $form->field($model, 'id_file_source')->textInput() ?>
 
 <?= $form->field($model, 'no')->textInput() ?>
 
@@ -62,59 +62,105 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'tanggal_dana_dilepaskan')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'harga_asli_produk')->textInput() ?>
+<?= $form->field($model, 'harga_asli_produk')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->harga_asli_produk)
+]) ?>
 
-<?= $form->field($model, 'total_diskon_produk')->textInput() ?>
+<?= $form->field($model, 'total_diskon_produk')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_diskon_produk)
+]) ?>
 
-<?= $form->field($model, 'jumlah_pengembalian_dana_ke_pembeli')->textInput() ?>
+<?= $form->field($model, 'jumlah_pengembalian_dana_ke_pembeli')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->jumlah_pengembalian_dana_ke_pembeli)
+]) ?>
 
-<?= $form->field($model, 'diskon_produk_dari_shopee')->textInput() ?>
+<?= $form->field($model, 'diskon_produk_dari_shopee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->diskon_produk_dari_shopee)
+]) ?>
 
-<?= $form->field($model, 'diskon_voucher_ditanggung_penjual')->textInput() ?>
+<?= $form->field($model, 'diskon_voucher_ditanggung_penjual')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->diskon_voucher_ditanggung_penjual)
+]) ?>
 
-<?= $form->field($model, 'cashback_koin_yang_ditanggung_penjual')->textInput() ?>
+<?= $form->field($model, 'cashback_koin_yang_ditanggung_penjual')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->cashback_koin_yang_ditanggung_penjual)
+]) ?>
 
-<?= $form->field($model, 'ongkir_dibayar_pembeli')->textInput() ?>
+<?= $form->field($model, 'ongkir_dibayar_pembeli')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->ongkir_dibayar_pembeli)
+]) ?>
 
-<?= $form->field($model, 'diskon_ongkir_ditanggung_jasa_kirim')->textInput() ?>
+<?= $form->field($model, 'diskon_ongkir_ditanggung_jasa_kirim')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->diskon_ongkir_ditanggung_jasa_kirim)
+]) ?>
 
-<?= $form->field($model, 'gratis_ongkir_dari_shopee')->textInput() ?>
+<?= $form->field($model, 'gratis_ongkir_dari_shopee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->gratis_ongkir_dari_shopee)
+]) ?>
 
-<?= $form->field($model, 'ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim')->textInput() ?>
+<?= $form->field($model, 'ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim)
+]) ?>
 
-<?= $form->field($model, 'ongkos_kirim_pengembalian_barang')->textInput() ?>
+<?= $form->field($model, 'ongkos_kirim_pengembalian_barang')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->ongkos_kirim_pengembalian_barang)
+]) ?>
 
-<?= $form->field($model, 'pengembalian_biaya_kirim')->textInput() ?>
+<?= $form->field($model, 'pengembalian_biaya_kirim')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->pengembalian_biaya_kirim)
+]) ?>
 
-<?= $form->field($model, 'biaya_komisi_ams')->textInput() ?>
+<?= $form->field($model, 'biaya_komisi_ams')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_komisi_ams)
+]) ?>
 
-<?= $form->field($model, 'biaya_administrasi_termasuk_ppn_11')->textInput() ?>
+<?= $form->field($model, 'biaya_administrasi_termasuk_ppn_11')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_administrasi_termasuk_ppn_11)
+]) ?>
 
-<?= $form->field($model, 'biaya_layanan_termasuk_ppn_11')->textInput() ?>
+<?= $form->field($model, 'biaya_layanan_termasuk_ppn_11')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_layanan_termasuk_ppn_11)
+]) ?>
 
-<?= $form->field($model, 'premi')->textInput() ?>
+<?= $form->field($model, 'premi')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->premi)
+]) ?>
 
-<?= $form->field($model, 'biaya_program')->textInput() ?>
+<?= $form->field($model, 'biaya_program')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_program)
+]) ?>
 
-<?= $form->field($model, 'biaya_kartu_kredit')->textInput() ?>
+<?= $form->field($model, 'biaya_kartu_kredit')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_kartu_kredit)
+]) ?>
 
-<?= $form->field($model, 'biaya_kampanye')->textInput() ?>
+<?= $form->field($model, 'biaya_kampanye')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_kampanye)
+]) ?>
 
-<?= $form->field($model, 'bea_masuk_ppn_pph')->textInput() ?>
+<?= $form->field($model, 'bea_masuk_ppn_pph')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->bea_masuk_ppn_pph)
+]) ?>
 
-<?= $form->field($model, 'total_penghasilan')->textInput() ?>
+<?= $form->field($model, 'total_penghasilan')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_penghasilan)
+]) ?>
 
 <?= $form->field($model, 'kode_voucher')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'kompensasi')->textInput() ?>
+<?= $form->field($model, 'kompensasi')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->kompensasi)
+]) ?>
 
-<?= $form->field($model, 'promo_gratis_ongkir_dari_penjual')->textInput() ?>
+<?= $form->field($model, 'promo_gratis_ongkir_dari_penjual')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->promo_gratis_ongkir_dari_penjual)
+]) ?>
 
 <?= $form->field($model, 'jasa_kirim')->textInput(['maxlength' => true]) ?>
 
 <?= $form->field($model, 'nama_kurir')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, '#')->textarea(['rows' => 6]) ?>
+<?php // $form->field($model, '#')->textarea(['rows' => 6]) ?>
 
 <?= $form->field($model, 'pengembalian_dana_ke_pembeli')->textInput() ?>
 
@@ -134,9 +180,9 @@ if (@$mode == Mode::READ) {
 </div>
 <div class="row mb-5">
     <div class="container-fluid">
-        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['index'], ['class' => 'btn btn-info mb-1']) ?>
+        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', $referrer, ['class' => 'btn btn-info mb-1']) ?>
         <?php if ($mode == Mode::READ) { ?>
-            <?= Html::a('<i class="ti-pencil-alt"></i><span class="ml-2">Edit</span>', ['update', 'id' => $model->id], ['class' => 'btn btn-warning mb-1']) ?>
+            <?php // Html::a('<i class="ti-pencil-alt"></i><span class="ml-2">Edit</span>', ['update', 'id' => $model->id], ['class' => 'btn btn-warning mb-1']) ?>
         <?php } else { ?>
             <?= Html::submitButton('<i class="ti-check"></i><span class="ml-2">' . ucwords('update') .'</span>', ['class' => 'btn btn-primary mb-1']) ?>
         <?php } ?>

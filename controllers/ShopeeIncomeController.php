@@ -9,6 +9,7 @@ use app\models\ShopeeIncomeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
 
 /* custom controller, theme uplon integrated */
 /**
@@ -41,6 +42,8 @@ class ShopeeIncomeController extends Controller
      */
     public function actionIndex()
     {
+        return $this->actionIndexServerside();
+
         $searchModel = new ShopeeIncomeSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -48,6 +51,18 @@ class ShopeeIncomeController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionIndexServerside()
+    {        
+        $request = Yii::$app->request->get();
+        $params = [
+            'date_start' => $request[1]['date_start'] ?? null,
+            'date_end' => $request[1]['date_end'] ?? null,
+            'status' => $request[1]['status'] ?? null,
+        ];
+
+        return $this->render('index-serverside', $params);
     }
 
     /**
@@ -161,4 +176,118 @@ class ShopeeIncomeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
+    public function actionServerside()
+    {
+        $searchModel = new ShopeeIncomeSearch();
+        $searchModel->isServerside = true;
+
+        // optional parameter
+        // $searchModel->year = Yii::$app->request->get('year') ?? null;
+        // $searchModel->month = Yii::$app->request->get('month') ?? null;
+        $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
+        $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        // Extract order information from the request
+        $orderData = Yii::$app->request->get('order', []);
+        $columns = Yii::$app->request->get('columns', []);
+
+        // Set pagination based on DataTables parameters
+        $pageSize = Yii::$app->request->get('length', 10);
+        $page = Yii::$app->request->get('start', 0) / $pageSize;
+
+        $dataProvider->setPagination([
+            'pageSize' => $pageSize,
+            'page' => $page,
+        ]);
+
+        // Handle ordering if order data is provided
+        // $modelClass = $dataProvider->query->modelClass;
+        if (!empty($orderData)) {
+            foreach ($orderData as $order) {
+                $columnIndex = intval($order['column']);
+                $direction = $order['dir'] === 'asc' ? SORT_ASC : SORT_DESC;
+
+                // Ensure the column name corresponds to a valid attribute from the model
+                if (isset($columns[$columnIndex]['data']) && !empty($columns[$columnIndex]['data'])) {
+                    $columnName = $columns[$columnIndex]['data'];
+                    // Apply ordering to the query
+                    $dataProvider->query->addOrderBy([$columnName => $direction]);
+                }
+            }
+        }
+
+        $number = $page * $pageSize; // Adjust the sequence number based on the page
+        $data = [];
+        foreach ($dataProvider->getModels() as $model) {
+            /*Total Diskon Produk
+            Jumlah Pengembalian Dana ke Pembeli	
+            Diskon Produk dari Shopee	
+            Diskon Voucher Ditanggung Penjual	
+            Cashback Koin yang Ditanggung Penjual	
+            Ongkir Dibayar Pembeli	
+            Diskon Ongkir Ditanggung Jasa Kirim
+            Gratis Ongkir dari Shopee
+            Ongkir yang Diteruskan oleh Shopee ke Jasa Kirim
+            Ongkos Kirim Pengembalian Barang
+            Pengembalian Biaya Kirim
+            Biaya Komisi AMS
+            Biaya Administrasi (termasuk PPN 11%)
+            Biaya Layanan (termasuk PPN 11%)
+            Premi	
+            Biaya Program	
+            Biaya Kartu Kredit
+            Biaya Kampanye	
+            Bea Masuk, PPN & PPh
+            */
+            $totalPengeluaran = 
+                ($model->total_diskon_produk
+                + $model->jumlah_pengembalian_dana_ke_pembeli
+                + $model->diskon_produk_dari_shopee
+                + $model->diskon_voucher_ditanggung_penjual
+                + $model->cashback_koin_yang_ditanggung_penjual
+                + $model->ongkir_dibayar_pembeli
+                + $model->diskon_ongkir_ditanggung_jasa_kirim
+                + $model->gratis_ongkir_dari_shopee
+                + $model->ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim
+                + $model->ongkos_kirim_pengembalian_barang
+                + $model->pengembalian_biaya_kirim
+                + $model->biaya_komisi_ams
+                + $model->biaya_administrasi_termasuk_ppn_11
+                + $model->biaya_layanan_termasuk_ppn_11
+                + $model->premi
+                + $model->biaya_program
+                + $model->biaya_kartu_kredit
+                + $model->biaya_kampanye
+                + $model->bea_masuk_ppn_pph
+                + $model->kompensasi
+                + $model->promo_gratis_ongkir_dari_penjual
+                + $model->pengembalian_dana_ke_pembeli
+                + $model->pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang
+                + $model->pro_rata_voucher_shopee_untuk_pengembalian_barang);
+
+            $data[] = [
+                'number' => ++$number,
+                // Increment the sequence number for each row
+                'waktu_pesanan_dibuat' => $model->waktu_pesanan_dibuat,
+                'no_pesanan' => $model->no_pesanan,
+                'harga_asli_produk' => number_format($model->harga_asli_produk),
+                'total_diskon_produk' => number_format($model->total_diskon_produk),
+                'total_pengeluaran' => number_format($totalPengeluaran),
+                'total_penghasilan' => number_format($model->total_penghasilan),
+                'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
+            ];
+        }
+
+        return \yii\helpers\Json::encode([
+            'draw' => Yii::$app->request->get('draw'),
+            'recordsTotal' => $dataProvider->getTotalCount(),
+            'recordsFiltered' => $dataProvider->getTotalCount(),
+            'data' => $data,
+        ]);
+    }
+
 }
