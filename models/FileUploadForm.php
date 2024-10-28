@@ -31,6 +31,7 @@ class FileUploadForm extends Model
 
     protected $table_ginee = 'ginee';
     protected $table_shopee = 'shopee';
+    protected $table_shopee_income = 'shopee_income';
     protected $table_tiktok = 'tiktok';
     protected $table_tiktok_income = 'tiktok_income';
     protected $table_tokopedia = 'tokopedia';
@@ -87,11 +88,19 @@ class FileUploadForm extends Model
 
     private $lazadaColumnsNumeric = [
         'paid_price', 'unit_price', 'seller_discount_total', 'shipping_fee', 'wallet_credit', 'bundle_discount', 'refund_amount'
-     ];
+    ];
 
-     private $lazadaIncomeColumnsNumeric = [
-        'amount_include_tax', 'vat_amount', 'wht_amount'
-     ];
+    private $lazadaIncomeColumnsNumeric = [
+    'amount_include_tax', 'vat_amount', 'wht_amount'
+    ];
+
+    private $shopeeIncomeColumnsNumeric = [       
+        'no', 'harga_asli_produk', 'total_diskon_produk', 'jumlah_pengembalian_dana_ke_pembeli', 'diskon_produk_dari_shopee', 'diskon_voucher_ditanggung_penjual', 'cashback_koin_yang_ditanggung_penjual', 'ongkir_dibayar_pembeli', 'diskon_ongkir_ditanggung_jasa_kirim',
+        'gratis_ongkir_dari_shopee', 'ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim', 'ongkos_kirim_pengembalian_barang', 'pengembalian_biaya_kirim', 'biaya_komisi_ams', 'biaya_administrasi_termasuk_ppn_11', 'biaya_layanan_termasuk_ppn_11', 'premi', 'biaya_program',
+        'biaya_kartu_kredit', 'biaya_kampanye', 'bea_masuk_ppn_pph', 'total_penghasilan', 'kompensasi', 'promo_gratis_ongkir_dari_penjual',
+        'pengembalian_dana_ke_pembeli', 'pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang', 'pro_rata_voucher_shopee_untuk_pengembalian_barang',
+        'pro_rated_bank_payment_channel_promotion_for_return_refund_items', 'pro_rated_shopee_payment_channel_promotion_for_return_refund_ite'
+    ];
 
     private $emptyColumnCount = 0;
 
@@ -134,6 +143,11 @@ class FileUploadForm extends Model
 
                     case TableUpload::SHOPEE: {
                         $this->importToShopee($isDeleteInsert);
+                        break;
+                    }
+
+                    case TableUpload::SHOPEE_INCOME: {
+                        $this->importToShopeeIncome($isDeleteInsert);
                         break;
                     }
 
@@ -267,30 +281,35 @@ class FileUploadForm extends Model
         $worksheet = $spreadsheet->getActiveSheet();
         // Get all merged cell ranges in the sheet
         $mergedCells = $worksheet->getMergeCells();
-
-        // Loop through each merged cell range
-        foreach ($mergedCells as $mergedRange) {
-            // Unmerge the cells
-            $worksheet->unmergeCells($mergedRange);
-
-            // Get the starting cell of the merged range
-            $startCell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::extractAllCellReferencesInRange($mergedRange)[0];
-            $value = $worksheet->getCell($startCell)->getValue();
-
-            // Fill all cells in the range with the original merged value
-            $cellsInRange = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::extractAllCellReferencesInRange($mergedRange);
-            foreach ($cellsInRange as $cell) {
-                $worksheet->setCellValue($cell, $value);
+        
+        if (!empty($mergedCells)) {
+            // Loop through each merged cell range
+            foreach ($mergedCells as $mergedRange) {
+                // Unmerge the cells
+                $worksheet->unmergeCells($mergedRange);
+                // Get the starting cell of the merged range
+                $startCell = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::extractAllCellReferencesInRange($mergedRange)[0];
+                $value = $worksheet->getCell($startCell)->getValue();
+                if ($worksheet->getCell($startCell)->isFormula()) {
+                    // $value = $worksheet->getCell($startCell)->getCalculatedValue();
+                    $value = '';
+                }
+    
+                // Fill all cells in the range with the original merged value
+                $cellsInRange = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::extractAllCellReferencesInRange($mergedRange);
+                foreach ($cellsInRange as $cell) {
+                    $worksheet->setCellValue($cell, $value);
+                }
             }
+    
+            // Save the unmerged spreadsheet to a new file
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save($filePath);
         }
 
-        // Save the unmerged spreadsheet to a new file
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($filePath);
-
         // reload after saved
-        $spreadsheet = IOFactory::load($filePath);
-        $worksheet = $spreadsheet->getActiveSheet();
+        // $spreadsheet = IOFactory::load($filePath);
+        // $worksheet = $spreadsheet->getActiveSheet();
         return $worksheet;
     }
 
@@ -1031,6 +1050,101 @@ class FileUploadForm extends Model
         if (!empty($data)) {
             // $this->insertOrUpdateBatch($header, $data);
             $this->insertIgnoreBatch($header, $data, $this->table_lazada_income);
+        }
+    }
+
+    public function importToShopeeIncome($isDeleteInsert=false)
+    {
+        $spreadsheet = IOFactory::load($this->filePath);
+        $worksheet = $this->unmergeCells($spreadsheet, $this->filePath, $sheetIndex = 1);
+        $header = [];
+        $data = [];
+        // init id_table
+        if ($this->id_file_source == null) { 
+            Yii::error('Error ID File Source !!!'); die();
+        }
+        
+        if ($isDeleteInsert) {
+            // delete existing data from table ginee
+            ShopeeIncome::deleteAll([
+                'id_file_source' => $this->id_file_source
+            ]);
+        }
+    
+        $skippedColumns = [];
+        // Read the header row
+        foreach ($worksheet->getRowIterator(6, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+            foreach ($cellIterator as $cell) {
+                $cellValue = $cell->getValue();
+                // Standardize header values using a utility function if needed
+                if ($cellValue === '' || $cellValue == NULL) {
+                    $skippedColumns[] = $columnIndex;
+                    continue;
+                    // $this->emptyColumnCount += 1;
+                    // $cellValue = $this->renameEmptyColumnName();
+                }
+                // echo '<pre>'; var_dump($cellValue); echo '</pre>';
+                $cellValue = StringHelper::sanitizeColumnName($cellValue);
+                $header[] = StringHelper::truncateString($cellValue);
+                $columnIndex++;
+            }
+        }
+        
+        $header[] = 'id_file_source';        
+
+        // Maximum number of rows to insert per batch
+        $batchSize = 1000;
+
+        // Read the data rows
+        foreach ($worksheet->getRowIterator(7) as $row) { // Start from row 2 to skip the header
+            $rowData = [];
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            $columnIndex = 0;
+    
+            foreach ($cellIterator as $cell) {                    
+                // Skip columns if they are in the skippedColumns array
+                // if (in_array($columnIndex, $skippedColumns)) {
+                //     $columnIndex++;
+                //     continue;
+                // }
+                            
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                    
+                
+                if (in_array($headerValue, $this->shopeeIncomeColumnsNumeric)) {
+                    $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
+                } else {
+                    $value = StringHelper::sanitizeValue($cell->getValue());
+                }
+
+                $rowData[$headerValue] = $value;
+                $columnIndex++;
+            }
+    
+            $rowData['id_file_source'] = $this->id_file_source;
+            if (!empty($rowData)) {
+                $data[] = $rowData; // Store the row data
+            }
+
+            // echo '<pre>'; var_dump($header);
+            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
+    
+            // Insert in batches of 1000 rows
+            if (count($data) >= $batchSize) {
+                // echo '<pre>'; var_dump($data); echo '</pre>'; die();
+                // $this->insertOrUpdateBatch($header, $data);
+                $this->insertIgnoreBatch($header, $data, $this->table_shopee_income);
+                $data = []; // Clear the data array after each batch insert
+            }
+        }        
+    
+        // Insert any remaining data that didn't complete a full batch
+        if (!empty($data)) {
+            // $this->insertOrUpdateBatch($header, $data);
+            $this->insertIgnoreBatch($header, $data, $this->table_shopee_income);
         }
     }
 

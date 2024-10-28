@@ -19,7 +19,8 @@ $itemsAdmin = [
             
             ['label' => 'Shopee', 'items' => [
                     ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']]
+                    ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']],
+                    ['label' => 'Tabel Income', 'url' =>['/shopee-income/index-serverside']]
                 ],
             ], 
             

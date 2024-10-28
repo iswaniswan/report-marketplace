@@ -64,7 +64,15 @@ class StringHelper
 
     public static function camelToSnakeCase($input) {
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $input));
-    }    
+    }   
+    
+    public static function truncateString($string, $maxLength = 64, $suffix = '')
+    {
+        if (strlen($string) > $maxLength) {
+            return substr($string, 0, $maxLength) . $suffix;
+        }
+        return $string;
+    }
 
 
 }

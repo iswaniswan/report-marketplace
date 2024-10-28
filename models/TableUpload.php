@@ -25,6 +25,7 @@ class TableUpload extends \yii\db\ActiveRecord
     const TOKOPEDIA = 5;
     const TIKTOK_INCOME = 6;
     const LAZADA_INCOME = 7;
+    const SHOPEE_INCOME = 8;
 
     /**
      * {@inheritdoc}
@@ -68,6 +69,7 @@ class TableUpload extends \yii\db\ActiveRecord
             static::TOKOPEDIA => 'tokopedia',
             static::TIKTOK_INCOME => 'tiktok income',
             static::LAZADA_INCOME => 'lazada income',
+            static::SHOPEE_INCOME => 'shopee income',
         ];
     }
 
@@ -101,6 +103,7 @@ class TableUpload extends \yii\db\ActiveRecord
             static::TOKOPEDIA => 'success',
             static::TIKTOK_INCOME => 'dark',
             static::LAZADA_INCOME => 'primary',
+            static::SHOPEE_INCOME => 'warning',
         ];
     }
 
