@@ -70,23 +70,35 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'nomor_sku')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'catatan_produk_pembeli')->textarea(['rows' => 2]) ?>
+<?= $form->field($model, 'catatan_produk_pembeli')->textarea(['rows' => 1]) ?>
 
-<?= $form->field($model, 'catatan_produk_penjual')->textarea(['rows' => 2]) ?>
+<?= $form->field($model, 'catatan_produk_penjual')->textarea(['rows' => 1]) ?>
 
 <?= $form->field($model, 'jumlah_produk_dibeli')->textInput() ?>
 
-<?= $form->field($model, 'harga_awal_idr')->textInput() ?>
+<?= $form->field($model, 'harga_awal_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->harga_awal_idr)
+]) ?>
 
-<?= $form->field($model, 'harga_satuan_bundling_idr')->textInput() ?>
+<?= $form->field($model, 'harga_satuan_bundling_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->harga_satuan_bundling_idr)
+]) ?>
 
-<?= $form->field($model, 'diskon_produk_idr')->textInput() ?>
+<?= $form->field($model, 'diskon_produk_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->diskon_produk_idr)
+]) ?>
 
-<?= $form->field($model, 'harga_jual_idr')->textInput() ?>
+<?= $form->field($model, 'harga_jual_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->harga_jual_idr)
+]) ?>
 
-<?= $form->field($model, 'jumlah_subsidi_tokopedia_idr')->textInput() ?>
+<?= $form->field($model, 'jumlah_subsidi_tokopedia_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->jumlah_subsidi_tokopedia_idr)
+]) ?>
 
-<?= $form->field($model, 'nilai_kupon_toko_terpakai_idr')->textInput() ?>
+<?= $form->field($model, 'nilai_kupon_toko_terpakai_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->nilai_kupon_toko_terpakai_idr)
+]) ?>
 
 <?= $form->field($model, 'jenis_kupon_toko_terpakai')->textInput(['maxlength' => true]) ?>
 
@@ -98,7 +110,9 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'total_biaya_pengiriman_idr')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'total_penjualan_idr')->textInput() ?>
+<?= $form->field($model, 'total_penjualan_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_penjualan_idr)
+]) ?>
 
 <?= $form->field($model, 'nama_pembeli')->textInput(['maxlength' => true]) ?>
 
@@ -118,7 +132,7 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'tipe_pengiriman_regular_same_day_etc')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'no_resi_kode_booking')->textarea(['rows' => 2]) ?>
+<?= $form->field($model, 'no_resi_kode_booking')->textarea(['rows' => 1]) ?>
 
 <?= $form->field($model, 'tanggal_pengiriman_barang')->textInput(['maxlength' => true]) ?>
 

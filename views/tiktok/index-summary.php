@@ -68,28 +68,28 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-basket-loaded float-right text-muted"></i>
+            <i class="icon-basket-loaded float-right text-dark"></i>
             <h6 class="text-primary text-uppercase">Jumlah Transaksi</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah_transaksi) ?></span></h3>
         </div>
     </div>    
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-handbag float-right text-muted"></i>
+            <i class="icon-handbag float-right text-dark"></i>
             <h6 class="text-danger text-uppercase">Quantity</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->quantity) ?></span></h3>
         </div>
     </div> 
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-paypal float-right text-muted"></i>
+            <i class="icon-paypal float-right text-dark"></i>
             <h6 class="text-purple text-uppercase">Fee Marketplace</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace) ?></span></h3>
         </div>
     </div>   
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-paypal float-right text-muted"></i>
+            <i class="icon-paypal float-right text-dark"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
             <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
                 <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
@@ -101,14 +101,14 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4"> 
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-credit-card float-right text-muted"></i>
+            <i class="icon-credit-card float-right text-dark"></i>
             <h6 class="text-warning text-uppercase">Amount HJP</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_hjp) ?></span></h3>
         </div>
     </div>
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-credit-card float-right text-muted"></i>
+            <i class="icon-credit-card float-right text-dark"></i>
             <h6 class="text-success text-uppercase">Amount Net</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->total_settlement_amount) ?></span></h3>
         </div>
@@ -121,7 +121,7 @@ $summaryTotal = (object) $summaryTotal[0];
         <div class="card-box">
             <div class="table-responsive">
                 <table class="table table-hover table-bordered">
-                    <thead class="bg-info text-white">
+                    <thead class="bg-dark text-white">
                         <th style="text-align: left;">Tanggal</th>
                         <th style="text-align: center;">Jumlah Transaksi</th>
                         <th style="text-align: center;">Qty</th>
@@ -162,7 +162,7 @@ $summaryTotal = (object) $summaryTotal[0];
                         <?php } ?>
                     </tbody>
                     <tfoot>
-                        <tr class="bg-info text-white">
+                        <tr class="bg-dark text-white">
                             <th>#</th>
                             <th style="text-align: right;"><?= number_format($grand_jumlah_transaksi) ?></th>
                             <th style="text-align: right;"><?= number_format($grand_quantity) ?></th>

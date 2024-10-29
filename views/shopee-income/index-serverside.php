@@ -21,12 +21,10 @@ echo \app\widgets\Breadcrumbs::widget([
 ]);
 
 $style = <<<CSS
+    #table-serverside tbody tr td:nth-child(4),
+    #table-serverside tbody tr td:nth-child(5),
     #table-serverside tbody tr td:nth-child(6),
-    #table-serverside tbody tr td:nth-child(7), 
-    #table-serverside tbody tr td:nth-child(8),
-    #table-serverside tbody tr td:nth-child(9),
-    #table-serverside tbody tr td:nth-child(10),
-    #table-serverside tbody tr td:nth-child(11) {
+    #table-serverside tbody tr td:nth-child(7) {
         text-align: right
     }
 CSS;

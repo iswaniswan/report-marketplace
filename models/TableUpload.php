@@ -107,4 +107,14 @@ class TableUpload extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getListChannel()
+    {
+        return [
+            static::LAZADA => 'lazada',
+            static::SHOPEE => 'shopee',
+            static::TIKTOK => 'tiktok',
+            static::TOKOPEDIA => 'tokopedia'
+        ];
+    }
+
 }

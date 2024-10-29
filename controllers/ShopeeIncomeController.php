@@ -244,8 +244,7 @@ class ShopeeIncomeController extends Controller
             Bea Masuk, PPN & PPh
             */
             $totalPengeluaran = 
-                ($model->total_diskon_produk
-                + $model->jumlah_pengembalian_dana_ke_pembeli
+                ($model->jumlah_pengembalian_dana_ke_pembeli
                 + $model->diskon_produk_dari_shopee
                 + $model->diskon_voucher_ditanggung_penjual
                 + $model->cashback_koin_yang_ditanggung_penjual

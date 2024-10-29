@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\components\Mode;
 use app\models\Shopee;
+use app\models\ShopeeIncome;
 use app\models\ShopeeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -77,57 +78,14 @@ class ShopeeController extends Controller
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
         
-        $summaryByDateRange = Shopee::getSummaryByDateRange($date_start, $date_end);
-        $summaryTotal = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        // $summaryByDateRange = Shopee::getSummaryByDateRange($date_start, $date_end);
+        // $summaryTotal = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        $summaryByDateRange = ShopeeIncome::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
         // echo '<pre>'; var_dump($summaryByDateRange); echo '</pre>'; die();
-        
-
-        // $produkTerjual = Shopee::getSum('jumlah', [], []);
-
-        // $produkSelesai = Shopee::getSum('jumlah', [
-        //     'status_pesanan' => 'Selesai',
-        // ], []);
-
-        // $produkBatal = Shopee::getSum('jumlah', [
-        //     'status_pesanan' => ['Dibatalkan', 'Return/Refund'],
-        // ], []);
-
-        // $produkDikirim = Shopee::getSum('jumlah', [
-        //     'status_pesanan' => 'Sedang dikirim',
-        // ], []);
-
-        // $totalHargaTotalPromosi = Shopee::getSum('harga_total_promosi');
-
-        // $totalTotal = Shopee::getSum('total');
-
-        $jumlahTransaksi = Shopee::getCountUnique('no_pesanan', [
-            'status_pesanan' => 'Selesai'
-        ]);
-
-        // $jumlahSubtotal = Shopee::getSum('subtotal', [
-        //     'status_pesanan' => 'Selesai'
-        // ]);
-
-        // $jumlahTotal = Shopee::getSum('total', [
-        //     'status_pesanan' => 'Selesai'
-        // ]);
-
-        // $feeMarketplace = $jumlahSubtotal - $jumlahTotal;
-        // $persenFeeMarketplace = $feeMarketplace / $jumlahSubtotal * 100; 
 
         return $this->render('index-summary', [
             'periode' => $periode,
-            // 'produkTerjual' => $produkTerjual,
-            // 'produkSelesai' => $produkSelesai,
-            // 'produkBatal' => $produkBatal,
-            // 'produkDikirim' => $produkDikirim,
-            // 'totalHargaTotalPromosi' => $totalHargaTotalPromosi,
-            // 'totalTotal' => $totalTotal,
-            'jumlahTransaksi' => $jumlahTransaksi,
-            // 'jumlahSubtotal' => $jumlahSubtotal,
-            // 'jumlahTotal' => $jumlahTotal,
-            // 'feeMarketplace' => $feeMarketplace,
-            // 'persenFeeMarketplace' => $persenFeeMarketplace,
             'summaryTotal' => $summaryTotal,
             'summaryByDateRange' => $summaryByDateRange
         ]);

@@ -48,7 +48,7 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'id_file_source')->textInput() ?>
 
-<?= $form->field($model, 'no')->textInput() ?>
+<?php // $form->field($model, 'no')->textInput() ?>
 
 <?= $form->field($model, 'no_pesanan')->textInput(['maxlength' => true]) ?>
 
@@ -170,7 +170,7 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'pro_rated_bank_payment_channel_promotion_for_return_refund_items')->textInput() ?>
 
-<?= $form->field($model, 'pro_rated_shopee_payment_channel_promotion_for_return_refund_ite')->textarea(['rows' => 6]) ?>
+<?= $form->field($model, 'pro_rated_shopee_payment_channel_promotion_for_return_refund_ite')->textarea(['rows' => 1]) ?>
 
                 </div>
                 <?= Html::hiddenInput('referrer', $referrer) ?>

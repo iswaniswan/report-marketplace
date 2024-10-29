@@ -120,4 +120,117 @@ class ShopeeIncome extends \yii\db\ActiveRecord
             'pro_rated_shopee_payment_channel_promotion_for_return_refund_ite' => 'Pro Rated Shopee Payment Channel Promotion For Return Refund Ite',
         ];
     }
+
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    {
+        $sql = <<<SQL
+                WITH CTE AS (
+                            SELECT 
+                                waktu_pesanan_dibuat, 
+                                count(distinct no_pesanan) jumlah_transaksi, 
+                                sum(jumlah) AS jumlah, 
+                                0 AS amount_hjp, 
+                                0 AS amount_net
+                            FROM (
+                                    SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah
+                                    FROM shopee 
+                                    WHERE status_pesanan NOT LIKE '%Batal%'
+                                    AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    GROUP BY 1
+                                    ORDER BY jumlah DESC 
+                                ) a
+                            GROUP BY 1
+                            UNION ALL 
+                            SELECT 
+                                waktu_pesanan_dibuat, 
+                                0 AS jumlah_transaksi,
+                                0 AS jumlah,
+                                sum(total_harga_produk) AS amount_hjp, 
+                                0 AS amount_net
+                            FROM (
+                                    SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, REPLACE(total_harga_produk, '.', '') total_harga_produk
+                                    FROM shopee 
+                                    WHERE status_pesanan NOT LIKE '%Batal%'
+                                        AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            ) b
+                            GROUP BY 1
+                            UNION ALL 
+                            SELECT 
+                                waktu_pesanan_dibuat,
+                                0 AS jumlah_transaksi,
+                                0 AS jumlah, 
+                                0 AS amount_hjp, 
+                                sum(total_penghasilan) AS amount_net
+                            FROM shopee_income
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                )
+                SELECT 
+                    waktu_pesanan_dibuat, 
+                    sum(jumlah_transaksi) jumlah_transaksi,
+                    sum(jumlah) jumlah, 
+                    sum(amount_hjp) amount_hjp, 
+                    sum(amount_net) amount_net,
+                    (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                FROM CTE a
+                GROUP BY 1
+        SQL;
+
+        if ($is_total) {
+            $sql = <<<SQL
+                        WITH CTE AS (
+                                    SELECT 
+                                        waktu_pesanan_dibuat, 
+                                        count(distinct no_pesanan) jumlah_transaksi, 
+                                        sum(jumlah) AS jumlah, 
+                                        0 AS amount_hjp, 
+                                        0 AS amount_net
+                                    FROM (
+                                            SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah
+                                            FROM shopee 
+                                            WHERE status_pesanan NOT LIKE '%Batal%'
+                                            AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                            GROUP BY 1
+                                            ORDER BY jumlah DESC 
+                                        ) a
+                                    GROUP BY 1
+                                    UNION ALL 
+                                    SELECT 
+                                        waktu_pesanan_dibuat, 
+                                        0 AS jumlah_transaksi,
+                                        0 AS jumlah,
+                                        sum(total_harga_produk) AS amount_hjp, 
+                                        0 AS amount_net
+                                    FROM (
+                                            SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, REPLACE(total_harga_produk, '.', '') total_harga_produk
+                                            FROM shopee 
+                                            WHERE status_pesanan NOT LIKE '%Batal%'
+                                                AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    ) b
+                                    GROUP BY 1
+                                    UNION ALL 
+                                    SELECT 
+                                        waktu_pesanan_dibuat,
+                                        0 AS jumlah_transaksi,
+                                        0 AS jumlah, 
+                                        0 AS amount_hjp, 
+                                        sum(total_penghasilan) AS amount_net
+                                    FROM shopee_income
+                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    GROUP BY 1
+                        )
+                        SELECT 
+                            sum(jumlah_transaksi) jumlah_transaksi,
+                            sum(jumlah) jumlah, 
+                            sum(amount_hjp) amount_hjp, 
+                            sum(amount_net) amount_net,
+                            (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                        FROM CTE a
+                SQL;
+        }
+    
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
+    }
+
 }

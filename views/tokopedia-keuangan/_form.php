@@ -68,31 +68,49 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'jumlah_produk_dibeli')->textInput() ?>
 
-<?= $form->field($model, 'harga_jual_idr')->textInput() ?>
+<?= $form->field($model, 'harga_jual_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->harga_jual_idr)
+]) ?>
 
-<?= $form->field($model, 'jumlah_subsidi_tokopedia_idr')->textInput() ?>
+<?= $form->field($model, 'jumlah_subsidi_tokopedia_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->jumlah_subsidi_tokopedia_idr)
+]) ?>
 
-<?= $form->field($model, 'nilai_kupon_toko_terpakai_idr')->textInput() ?>
+<?= $form->field($model, 'nilai_kupon_toko_terpakai_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->nilai_kupon_toko_terpakai_idr)
+]) ?>
 
 <?= $form->field($model, 'jenis_kupon_toko_terpakai')->textInput(['maxlength' => true]) ?>
 
 <?= $form->field($model, 'kode_kupon_toko_yang_digunakan')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'jumlah_produk_yang_dikurangkan')->textInput() ?>
+<?= $form->field($model, 'jumlah_produk_yang_dikurangkan')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->jumlah_produk_yang_dikurangkan)
+]) ?>
 
-<?= $form->field($model, 'total_pengurangan_idr')->textInput() ?>
+<?= $form->field($model, 'total_pengurangan_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_pengurangan_idr)
+]) ?>
 
 <?= $form->field($model, 'nama_biaya_layanan')->textInput(['maxlength' => true]) ?>
 
 <?= $form->field($model, 'persentase_biaya_layanan')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'biaya_layanan_termasuk_ppn_dan_pph_idr')->textInput() ?>
+<?= $form->field($model, 'biaya_layanan_termasuk_ppn_dan_pph_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_layanan_termasuk_ppn_dan_pph_idr)
+]) ?>
 
-<?= $form->field($model, 'biaya_layanan_di_luar_ppn_dan_pph_idr')->textInput() ?>
+<?= $form->field($model, 'biaya_layanan_di_luar_ppn_dan_pph_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->biaya_layanan_di_luar_ppn_dan_pph_idr)
+]) ?>
 
-<?= $form->field($model, 'ppn_idr')->textInput() ?>
+<?= $form->field($model, 'ppn_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->ppn_idr)
+]) ?>
 
-<?= $form->field($model, 'pph_idr')->textInput() ?>
+<?= $form->field($model, 'pph_idr')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->pph_idr)
+]) ?>
 
                 </div>
                 <?= Html::hiddenInput('referrer', $referrer) ?>

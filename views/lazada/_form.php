@@ -140,15 +140,25 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'pay_method')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'paid_price')->textInput() ?>
+<?= $form->field($model, 'paid_price')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->paid_price)
+]) ?>
 
-<?= $form->field($model, 'unit_price')->textInput() ?>
+<?= $form->field($model, 'unit_price')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->unit_price)
+]) ?>
 
-<?= $form->field($model, 'seller_discount_total')->textInput() ?>
+<?= $form->field($model, 'seller_discount_total')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->seller_discount_total)
+]) ?>
 
-<?= $form->field($model, 'shipping_fee')->textInput() ?>
+<?= $form->field($model, 'shipping_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_fee)
+]) ?>
 
-<?= $form->field($model, 'wallet_credit')->textInput() ?>
+<?= $form->field($model, 'wallet_credit')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->wallet_credit)
+]) ?>
 
 <?= $form->field($model, 'item_name')->textInput(['maxlength' => true]) ?>
 

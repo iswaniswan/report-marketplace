@@ -187,7 +187,8 @@ class Tiktok extends \yii\db\ActiveRecord
                             0 AS total_settlement_amount 
                         FROM tiktok a 
                         WHERE sku_quantity_of_return = 0
-                        GROUP BY STR_TO_DATE(a.created_time, '%d/%m/%Y')
+                            AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                        GROUP BY 1
                         UNION ALL
                         SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
                             FROM (
@@ -196,12 +197,12 @@ class Tiktok extends \yii\db\ActiveRecord
                                 FROM tiktok a 
                                 LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
                                 WHERE sku_quantity_of_return = 0
+                                    AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
                         ) a
                         GROUP BY 1, 2
                 ) a
-                WHERE created_time BETWEEN '$date_start' AND '$date_end'
-                GROUP BY created_time
-                ORDER BY created_time
+                GROUP BY 1
+                ORDER BY 1
         SQL;
 
         if ($is_total) {
@@ -224,8 +225,9 @@ class Tiktok extends \yii\db\ActiveRecord
                                     ) AS amount_hjp,
                                     0 AS total_settlement_amount 
                                 FROM tiktok a 
-                                WHERE sku_quantity_of_return = 0
-                                GROUP BY STR_TO_DATE(a.created_time, '%d/%m/%Y')
+                                WHERE sku_quantity_of_return = 0 
+                                    AND  STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                                GROUP BY 1
                                 UNION ALL
                                 SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
                                     FROM (
@@ -234,8 +236,8 @@ class Tiktok extends \yii\db\ActiveRecord
                                         FROM tiktok a 
                                         LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
                                         WHERE sku_quantity_of_return = 0
-                                ) a
-                                WHERE created_time BETWEEN '$date_start' AND '$date_end'
+                                            AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                                ) a                                
                                 GROUP BY 1, 2
                         ) a
             SQL;

@@ -58,83 +58,155 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'currency')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'total_settlement_amount')->textInput() ?>
+<?= $form->field($model, 'total_settlement_amount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_settlement_amount)
+]) ?>
 
-<?= $form->field($model, 'total_revenue')->textInput() ?>
+<?= $form->field($model, 'total_revenue')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_revenue)
+]) ?>
 
-<?= $form->field($model, 'subtotal_after_seller_discounts')->textInput() ?>
+<?= $form->field($model, 'subtotal_after_seller_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->subtotal_after_seller_discounts)
+]) ?>
 
-<?= $form->field($model, 'subtotal_before_discounts')->textInput() ?>
+<?= $form->field($model, 'subtotal_before_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->subtotal_before_discounts)
+]) ?>
 
-<?= $form->field($model, 'seller_discounts')->textInput() ?>
+<?= $form->field($model, 'seller_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->seller_discounts)
+]) ?>
 
-<?= $form->field($model, 'refund_subtotal_after_seller_discounts')->textInput() ?>
+<?= $form->field($model, 'refund_subtotal_after_seller_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_subtotal_after_seller_discounts)
+]) ?>
 
-<?= $form->field($model, 'refund_subtotal_before_seller_discounts')->textInput() ?>
+<?= $form->field($model, 'refund_subtotal_before_seller_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_subtotal_before_seller_discounts)
+]) ?>
 
-<?= $form->field($model, 'refund_of_seller_discounts')->textInput() ?>
+<?= $form->field($model, 'refund_of_seller_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_of_seller_discounts)
+]) ?>
 
-<?= $form->field($model, 'total_fees')->textInput() ?>
+<?= $form->field($model, 'total_fees')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->total_fees)
+]) ?>
 
 <?= $form->field($model, 'tiktok_shop_commission_fee')->textarea(['rows' => 1]) ?>
 
-<?= $form->field($model, 'flat_fee')->textInput() ?>
+<?= $form->field($model, 'flat_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->flat_fee)
+]) ?>
 
-<?= $form->field($model, 'sales_fee')->textInput() ?>
+<?= $form->field($model, 'sales_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->sales_fee)
+]) ?>
 
-<?= $form->field($model, 'mall_service_fee')->textInput() ?>
+<?= $form->field($model, 'mall_service_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->mall_service_fee)
+]) ?>
 
-<?= $form->field($model, 'payment_fee')->textInput() ?>
+<?= $form->field($model, 'payment_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->payment_fee)
+]) ?>
 
-<?= $form->field($model, 'shipping_cost')->textInput() ?>
+<?= $form->field($model, 'shipping_cost')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_cost)
+]) ?>
 
-<?= $form->field($model, 'shipping_costs_passed_on_to_the_logistics_provider')->textInput() ?>
+<?= $form->field($model, 'shipping_costs_passed_on_to_the_logistics_provider')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_costs_passed_on_to_the_logistics_provider)
+]) ?>
 
-<?= $form->field($model, 'shipping_cost_borne_by_the_platform')->textInput() ?>
+<?= $form->field($model, 'shipping_cost_borne_by_the_platform')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_cost_borne_by_the_platform)
+]) ?>
 
-<?= $form->field($model, 'shipping_cost_paid_by_the_customer')->textInput() ?>
+<?= $form->field($model, 'shipping_cost_paid_by_the_customer')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_cost_paid_by_the_customer)
+]) ?>
 
-<?= $form->field($model, 'refunded_shipping_cost_paid_by_the_customer')->textInput() ?>
+<?= $form->field($model, 'refunded_shipping_cost_paid_by_the_customer')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refunded_shipping_cost_paid_by_the_customer)
+]) ?>
 
-<?= $form->field($model, 'return_shipping_costs_passed_on_to_the_customer')->textInput() ?>
+<?= $form->field($model, 'return_shipping_costs_passed_on_to_the_customer')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->return_shipping_costs_passed_on_to_the_customer)
+]) ?>
 
-<?= $form->field($model, 'shipping_cost_subsidy')->textInput() ?>
+<?= $form->field($model, 'shipping_cost_subsidy')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->shipping_cost_subsidy)
+]) ?>
 
-<?= $form->field($model, 'affiliate_commission')->textInput() ?>
+<?= $form->field($model, 'affiliate_commission')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->affiliate_commission)
+]) ?>
 
-<?= $form->field($model, 'affiliate_partner_commission')->textInput() ?>
+<?= $form->field($model, 'affiliate_partner_commission')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->affiliate_partner_commission)
+]) ?>
 
-<?= $form->field($model, 'affiliate_shop_ads_commission')->textInput() ?>
+<?= $form->field($model, 'affiliate_shop_ads_commission')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->affiliate_shop_ads_commission)
+]) ?>
 
-<?= $form->field($model, 'sfp_service_fee')->textInput() ?>
+<?= $form->field($model, 'sfp_service_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->sfp_service_fee)
+]) ?>
 
-<?= $form->field($model, 'live_specials_service_fee')->textInput() ?>
+<?= $form->field($model, 'live_specials_service_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->live_specials_service_fee)
+]) ?>
 
-<?= $form->field($model, 'bonus_cashback_service_fee')->textInput() ?>
+<?= $form->field($model, 'bonus_cashback_service_fee')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->bonus_cashback_service_fee)
+]) ?>
 
-<?= $form->field($model, 'ajustment_amount')->textInput() ?>
+<?= $form->field($model, 'ajustment_amount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->ajustment_amount)
+]) ?>
 
 <?= $form->field($model, 'related_order_id')->textInput(['maxlength' => true]) ?>
 
 <?php // $form->field($model, '_')->textarea(['rows' => 1]) ?>
 
-<?= $form->field($model, 'customer_payment')->textInput() ?>
+<?= $form->field($model, 'customer_payment')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->customer_payment)
+]) ?>
 
-<?= $form->field($model, 'customer_refund')->textInput() ?>
+<?= $form->field($model, 'customer_refund')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->customer_refund)
+]) ?>
 
-<?= $form->field($model, 'seller_co_funded_voucher_discount')->textInput() ?>
+<?= $form->field($model, 'seller_co_funded_voucher_discount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->seller_co_funded_voucher_discount)
+]) ?>
 
-<?= $form->field($model, 'refund_of_seller_co_funded_voucher_discount')->textInput() ?>
+<?= $form->field($model, 'refund_of_seller_co_funded_voucher_discount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_of_seller_co_funded_voucher_discount)
+]) ?>
 
-<?= $form->field($model, 'platform_discounts')->textInput() ?>
+<?= $form->field($model, 'platform_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->platform_discounts)
+]) ?>
 
-<?= $form->field($model, 'refund_of_platform_discounts')->textInput() ?>
+<?= $form->field($model, 'refund_of_platform_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_of_platform_discounts)
+]) ?>
 
-<?= $form->field($model, 'platform_co_funded_voucher_discounts')->textInput() ?>
+<?= $form->field($model, 'platform_co_funded_voucher_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->platform_co_funded_voucher_discounts)
+]) ?>
 
-<?= $form->field($model, 'refund_of_platform_co_funded_voucher_discounts')->textInput() ?>
+<?= $form->field($model, 'refund_of_platform_co_funded_voucher_discounts')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->refund_of_platform_co_funded_voucher_discounts)
+]) ?>
 
-<?= $form->field($model, 'seller_shipping_cost_discount')->textInput() ?>
+<?= $form->field($model, 'seller_shipping_cost_discount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->seller_shipping_cost_discount)
+]) ?>
 
 <?= $form->field($model, 'estimated_package_weight_g')->textInput() ?>
 

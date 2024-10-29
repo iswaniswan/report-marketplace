@@ -56,9 +56,13 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'fee_name')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'amount_include_tax')->textInput() ?>
+<?= $form->field($model, 'amount_include_tax')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->amount_include_tax)
+]) ?>
 
-<?= $form->field($model, 'vat_amount')->textInput() ?>
+<?= $form->field($model, 'vat_amount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->vat_amount)
+]) ?>
 
 <?= $form->field($model, 'release_status')->textInput(['maxlength' => true]) ?>
 
@@ -76,7 +80,9 @@ if (@$mode == Mode::READ) {
 
 <?= $form->field($model, 'lazada_sku')->textInput(['maxlength' => true]) ?>
 
-<?= $form->field($model, 'wht_amount')->textInput() ?>
+<?= $form->field($model, 'wht_amount')->textInput([
+    'value' => Yii::$app->formatter->asDecimal($model->wht_amount)
+]) ?>
 
 <?= $form->field($model, 'wht_included_in_amount')->textInput(['maxlength' => true]) ?>
 
