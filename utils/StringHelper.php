@@ -74,5 +74,18 @@ class StringHelper
         return $string;
     }
 
+    public static function trimDateToMonthToDay($dateString, $excludeDays=[])
+    {
+        $date = strtotime($dateString);
+        $day = date('d', $date);
+        
+        // If the date is the first or last day of the month, include the month abbreviation.
+        if ($day === '01' || $day === date('t', $date) || in_array($day, $excludeDays)) {
+            return date('M d', $date);
+        }
+    
+        // Otherwise, just return the day.
+        return $day;
+    }
 
 }

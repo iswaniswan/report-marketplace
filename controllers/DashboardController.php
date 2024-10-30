@@ -222,12 +222,36 @@ class DashboardController extends \yii\web\Controller
         // echo '<pre>'; var_dump($mergedData); echo '</pre>'; die();
         // $lazada = [];
 
+        /** data chart */
+        $dates = [];
+        $jumlahTransaksi = [];
+        $jumlah = [];
+        $amountHjp = [];
+        $amountNet = [];
+
+        foreach ($mergedData as $date => $values) {
+            $dates[] = StringHelper::trimDateToMonthToDay($date, ['15']);
+            $jumlahTransaksi[] = $values['jumlah_transaksi'] ?? 0;
+            $jumlah[] = $values['jumlah'] ?? 0;
+            $amountHjp[] = $values['amount_hjp'] ?? 0;
+            $amountNet[] = $values['amount_net'] ?? 0;
+        }
+
+        $dataChart = [
+            'dates' => $dates,
+            'jumlahTransaksi' => $jumlahTransaksi,
+            'jumlah' => $jumlah,
+            'amountHjp' => $amountHjp,
+            'amountNet' => $amountNet
+        ];
+
         $this->layout = 'main';
         return $this->render('index', [
             'periode' => $periode,
             'channel' => $channel,
             'summaryByDateRange' => $mergedData,
-            'summaryTotal' => $mergedTotal
+            'summaryTotal' => $mergedTotal,
+            'dataChart' => $dataChart
         ]);
     }
 

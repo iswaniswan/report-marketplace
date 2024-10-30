@@ -14,6 +14,12 @@ $summaryTotal = (object) @$summaryTotal ?? null;
 
 $color = ($channel == null) ? 'danger' : TableUpload::getListColorTheme()[$channel];
 
+$style = <<<CSS
+    #chart-wrapper {
+        margin-bottom: 2rem;
+    }
+CSS;
+$this->registerCss($style);
 
 ?>
 <h4 class="text-secondary mb-4"></h4>
@@ -117,6 +123,75 @@ $color = ($channel == null) ? 'danger' : TableUpload::getListColorTheme()[$chann
         </div>
     </div>
 </form>
+
+<div id="chart-wrapper">
+<?php
+/* default chart */
+use miloschuman\highcharts\Highcharts;
+
+$titleChart = 'Semua Channel';
+if ($channel != null) {
+    $titleChart = TableUpload::getListChannel()[$channel];
+    $titleChart = ucwords($titleChart);
+}
+
+echo Highcharts::widget([
+    'options' => [
+        'chart' => [
+            'type' => 'column'
+        ],
+        'title' => [
+            'text' => $titleChart
+        ],
+        'xAxis' => [
+            'categories' => $dataChart['dates'],
+            'crosshair' => true
+        ],
+        'yAxis' => [
+            [
+                'title' => ['text' => 'Amount HJP/ Amount Net'],
+                'opposite' => false,
+            ],
+            [
+                'title' => ['text' => 'Jumlah/Jumlah Transaksi'],
+                'opposite' => true,
+            ]
+        ],
+        'series' => [
+            [
+                'type' => 'column',
+                'name' => 'Amount Net',
+                'data' => $dataChart['amountNet'],
+                'yAxis' => 0,
+            ],
+            [
+                'type' => 'column',
+                'name' => 'Amount HJP',
+                'data' => $dataChart['amountHjp'],
+                'yAxis' => 0,
+            ],
+            [
+                'type' => 'line',
+                'name' => 'Jumlah Transaksi',
+                'data' => $dataChart['jumlahTransaksi'],
+                'yAxis' => 1,
+                'marker' => [
+                    'enabled' => true,
+                ]
+            ],
+            [
+                'type' => 'line',
+                'name' => 'Jumlah',
+                'data' => $dataChart['jumlah'],
+                'yAxis' => 1,
+                'marker' => [
+                    'enabled' => true,
+                ]
+            ],
+        ]
+    ]
+]) ?>
+</div>
 
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
@@ -233,3 +308,19 @@ $color = ($channel == null) ? 'danger' : TableUpload::getListColorTheme()[$chann
         </div>
     </div>
 </div>
+
+
+<?php 
+
+$script = <<<JS
+
+    $('#btn-clear').on('click', function() {
+        $('#periode').val('');
+        $('#channel').val('');
+    })
+
+JS;
+
+$this->registerJs($script, \yii\web\View::POS_END);
+
+?>
