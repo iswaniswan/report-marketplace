@@ -100,7 +100,7 @@ if (@$mode == Mode::READ) {
                     <div class="mb-3 row field-offline-terbilang" style="padding:unset">
                         <label class="col-2" for="offline-terbilang">Terbilang</label>
                         <div class="col">
-                            <textarea name="terbilang" id="terbilang" rows="2" class="form-control" readonly></textarea>
+                            <textarea name="terbilang" id="terbilang" rows="2" class="form-control font-italic font-weight-bold" readonly></textarea>
                             <div class="invalid-feedback "></div>
                         </div>
                     </div>
@@ -218,7 +218,7 @@ $script = <<<JS
             const subTotal = hitungSubtotal('#offline-quantity', '#offline-harga_satuan');
             $("#offline-subtotal").val(subTotal);
             const _terbilang = terbilang(subTotal);
-            $('#terbilang').val(_terbilang + "Rupiah");
+            $('#terbilang').val(_terbilang + " Rupiah");
         })
     })
 
