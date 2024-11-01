@@ -35,7 +35,7 @@ CSS;
 
 // $this->registerCss($style);
 
-// var_dump($fileSource);
+// var_dump($code);
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
@@ -62,6 +62,9 @@ echo \app\widgets\Breadcrumbs::widget([
                                 <?php foreach (TableUpload::getList() as $key => $value) { ?>
                                     <?php if ($value == 'ginee') {continue;} ?>
                                     <?php $isSelected = (@$fileSource->id_table != null && $fileSource->id_table == $key) ? 'selected' : ''; ?>
+                                    <?php if (@$code != null && $code == $value) {
+                                        $isSelected = 'selected';
+                                    } ?>
                                     <option value="<?= $key ?>" <?= $isSelected ?>><?= $value ?></option>
                                 <?php } ?>
                             </select>
@@ -72,6 +75,10 @@ echo \app\widgets\Breadcrumbs::widget([
                             <label for="periode">Periode</label>
                             <?php $periode = ''; if (@$fileSource->month != null && @$fileSource->year != null) {
                                 $periode = $fileSource->year . '-' . str_pad($fileSource->month, 2, '0', STR_PAD_LEFT);
+                            } ?>
+
+                            <?php if (@$year != null && @$month != null) {
+                                $periode = $year . '-' . sprintf('%02d', $month);
                             } ?>
                             <input type="month" id="periode" name="FileUploadForm[periode]" min="2020-01" max="2030-12" value="<?= $periode ?>" class="form-control" onclick="this.showPicker();">
                         </div>
@@ -128,7 +135,7 @@ echo \app\widgets\Breadcrumbs::widget([
                     ]
                 ]); ?>
 
-                <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['index'], ['class' => 'btn btn-info mb-1 mt-4']) ?>
+                <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', $referrer, ['class' => 'btn btn-info mb-1 mt-4']) ?>
                 <?php ActiveForm::end(); ?>
             </div>            
         </div>

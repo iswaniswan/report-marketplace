@@ -26,6 +26,7 @@ echo \app\widgets\Breadcrumbs::widget([
 <div class="row mb-4">
     <div class="container-fluid">
         <div class="dt-button-wrapper">
+            <?= Html::a('<i class="ti-calendar mr-2"></i> View', ['index-calendar'], ['class' => 'btn btn-purple mb-1']) ?>
             <?= Html::a('<i class="ti-plus mr-2"></i> Add', ['upload'], ['class' => 'btn btn-primary mb-1']) ?>
             <?= Html::a('<i class="ti-printer mr-2"></i> Print', ['#'], ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
             <div class="btn-group mr-1">

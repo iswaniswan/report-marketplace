@@ -54,6 +54,24 @@ class FileSourceController extends Controller
         ]);
     }
 
+    public function actionIndexCalendar($year=null)
+    {
+        $searchModel = new FileSourceSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        if ($year == null) {
+            $year = date('Y');
+        }
+        $listCodeName = FileSource::getListCodeName($year);
+
+        return $this->render('index-calendar', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'listCodeName' => $listCodeName,
+            'year' => $year
+        ]);
+    }
+
     /**
      * Displays a single FileSource model.
      * @param int $id ID
@@ -151,6 +169,62 @@ class FileSourceController extends Controller
         ]);
     }
 
+    public function actionUploadCalendar($code_name=null, $year=null, $month=null, $code=null)
+    {        
+        $model = new FileUploadForm();
+        $fileSource = new FileSource();
+        if ($code_name != null) {
+            $fileSource = FileSource::find()->where([
+                'code_name' => $code_name
+            ])->one();
+        }
+
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+            
+            $filename = $model->file->baseName . '.'. $model->file->extension;
+            $codeName = $model->getCodeName();
+            $fileSourceExists = FileSource::isFileExists($codeName);
+
+            if ($fileSourceExists) {                    
+                $fileSourceExists->updateAttributes([
+                    'date_updated' => date('Y-m-d H:i:s')
+                ]);
+            } else {   
+                $fileSource = new FileSource();
+                $fileSource->id_table = $model->id_table;
+                $fileSource->periode = $model->periode;
+                $fileSource->filename = $filename;
+                $fileSource->path = $model->path;
+                $code_name = TableUpload::getList()[$fileSource->id_table];
+                $fileSource->code_name = $code_name . $fileSource->getYear() . $fileSource->getMonth();
+                if ($fileSource->save()) {
+                    $fileSourceExists = $fileSource;
+                }
+            }
+            
+            $model->id_file_source = $fileSourceExists->id;
+            // file is uploaded successfully
+            if ($model->upload()) {
+                Yii::$app->session->setFlash('success', 'File uploaded successfully.');
+                return $this->redirect(['index']);
+            } else {
+                $fileSourceExists->delete();
+                // var_dump($model->errors); die();
+                Yii::$app->session->setFlash('error', 'Terjadi kesalahan');
+            }
+        }
+
+        return $this->render('upload', [
+            'model' => $model,
+            'fileSource' => $fileSource,
+            'referrer' => $this->request->referrer,
+            'year' => $year,
+            'month' => $month,
+            'code' => $code
+        ]);
+    }
+
     /**
      * Deletes an existing FileSource model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -236,7 +310,8 @@ class FileSourceController extends Controller
 
         return $this->render('upload', [
             'model' => $model,
-            'fileSource' => $fileSource
+            'fileSource' => $fileSource,
+            'referrer' => $this->request->referrer
         ]);
     }
 

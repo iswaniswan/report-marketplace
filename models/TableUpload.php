@@ -73,6 +73,19 @@ class TableUpload extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getListUpload()
+    {
+        return [
+            static::LAZADA => 'lazada',
+            static::LAZADA_INCOME => 'lazada income',
+            static::SHOPEE => 'shopee',
+            static::SHOPEE_INCOME => 'shopee income',
+            static::TIKTOK => 'tiktok',
+            static::TIKTOK_INCOME => 'tiktok income',
+            static::TOKOPEDIA => 'tokopedia',
+        ];
+    }
+
     public static function getCountRows($idTable, $formatted=false)
     {
         $count = 0;

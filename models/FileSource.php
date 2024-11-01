@@ -96,4 +96,15 @@ class FileSource extends \yii\db\ActiveRecord
         return parent::beforeSave($insert);
     }
 
+    public static function getListCodeName($year=null)
+    {
+        $query = static::find();
+
+        if ($year != null) {
+            return $query->where(['year' => $year])->select('code_name')->column();
+        }   
+        
+        return $query->select('code_name')->column();
+    }
+
 }
