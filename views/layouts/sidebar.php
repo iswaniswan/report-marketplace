@@ -44,6 +44,12 @@ $itemsAdmin = [
                     ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
                 ],
             ],
+
+            ['label' => 'Offline', 'items' => [
+                    ['label' => 'Summary', 'url' =>['/offline-report/index-summary']],
+                    ['label' => 'Tabel', 'url' =>['/offline-report/index-serverside']],
+                ],
+            ],
             
         ]
     ],
