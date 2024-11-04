@@ -75,8 +75,8 @@ class LazadaController extends Controller
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
-        // $summaryByDateRange = Lazada::getSummaryByDateRange($date_start, $date_end);
-        // $summaryTotal = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        $summaryByDateRange = Lazada::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
 
         // $jumlahTransaksi = Tiktok::getCountUnique('no_pesanan', [
         //     'status_pesanan' => 'Selesai'
@@ -86,8 +86,8 @@ class LazadaController extends Controller
             'periode' => $periode,
             'date_start' => $date_start,
             'date_end' => $date_end,
-            // 'summaryByDateRange' => $summaryByDateRange,
-            // 'summaryTotal' => $summaryTotal,
+            'summaryByDateRange' => $summaryByDateRange,
+            'summaryTotal' => $summaryTotal,
         ]);
     }
 

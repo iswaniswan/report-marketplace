@@ -29,7 +29,7 @@ if ($periode == null) {
 
 
 // var_dump($summaryTotal[0]); die();
-// $summaryTotal = (object) $summaryTotal[0];
+$summaryTotal = (object) $summaryTotal[0];
 ?>
 
 <form action="<?= Url::to(['lazada/index-summary']) ?>" method="GET">
@@ -84,7 +84,11 @@ if ($periode == null) {
         <div class="card-box tilebox-two">
             <i class="icon-paypal float-right text-primary"></i>
             <h6 class="text-purple text-uppercase">Fee Marketplace</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace) ?></span></h3>
+            <?php $feeMarketplace = @$summaryTotal->fee_marketplace; 
+            if ($feeMarketplace < 0) {
+                $feeMarketplace = abs($feeMarketplace);
+            } ?>
+            <h3><span data-plugin="counterup"><?= number_format($feeMarketplace) ?></span></h3>
         </div>
     </div>   
     <div class="col-xl-3 col-md-6">
@@ -92,7 +96,7 @@ if ($periode == null) {
             <i class="icon-paypal float-right text-primary"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
             <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
-                <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
+                <h3><span data-plugin="counterup"><?= number_format(@$feeMarketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
             <?php } ?>
         </div>
     </div> 
@@ -115,7 +119,6 @@ if ($periode == null) {
     </div>   
 </div>
 
-<?php /*
 <div class="row">
     <div class="col-12">
         <div class="card-box">
@@ -181,7 +184,7 @@ if ($periode == null) {
         </div>
     </div>
 </div>
-*/ ?>
+
 
 <?php
 

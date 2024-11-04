@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Lazada;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -221,6 +222,53 @@ class DashboardController extends \yii\web\Controller
         
         // echo '<pre>'; var_dump($mergedData); echo '</pre>'; die();
         // $lazada = [];
+        if ($channel == null || $channel == TableUpload::LAZADA) {
+            $summaryChannel = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+            foreach (@$summaryChannel as $data) { $data = (array) $data; 
+                // total card
+                if (!isset($mergedTotal['jumlah_transaksi'])) {
+                    $mergedTotal = [
+                        "jumlah_transaksi" => (int) $data['jumlah_transaksi'],
+                        "jumlah" => (int) $data['quantity'],
+                        "amount_hjp" => (int) $data['amount_hjp'],
+                        "fee_marketplace" => (int) $data['fee_marketplace'],
+                        "amount_net" => (int) $data['amount_net']
+                    ];
+                } else {                    
+                    $mergedTotal['jumlah_transaksi'] += (int) $data['jumlah_transaksi'];
+                    $mergedTotal['jumlah'] += (int) $data['quantity'];
+                    $mergedTotal['amount_hjp'] += (int) $data['amount_hjp'];
+                    $mergedTotal['fee_marketplace'] += (int) $data['fee_marketplace'];
+                    $mergedTotal['amount_net'] += (int) $data['amount_net'];                    
+                }
+            }
+
+            $summaryChannel = Lazada::getSummaryByDateRange($date_start, $date_end);
+            foreach (@$summaryChannel as $data) { $data = (array) $data;
+
+                // standarized key name
+                $date = $data["tanggal"];
+                if (!isset($mergedData[$date])) {
+                    $mergedData[$date] = [
+                        "waktu_pesanan_dibuat" => $date,
+                        "jumlah_transaksi" => (int) $data['jumlah_transaksi'],
+                        "jumlah" => (int) $data['quantity'],
+                        "amount_hjp" => (int) $data['amount_hjp'],
+                        "fee_marketplace" => (int) $data['fee_marketplace'],
+                        "amount_net" => (int) $data['amount_net']
+                    ];
+                } else {
+                    $mergedData[$date] = [
+                        "waktu_pesanan_dibuat" => $date,
+                        "jumlah_transaksi" => $mergedData[$date]['jumlah_transaksi'] += (int) $data['jumlah_transaksi'],
+                        "jumlah" => $mergedData[$date]['jumlah'] += (int) $data['quantity'],
+                        "amount_hjp" => $mergedData[$date]['amount_hjp'] += (int) $data['amount_hjp'],
+                        "fee_marketplace" => $mergedData[$date]['fee_marketplace'] += (int) $data['fee_marketplace'],
+                        "amount_net" => $mergedData[$date]['amount_net'] += (int) $data['amount_net']
+                    ];
+                }
+            }  
+        }
 
         /** data chart */
         $dates = [];
