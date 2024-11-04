@@ -223,13 +223,13 @@ class Lazada extends \yii\db\ActiveRecord
                         INNER JOIN (
                             SELECT
                                 order_number,
-                                SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS payment_fee,
-                                SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS item_price_credit,
-                                SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS commission,
-                                SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS promotional_charges_vouchers,
-                                SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS free_shipping_max_fee,
-                                SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS campaign_fee,
-                                SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS lazcoins_discount_promotion_fee
+                                SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS payment_fee,
+                                SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS item_price_credit,
+                                SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS commission,
+                                SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS promotional_charges_vouchers,
+                                SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS free_shipping_max_fee,
+                                SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS campaign_fee,
+                                SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS lazcoins_discount_promotion_fee
                             FROM lazada_income
                             WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                             GROUP BY 1
@@ -282,13 +282,13 @@ class Lazada extends \yii\db\ActiveRecord
                         INNER JOIN (
                             SELECT
                                 order_number,
-                                SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS payment_fee,
-                                SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS item_price_credit,
-                                SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS commission,
-                                SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS promotional_charges_vouchers,
-                                SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS free_shipping_max_fee,
-                                SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS campaign_fee,
-                                SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS INT4) ELSE 0 END) AS lazcoins_discount_promotion_fee
+                                SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS payment_fee,
+                                SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS item_price_credit,
+                                SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS commission,
+                                SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS promotional_charges_vouchers,
+                                SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS free_shipping_max_fee,
+                                SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS campaign_fee,
+                                SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS lazcoins_discount_promotion_fee
                             FROM lazada_income
                             WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                             GROUP BY 1
