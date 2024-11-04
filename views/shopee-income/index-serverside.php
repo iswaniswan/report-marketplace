@@ -68,10 +68,10 @@ $this->registerCss($style);
                     */ ?>
                     <div class="col-12">
                         <div class="form-group justify-content-start">
-                            <button class="btn btn-secondary" id="btn-clear">
+                            <button type="button" class="btn btn-secondary" id="btn-clear">
                                 <i class="ti-reload"></i> Clear
                             </button>
-                            <button class="btn btn-primary" id="btn-submit">
+                            <button type="submit" class="btn btn-primary" id="btn-submit">
                                 <i class="ti-search"></i> Submit
                             </button>
                         </div>

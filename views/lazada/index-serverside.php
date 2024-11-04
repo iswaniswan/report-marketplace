@@ -63,7 +63,7 @@ $this->registerCss($style);
                         <div class="form-group">
                             <label for="status">Status</label>
                             <select name="1[status]" id="status" class="form-control">
-                                <option value="">Pilih Status</option>
+                                <option value="">Semua Status</option>
                                 <?php foreach (Lazada::getListStatus() as $_status) { ?>
                                     <?php $isSelected = (@$status == $_status) ? 'selected' : '' ?>
                                     <option value="<?= $_status ?>" <?= $isSelected ?>><?= $_status ?></option>
@@ -87,10 +87,10 @@ $this->registerCss($style);
                     */ ?>
                     <div class="col-12">
                         <div class="form-group justify-content-start">
-                            <button class="btn btn-secondary" id="btn-clear">
+                            <button type="button" class="btn btn-secondary" id="btn-clear">
                                 <i class="ti-reload"></i> Clear
                             </button>
-                            <button class="btn btn-primary" id="btn-submit">
+                            <button type="submit" class="btn btn-primary" id="btn-submit">
                                 <i class="ti-search"></i> Submit
                             </button>
                         </div>

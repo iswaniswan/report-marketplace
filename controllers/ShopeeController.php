@@ -58,8 +58,8 @@ class ShopeeController extends Controller
     {        
         $request = Yii::$app->request->get();
         $params = [
-            'date_start' => $request[1]['date_start'] ?? null,
-            'date_end' => $request[1]['date_end'] ?? null,
+            'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
+            'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
             'status' => $request[1]['status'] ?? null,
             'channel' => $request[1]['channel'] ?? null,
         ];
