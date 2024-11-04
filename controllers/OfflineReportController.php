@@ -66,6 +66,28 @@ class OfflineReportController extends Controller
         return $this->render('index-serverside', $params);
     }
 
+    public function actionIndexSummary()
+    {        
+        $request = Yii::$app->request->get();
+        
+        /** temporary periode karena data kosong */
+        // $periode = $request[1]['periode'] ?? date('Y-m');   
+        $periode = $request[1]['periode'] ?? '2024-09';
+
+        $date_start = date('Y-m-d', strtotime($periode. '-01'));
+        $date_end = date('Y-m-t', strtotime($periode. '-01'));
+        
+        // $summaryByDateRange = Offline::getSummaryByDateRange($date_start, $date_end);
+        // $summaryTotal = Offline::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        // echo '<pre>'; var_dump($summaryByDateRange); echo '</pre>'; die();
+
+        return $this->render('index-summary', [
+            'periode' => $periode,
+            // 'summaryTotal' => $summaryTotal,
+            // 'summaryByDateRange' => $summaryByDateRange
+        ]);
+    }
+
     /**
      * Displays a single Offline model.
      * @param int $id ID
