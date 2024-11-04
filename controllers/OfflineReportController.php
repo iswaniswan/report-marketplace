@@ -57,10 +57,8 @@ class OfflineReportController extends Controller
     {        
         $request = Yii::$app->request->get();
         $params = [
-            'date_start' => $request[1]['date_start'] ?? null,
-            'date_end' => $request[1]['date_end'] ?? null,
-            'status' => $request[1]['status'] ?? null,
-            'channel' => $request[1]['channel'] ?? null,
+            'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
+            'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
         ];
 
         return $this->render('index-serverside', $params);
@@ -72,19 +70,19 @@ class OfflineReportController extends Controller
         
         /** temporary periode karena data kosong */
         // $periode = $request[1]['periode'] ?? date('Y-m');   
-        $periode = $request[1]['periode'] ?? '2024-09';
+        $periode = $request[1]['periode'] ?? '2024-10';
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
         
-        // $summaryByDateRange = Offline::getSummaryByDateRange($date_start, $date_end);
-        // $summaryTotal = Offline::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+        $summaryByDateRange = Offline::getSummaryByDateRange($date_start, $date_end);
+        $summaryTotal = Offline::getSummaryByDateRange($date_start, $date_end, $is_total=true);
         // echo '<pre>'; var_dump($summaryByDateRange); echo '</pre>'; die();
 
         return $this->render('index-summary', [
             'periode' => $periode,
-            // 'summaryTotal' => $summaryTotal,
-            // 'summaryByDateRange' => $summaryByDateRange
+            'summaryTotal' => $summaryTotal,
+            'summaryByDateRange' => $summaryByDateRange
         ]);
     }
 

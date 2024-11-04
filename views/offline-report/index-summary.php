@@ -12,13 +12,13 @@ use yii\helpers\Url;
 
 DataTableAsset::register($this);
 
-$this->title = 'Summary Penjualan Offline';
+$this->title = 'Summary Offline';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Summary Penjualan Offline'
+        'title' => 'Summary Offline'
     ],
 ]);
 
@@ -29,7 +29,7 @@ if ($periode == null) {
 
 
 // var_dump($summaryTotal[0]); die();
-// $summaryTotal = (object) $summaryTotal[0];
+$summaryTotal = (object) $summaryTotal[0];
 ?>
 
 <form action="<?= Url::to(['offline-report/index-summary']) ?>" method="GET">
@@ -80,6 +80,7 @@ if ($periode == null) {
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->quantity) ?></span></h3>
         </div>
     </div> 
+    <?php /*
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
             <i class="icon-paypal float-right text-primary"></i>
@@ -100,8 +101,17 @@ if ($periode == null) {
             <?php } ?>
         </div>
     </div> 
+    */ ?>
+    <div class="col-xl-6 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-credit-card float-right text-primary"></i>
+            <h6 class="text-success text-uppercase">Amount Net</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_net) ?></span></h3>
+        </div>
+    </div>  
 </div>
 
+<?php /*
 <div class="row mb-4"> 
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
@@ -118,66 +128,46 @@ if ($periode == null) {
         </div>
     </div>   
 </div>
+*/ ?>
 
-<?php /*
+
 <div class="row">
     <div class="col-12">
         <div class="card-box">
             <div class="table-responsive">
                 <table class="table table-hover table-bordered">
-                    <thead class="bg-info text-white">
+                    <thead class="bg-light text-dark">
                         <th style="text-align: left;">Tanggal</th>
                         <th style="text-align: center;">Jumlah Transaksi</th>
                         <th style="text-align: center;">Qty</th>
-                        <th style="text-align: center;">Amount HJP</th>
                         <th style="text-align: center;">Amount Net</th>
-                        <th style="text-align: center;">Fee Marketplace</th>
-                        <th style="text-align: center;">% Fee Marketplace</th>
                     </thead>
                     <tbody>
                         <?php 
                             $grand_jumlah_transaksi = 0;
                             $grand_quantity = 0;
-                            $grand_amount_hjp = 0;
                             $grand_amount_net = 0;
-                            $grand_fee_marketplace = 0;
                         ?>
                         <?php foreach (@$summaryByDateRange as $result) { $result = (object) $result; ?>
                             <?php 
                                 $grand_jumlah_transaksi += $result->jumlah_transaksi;
                                 $grand_quantity += $result->quantity;
-                                $grand_amount_hjp += $result->amount_hjp;
                                 $grand_amount_net += $result->amount_net;
-                                $grand_fee_marketplace += $result->fee_marketplace;
                             ?>
                             <tr>
                                 <td><?= date('d-m-Y', strtotime($result->tanggal)) ?></td>
                                 <td style="text-align: right;"><?= number_format($result->jumlah_transaksi) ?></td>
                                 <td style="text-align: right;"><?= number_format($result->quantity) ?></td>
-                                <td style="text-align: right;"><?= number_format($result->amount_hjp) ?></td>
-                                <td style="text-align: right;"><?= number_format($result->amount_net) ?></td>
-                                <td style="text-align: right;"><?= number_format($result->fee_marketplace) ?></td>
-                                <td style="text-align: right;">
-                                    <?php if ((int) @$result->amount_hjp > 0) { ?>
-                                        <?= number_format($result->fee_marketplace/$result->amount_hjp * 100, 2) ?>%
-                                    <?php } ?>
-                                </td>
+                                <td style="text-align: right;"><?= number_format($result->amount_net) ?></td>                                
                             </tr>
                         <?php } ?>
                     </tbody>
                     <tfoot>
-                        <tr class="bg-info text-white">
+                        <tr class="bg-light text-dark">
                             <th>#</th>
                             <th style="text-align: right;"><?= number_format($grand_jumlah_transaksi) ?></th>
                             <th style="text-align: right;"><?= number_format($grand_quantity) ?></th>
-                            <th style="text-align: right;"><?= number_format($grand_amount_hjp) ?></th>
                             <th style="text-align: right;"><?= number_format($grand_amount_net) ?></th>
-                            <th style="text-align: right;"><?= number_format($grand_fee_marketplace) ?></th>
-                            <th style="text-align: right;">
-                                <?php if ((int) $grand_amount_hjp > 0) { ?>
-                                    <?= number_format($grand_fee_marketplace/$grand_amount_hjp * 100, 2) ?>%
-                                <?php } ?>
-                            </th>
                         </tr>
                     </tfoot>
                 </table>
@@ -185,7 +175,6 @@ if ($periode == null) {
         </div>
     </div>
 </div>
-*/?>
 
 <?php
 

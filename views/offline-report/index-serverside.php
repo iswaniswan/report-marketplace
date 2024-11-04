@@ -146,13 +146,13 @@ if ($date_end == null) {
     $date_end = "";
 }
 
-if ($status == null) {
-    $status = "";
-}
+// if ($status == null) {
+//     $status = "";
+// }
 
-if ($channel == null) {
-    $channel = "";
-}
+// if ($channel == null) {
+//     $channel = "";
+// }
 
 $script = <<<JS
     const dtPrint = () => {
@@ -179,7 +179,6 @@ $script = <<<JS
                     // Additional data if needed
                     date_start: '$date_start',
                     date_end: '$date_end',
-                    status: '$status',
                 });
             }
         },
