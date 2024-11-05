@@ -135,6 +135,64 @@ if ($channel != null) {
     $titleChart = ucwords($titleChart);
 }
 
+// echo Highcharts::widget([
+//     'options' => [
+//         'chart' => [
+//             'type' => 'column'
+//         ],
+//         'title' => [
+//             'text' => $titleChart
+//         ],
+//         'xAxis' => [
+//             'categories' => $dataChart['dates'],
+//             'crosshair' => true
+//         ],
+//         'yAxis' => [
+//             [
+//                 'title' => ['text' => 'Amount HJP/ Amount Net'],
+//                 'opposite' => false,
+//             ],
+//             [
+//                 'title' => ['text' => 'Jumlah/Jumlah Transaksi'],
+//                 'opposite' => true,
+//             ]
+//         ],
+//         'series' => [
+//             [
+//                 'type' => 'column',
+//                 'name' => 'Amount Net',
+//                 'data' => $dataChart['amountNet'],
+//                 'yAxis' => 0,
+//             ],
+//             [
+//                 'type' => 'column',
+//                 'name' => 'Amount HJP',
+//                 'data' => $dataChart['amountHjp'],
+//                 'yAxis' => 0,
+//             ],
+//             [
+//                 'type' => 'line',
+//                 'name' => 'Jumlah Transaksi',
+//                 'data' => $dataChart['jumlahTransaksi'],
+//                 'yAxis' => 1,
+//                 'marker' => [
+//                     'enabled' => true,
+//                 ]
+//             ],
+//             [
+//                 'type' => 'line',
+//                 'name' => 'Jumlah',
+//                 'data' => $dataChart['jumlah'],
+//                 'yAxis' => 1,
+//                 'marker' => [
+//                     'enabled' => true,
+//                 ]
+//             ],
+//         ]
+//     ]
+// ])
+
+
 echo Highcharts::widget([
     'options' => [
         'chart' => [
@@ -188,9 +246,20 @@ echo Highcharts::widget([
                     'enabled' => true,
                 ]
             ],
-        ]
+            [
+                'type' => 'pie',
+                'name' => 'Amount Net',
+                'data' => $pieData,
+                'center' => ['10%', '10%'], // Adjust position to place above main chart
+                'size' => 100, // Size of the pie chart
+                'showInLegend' => true,
+                'dataLabels' => ['enabled' => false]
+            ]
+        ],
     ]
-]) ?>
+]);
+
+?>
 </div>
 
 <div class="row mb-4">
