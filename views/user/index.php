@@ -47,8 +47,8 @@ echo \app\widgets\Breadcrumbs::widget([
                 'filterModel' => $searchModel,
                 'tableOptions' => ['class' => 'table table-hover table-bordered'],
                 'clientOptions' => [
-                'dom' => 'lfrtipB',
-                'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print']
+                    'dom' => 'lfrtipB',
+                    'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print']
                 ],
                 'columns' => 
                 [

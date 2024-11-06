@@ -202,7 +202,15 @@ $script = <<<JS
             var pageInfo = table.page.info();
             // Calculate the sequence number based on the page index and page length
             $('td:eq(0)', row).html(pageInfo.start + index + 1);
-        }
+        },
+        dom: 'Bfrtip', // Include the 'B' in 'dom' to show buttons
+        buttons: [
+            { extend: 'copy', text: 'Copy' },
+            { extend: 'csv', text: 'CSV' },
+            { extend: 'excel', text: 'Excel' },
+            { extend: 'pdf', text: 'PDF' },
+            { extend: 'print', text: 'Print' }
+        ]
     });
 
     $('#btn-clear').on('click', function() {

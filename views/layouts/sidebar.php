@@ -56,6 +56,7 @@ $itemsAdmin = [
     ['label' => 'Input','header' => true],
     ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
     ['label' => 'Offline', 'icon' => 'ti-receipt', 'url' => ['/offline/index']],
+    ['label' => 'Pengaturan','header' => true],
     ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
         ['label' => 'User', 'url' =>['/user']],
         // ['label' => 'Menu', 'url' =>['/menu']],
