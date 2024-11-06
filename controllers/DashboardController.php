@@ -7,6 +7,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
+use app\models\Shopee;
 use app\models\ShopeeIncome;
 use app\models\Tokopedia;
 use app\models\Tiktok;
@@ -74,7 +75,8 @@ class DashboardController extends \yii\web\Controller
         // ];
         
         if ($channel == null || $channel == TableUpload::SHOPEE) {
-            $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+            // $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+            $summaryChannel = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data;
                 // total card
                 if (!isset($mergedTotal['jumlah_transaksi'])) {
@@ -97,7 +99,8 @@ class DashboardController extends \yii\web\Controller
             }
             
 
-            $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end);
+            // $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end);
+            $summaryChannel = Shopee::getSummaryByDateRange($date_start, $date_end);
             foreach (@$summaryChannel as $data) { $data = (array) $data;
                 $date = $data["waktu_pesanan_dibuat"];
     

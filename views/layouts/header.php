@@ -193,7 +193,7 @@ use app\components\Session;
 
     <!-- LOGO -->
     <div class="logo-box">
-        <a href="index.html" class="logo text-center logo-dark">
+        <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-dark">
                         <span class="logo-lg">
                             <img src="assets/images/logo.png" alt="" height="22">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->
@@ -204,7 +204,7 @@ use app\components\Session;
                         </span>
         </a>
 
-        <a href="index.html" class="logo text-center logo-light">
+        <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-light">
                         <span class="logo-lg">
                             <img src="assets/images/logo-light.png" alt="" height="22">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->

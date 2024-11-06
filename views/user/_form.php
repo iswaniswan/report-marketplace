@@ -53,14 +53,14 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'id_role')->textInput() ?>
 
-                    <?= $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
+                    <?php /* $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
                             'prompt' => '- Pilih Role -',
                             'required' => true,
-                    ])->label('Role') ?>
+                    ])->label('Role') */?>
 
-                    <?= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
+                    <?php // $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
+                    <?php // $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
 
                     <?php // $form->field($model, 'is_deleted')->textInput() ?>
 
