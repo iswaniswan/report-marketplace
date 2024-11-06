@@ -199,61 +199,141 @@ class Shopee extends \yii\db\ActiveRecord
 
     public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
     {
-        $query = static::find()
-            ->select([
-                'tanggal' => new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
-                'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
-                'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
-                'harga_awal' => new \yii\db\Expression(
-                    "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
-                ),
-                'total_harga_produk' => new \yii\db\Expression(
-                    "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
-                ),
-                'fee_marketplace' => new \yii\db\Expression(
-                    "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
-                     SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
-                ),
-            ])
-            ->where(['status_pesanan' => 'Selesai'])
-            ->andWhere([
-                'between',
-                new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
-                $date_start,
-                $date_end
-            ])
-            ->groupBy(new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"))
-            ->orderBy(['tanggal' => SORT_ASC])
-            ->asArray();
+        // $query = static::find()
+        //     ->select([
+        //         'tanggal' => new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+        //         'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
+        //         'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
+        //         'harga_awal' => new \yii\db\Expression(
+        //             "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
+        //         ),
+        //         'total_harga_produk' => new \yii\db\Expression(
+        //             "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
+        //         ),
+        //         'fee_marketplace' => new \yii\db\Expression(
+        //             "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
+        //              SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
+        //         ),
+        //     ])
+        //     ->where(['status_pesanan' => 'Selesai'])
+        //     ->andWhere([
+        //         'between',
+        //         new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+        //         $date_start,
+        //         $date_end
+        //     ])
+        //     ->groupBy(new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"))
+        //     ->orderBy(['tanggal' => SORT_ASC])
+        //     ->asArray();
 
         
-        if ($is_total) {
-            $query = static::find()
-                ->select([
-                    'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
-                    'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
-                    'harga_awal' => new \yii\db\Expression(
-                        "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
-                    ),
-                    'total_harga_produk' => new \yii\db\Expression(
-                        "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
-                    ),
-                    'fee_marketplace' => new \yii\db\Expression(
-                        "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
-                        SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
-                    ),
-                ])
-                ->where(['status_pesanan' => 'Selesai'])
-                ->andWhere([
-                    'between',
-                    new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
-                    $date_start,
-                    $date_end
-                ])
-                ->asArray();
-        }
+        // if ($is_total) {
+        //     $query = static::find()
+        //         ->select([
+        //             'jumlah_transaksi' => new \yii\db\Expression("COUNT(DISTINCT no_pesanan)"),
+        //             'jumlah' => new \yii\db\Expression("sum(CAST(jumlah AS UNSIGNED))"),
+        //             'harga_awal' => new \yii\db\Expression(
+        //                 "SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED))"
+        //             ),
+        //             'total_harga_produk' => new \yii\db\Expression(
+        //                 "SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2)))"
+        //             ),
+        //             'fee_marketplace' => new \yii\db\Expression(
+        //                 "(SUM(CAST(REPLACE(harga_awal, '.', '') AS DECIMAL(15, 2))  * CAST(jumlah AS UNSIGNED)) - 
+        //                 SUM(CAST(REPLACE(total_harga_produk, '.', '') AS DECIMAL(15, 2))))"
+        //             ),
+        //         ])
+        //         ->where(['status_pesanan' => 'Selesai'])
+        //         ->andWhere([
+        //             'between',
+        //             new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"),
+        //             $date_start,
+        //             $date_end
+        //         ])
+        //         ->asArray();
+        // }
     
-        return $query->all();
+        // return $query->all();
+
+
+        /* versi 2 */
+        $sql = <<<SQL
+                WITH CTE AS (
+                            /** jumlah transaksi */
+                            SELECT waktu_pesanan_dibuat, count(no_pesanan) AS jumlah_transaksi, 0 AS jumlah, 0 AS amount_hjp, sum(total_penghasilan) AS amount_net
+                            FROM shopee_income 
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                            UNION ALL 
+                            /* jumlah produk*/
+                            SELECT waktu_pesanan_dibuat, 0 AS jumlah_transaksi, sum(jumlah) AS jumlah, 0 AS amount_hjp, 0 AS amount_net
+                            FROM (
+                                    SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah
+                                    FROM shopee 
+                                    WHERE status_pesanan NOT LIKE '%Batal%'
+                                    AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    AND no_pesanan IN (
+                                                        SELECT DISTINCT no_pesanan
+                                                        FROM shopee_income 
+                                                        WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    )
+                                    GROUP BY 1
+                                    ORDER BY jumlah DESC 
+                                ) a
+                            GROUP BY 1
+                            UNION ALL 			
+                            SELECT a.waktu_pesanan_dibuat, 0 AS jumlah_transaksi, 0 AS jumlah, sum(REPLACE(total_harga_produk, '.', '')) amount_hjp, 0 AS amount_net
+                            FROM shopee_income a
+                            INNER JOIN shopee b ON b.no_pesanan = a.no_pesanan
+                            WHERE STR_TO_DATE(a.waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                AND b.status_pesanan NOT LIKE '%Batal%'
+                            GROUP BY 1
+                )
+                SELECT waktu_pesanan_dibuat, sum(jumlah_transaksi) jumlah_transaksi, sum(jumlah) jumlah, sum(amount_hjp) amount_hjp, sum(amount_net) amount_net, (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                FROM CTE a
+                GROUP BY 1
+        SQL;
+
+        if ($is_total) {
+            $sql = <<<SQL
+                    WITH CTE AS (
+                            /** jumlah transaksi */
+                            SELECT waktu_pesanan_dibuat, count(no_pesanan) AS jumlah_transaksi, 0 AS jumlah, 0 AS amount_hjp, sum(total_penghasilan) AS amount_net
+                            FROM shopee_income 
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                            UNION ALL 
+                            /* jumlah produk*/
+                            SELECT waktu_pesanan_dibuat, 0 AS jumlah_transaksi, sum(jumlah) AS jumlah, 0 AS amount_hjp, 0 AS amount_net
+                            FROM (
+                                    SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah
+                                    FROM shopee 
+                                    WHERE status_pesanan NOT LIKE '%Batal%'
+                                    AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    AND no_pesanan IN (
+                                                        SELECT DISTINCT no_pesanan
+                                                        FROM shopee_income 
+                                                        WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    )
+                                    GROUP BY 1
+                                    ORDER BY jumlah DESC 
+                                ) a
+                            GROUP BY 1
+                            UNION ALL 			
+                            SELECT a.waktu_pesanan_dibuat, 0 AS jumlah_transaksi, 0 AS jumlah, sum(REPLACE(total_harga_produk, '.', '')) amount_hjp, 0 AS amount_net
+                            FROM shopee_income a
+                            INNER JOIN shopee b ON b.no_pesanan = a.no_pesanan
+                            WHERE STR_TO_DATE(a.waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                AND b.status_pesanan NOT LIKE '%Batal%'
+                            GROUP BY 1
+                )
+                SELECT sum(jumlah_transaksi) jumlah_transaksi, sum(jumlah) jumlah, sum(amount_hjp) amount_hjp, sum(amount_net) amount_net, (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                FROM CTE a
+            SQL;
+        }
+
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
     }
     
 
