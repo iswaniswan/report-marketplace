@@ -195,23 +195,23 @@ use app\components\Session;
     <div class="logo-box">
         <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-dark">
                         <span class="logo-lg">
-                            <img src="assets/images/logo.png" alt="" height="22">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo2.png' ?>" alt="" height="22" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->
                         </span>
             <span class="logo-sm">
                             <!-- <span class="logo-lg-text-dark">U</span> -->
-                            <img src="assets/images/logo-sm.png" alt="" height="24">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo2-sm.png' ?>" alt="" height="22" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                         </span>
         </a>
 
         <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-light">
                         <span class="logo-lg">
-                            <img src="assets/images/logo-light.png" alt="" height="22">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo2.png' ?>" alt="" height="">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->
                         </span>
             <span class="logo-sm">
                             <!-- <span class="logo-lg-text-dark">U</span> -->
-                            <img src="assets/images/logo-sm-light.png" alt="" height="24">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo2-sm.png' ?>" alt="" height="">
                         </span>
         </a>
     </div>

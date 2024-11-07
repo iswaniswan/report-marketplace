@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 
-<div class="row mb-4 justify-content-center box-center">
+<div class="row mb-4 justify-content-center box-center">    
     <div class="col-md-6" style="max-width: 20rem">
         <?php $form = ActiveForm::begin([
             'id' => 'login-form',
@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="text-center">
                     <div class="d-none">
                         <a href="#">
-                            <span><img src="assets/images/logo.png" alt="" height="28"></span>
+                            <span><img src="<?= Yii::getAlias('@web').'/images/logo2.png' ?>" alt="" height="" style="width: 100%"></span>
                         </a>
                     </div>
                     <h1 class="bg-primary text-uppercase h1-icon">

@@ -63,13 +63,13 @@ echo \app\widgets\Breadcrumbs::widget([
                     'headerOptions' => ['style' => 'text-align:left;'],
                     'contentOptions' => ['style' => 'text-align:left'],
                     ],
-                [
+                /*[
                     'attribute' => 'email',
                     'format' => 'raw',
                     'headerOptions' => ['style' => 'text-align:left;'],
                     'contentOptions' => ['style' => 'text-align:left'],
                     ],
-                /*[
+                [
                     'attribute' => 'id_role',
                     'header' => 'Role',
                     'value' => function(User $model) {

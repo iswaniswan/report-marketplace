@@ -47,7 +47,7 @@ if (@$mode == Mode::READ) {
 
                     <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+                    <?php // $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
