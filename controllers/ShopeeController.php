@@ -58,8 +58,8 @@ class ShopeeController extends Controller
     {        
         $request = Yii::$app->request->get();
         $params = [
-            'date_start' => $request[1]['date_start'] ?? date('Y-m-01', strtotime('2024-09-01')),
-            'date_end' => $request[1]['date_end'] ?? date('Y-m-t', strtotime('2024-09-30')),
+            'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
+            'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
             'status' => $request[1]['status'] ?? [],
             'channel' => $request[1]['channel'] ?? null,
         ];
@@ -262,11 +262,14 @@ class ShopeeController extends Controller
                 'waktu_pesanan_dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
                 'no_pesanan' => $model->no_pesanan,
                 'status_pesanan' => $model->status_pesanan,
-                'harga_awal' => number_format($hargaAwal, 2),
-                'total_diskon' => number_format($totalDiskon, 2),
+                'nama_produk' => $model->nama_produk,
+                'nomor_referensi_sku' => $model->nomor_referensi_sku,
+                'nama_variasi' => $model->nama_variasi,
+                'harga_awal' => number_format($hargaAwal),
+                'total_diskon' => number_format($totalDiskon),
                 'jumlah_produk_di_pesan' => $model->jumlah_produk_di_pesan,
-                'total_harga_produk' => number_format($totalHargaProduk, 2),
-                'total_pembayaran' => number_format($totalPembayaran, 2),
+                'total_harga_produk' => number_format($totalHargaProduk),
+                'total_pembayaran' => number_format($totalPembayaran),
                 // 'nama_toko' => $model->nama_toko,
                 // 'nama_produk' => $model->nama_produk,
                 // 'variant_produk' => $model->variant_produk,

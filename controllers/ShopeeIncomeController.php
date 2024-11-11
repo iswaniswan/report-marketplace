@@ -274,8 +274,8 @@ class ShopeeIncomeController extends Controller
                 'waktu_pesanan_dibuat' => $model->waktu_pesanan_dibuat,
                 'no_pesanan' => $model->no_pesanan,
                 'harga_asli_produk' => number_format($model->harga_asli_produk),
-                'total_diskon_produk' => number_format($model->total_diskon_produk),
-                'total_pengeluaran' => number_format($totalPengeluaran),
+                'total_diskon_produk' => number_format(abs($model->total_diskon_produk)),
+                'total_pengeluaran' => number_format(abs($totalPengeluaran)),
                 'total_penghasilan' => number_format($model->total_penghasilan),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];

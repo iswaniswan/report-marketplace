@@ -26,12 +26,17 @@ echo \app\widgets\Breadcrumbs::widget([
 ]);
 
 $style = <<<CSS
-    #table-serverside tbody tr td:nth-child(6),
-    #table-serverside tbody tr td:nth-child(7), 
+    #table-serverside tbody tr td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     #table-serverside tbody tr td:nth-child(8),
     #table-serverside tbody tr td:nth-child(9),
     #table-serverside tbody tr td:nth-child(10),
-    #table-serverside tbody tr td:nth-child(11) {
+    #table-serverside tbody tr td:nth-child(11),
+    #table-serverside tbody tr td:nth-child(12) {
         text-align: right
     }
 
@@ -157,15 +162,15 @@ $this->registerCss($style);
     <div class="container-fluid">
         <div class="dt-button-wrapper">
             <?php // Html::a('<i class="ti-plus mr-2"></i> Add', ['create'], ['class' => 'btn btn-primary mb-1']) ?>
-            <?= Html::a('<i class="ti-printer mr-2"></i> Print', ['#'], ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
+            <?= Html::a('<i class="ti-printer mr-2"></i> Print', 'javascript:void(0)', ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
             <div class="btn-group mr-1">
                 <?= Html::a('<i class="ti-download mr-2"></i> Export', ['#'], [
                     'class' => 'btn btn-success mb-1 dropdown-toggle',
                     'data-toggle' => 'dropdown'
                 ]) ?>
                 <div class="dropdown-menu" x-placement="bottom-start">
-                    <?= Html::a('Excel', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel()']) ?>
-                    <?= Html::a('Pdf', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
+                    <?= Html::a('Excel', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel(event);']) ?>
+                    <?= Html::a('Pdf', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
                 </div>
             </div>
         </div>
@@ -183,6 +188,9 @@ $this->registerCss($style);
                             <th>#</th>
                             <th>Tanggal<br/>Pembuatan</th>
                             <th>ID Pesanan</th>
+                            <th>Nama Produk</th>
+                            <th>Nomor<br/>Referensi SKU</th>
+                            <th>Nama<br/>Variasi</th>
                             <th>Status</th>
                             <th>Harga<br/>Awal Produk</th>
                             <th>Total<br/>Diskon</th>
@@ -225,10 +233,6 @@ $countAllStatus = count(Shopee::getListStatus());
 $isAutoCheckedAll = (@$status == '' || empty(@$status) || @$status[0] == '') ? 1 : 0;
 
 $script = <<<JS
-    $('.dt-buttons button').on('click', function(e) {
-        e.preventDefault(); // Prevents reload
-    });
-
     const dtPrint = () => {
         const dtBtn = $('.btn.buttons-print');
         dtBtn.trigger('click');
@@ -261,6 +265,9 @@ $script = <<<JS
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
             { data: 'waktu_pesanan_dibuat', orderable: false},
             { data: 'no_pesanan', orderable: false},
+            { data: 'nama_produk', orderable: false, width: '250px'},
+            { data: 'nomor_referensi_sku', orderable: false},
+            { data: 'nama_variasi', orderable: false},
             { data: 'status_pesanan', orderable: false},
             { data: 'harga_awal', orderable: false},
             { data: 'total_diskon', orderable: false},
@@ -305,6 +312,7 @@ $script = <<<JS
                     }
                 }},
                 customize: function (doc) {
+                    doc.pageOrientation = 'landscape';
                     // Optional: Customize PDF document margins
                     doc.pageMargins = [10, 5, 5, 5]; // Set custom margins for left, top, right, bottom
                 }
@@ -320,12 +328,12 @@ $script = <<<JS
                         }
                         return data;
                     }
-                }}
+                }},
             }
         ],
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
         initComplete: function() {
-            $(document).on('click', '.dt-buttons button', function(e) {
+            $(document).on('click', '.buttons-excel', function(e) {
                 e.preventDefault();
             });
         }
