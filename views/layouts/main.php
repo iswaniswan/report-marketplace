@@ -4,13 +4,16 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\assets\Select2Asset;
 use app\widgets\Alert;
+use kartik\select2\Select2;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
 AppAsset::register($this);
+Select2Asset::register($this);
 \app\assets\UplonAsset::register($this);
 
 $this->registerCsrfMetaTags();

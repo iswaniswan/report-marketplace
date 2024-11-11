@@ -195,12 +195,12 @@ use app\components\Session;
     <div class="logo-box">
         <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-dark">
                         <span class="logo-lg">
-                            <img src="<?= Yii::getAlias('@web').'/images/logo2.png' ?>" alt="" height="22" style="width: 100%; object-fit: contain; transform: scale(2.5);">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="16" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->
                         </span>
             <span class="logo-sm">
                             <!-- <span class="logo-lg-text-dark">U</span> -->
-                            <img src="<?= Yii::getAlias('@web').'/images/logo2-sm.png' ?>" alt="" height="22" style="width: 100%; object-fit: contain; transform: scale(2.5);">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="16" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                         </span>
         </a>
 
@@ -216,13 +216,18 @@ use app\components\Session;
         </a>
     </div>
 
-    <ul class="list-unstyled topnav-menu topnav-menu-left m-0">
-        <li>
+    <ul class="list-unstyled topnav-menu topnav-menu-left m-0 d-flex" style="display: flex; justify-content: center; text-align: center; align-items: center;">
+        <li class="list-item">
             <button class="button-menu-mobile waves-effect waves-light">
                 <i class="mdi mdi-menu text-white"></i>
             </button>
         </li>
-
+        <li class="list-item" style="flex-grow: 1;">
+            <div class="container">
+                <img src="<?= Yii::getAlias('@web').'/images/logo3-text.jpeg' ?>" alt="user-image" style="height: 56px; border-radius: 8px" class="topnav-logo">
+                <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="user-image" style="height: 56px; border-radius: 8px;" class="topnav-logo-small">
+            </div>
+        </li>
         <?php /*
         <li class="d-none d-sm-block">
             <form class="app-search">
@@ -241,3 +246,62 @@ use app\components\Session;
         */ ?>
     </ul>
 </div>
+
+
+<style>
+    /* Default styling for smaller screens */
+.topnav-logo {
+    max-height: 40px;
+    border-radius: 8px;
+}
+
+.topnav-logo-small {
+    display: none;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 40px;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) {
+    .topnav-logo {
+        /* max-height: 48px; */
+        display: none;
+    }
+    .topnav-logo-small {
+        /* max-height: 48px; */
+        display: block;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .topnav-logo {
+        max-height: 56px;
+    }
+    .topnav-logo-small {
+        display: none;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    .topnav-logo {
+        max-height: 64px;
+    }
+    .topnav-logo-small {
+        display: none;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+    .topnav-logo {
+        max-height: 72px;
+    }
+    .topnav-logo-small {
+        display: none;
+    }
+}
+
+</style>
