@@ -58,11 +58,13 @@ class ShopeeController extends Controller
     {        
         $request = Yii::$app->request->get();
         $params = [
-            'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
-            'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'date_start' => $request[1]['date_start'] ?? date('Y-m-01', strtotime('2024-09-01')),
+            'date_end' => $request[1]['date_end'] ?? date('Y-m-t', strtotime('2024-09-30')),
+            'status' => $request[1]['status'] ?? [],
             'channel' => $request[1]['channel'] ?? null,
         ];
+
+        // var_dump( $request[1]['status']);die();
 
         return $this->render('index-serverside', $params);
     }
@@ -206,14 +208,14 @@ class ShopeeController extends Controller
     public function actionServerside()
     {
         $searchModel = new ShopeeSearch();
-        $searchModel->isServerside = true;
+        $searchModel->isServerside = true;        
 
         // optional parameter
         // $searchModel->year = Yii::$app->request->get('year') ?? null;
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         $searchModel->channel = Yii::$app->request->get('channel') ?? null;
         
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -250,16 +252,21 @@ class ShopeeController extends Controller
         $number = $page * $pageSize; // Adjust the sequence number based on the page
         $data = [];
         foreach ($dataProvider->getModels() as $model) {
+            $hargaAwal = str_replace(".", "", $model->harga_awal);
+            $totalDiskon = str_replace(".", "", $model->total_diskon);
+            $totalHargaProduk = str_replace(".", "", $model->total_harga_produk);
+            $totalPembayaran = str_replace(".", "", $model->total_pembayaran);
+
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
                 'waktu_pesanan_dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
                 'no_pesanan' => $model->no_pesanan,
                 'status_pesanan' => $model->status_pesanan,
-                'harga_awal' => number_format($model->harga_awal, 2),
-                'total_diskon' => number_format($model->total_diskon, 2),
+                'harga_awal' => number_format($hargaAwal, 2),
+                'total_diskon' => number_format($totalDiskon, 2),
                 'jumlah_produk_di_pesan' => $model->jumlah_produk_di_pesan,
-                'total_harga_produk' => number_format($model->total_harga_produk, 2),
-                'total_pembayaran' => number_format($model->total_pembayaran, 2),
+                'total_harga_produk' => number_format($totalHargaProduk, 2),
+                'total_pembayaran' => number_format($totalPembayaran, 2),
                 // 'nama_toko' => $model->nama_toko,
                 // 'nama_produk' => $model->nama_produk,
                 // 'variant_produk' => $model->variant_produk,

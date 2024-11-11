@@ -138,6 +138,11 @@ if ($date_end == null) {
 }
 
 $script = <<<JS
+    $(document).on('click', '.dt-buttons button', function(e) {
+        e.preventDefault(); // Prevents reload
+    });
+
+    
     const dtPrint = () => {
         const dtBtn = $('.btn.buttons-print');
         dtBtn.trigger('click');
@@ -184,14 +189,55 @@ $script = <<<JS
             // Calculate the sequence number based on the page index and page length
             $('td:eq(0)', row).html(pageInfo.start + index + 1);
         },
-        dom: 'Bfrtip', // Include the 'B' in 'dom' to show buttons
+        dom: 'Blfrtip', // Include the 'B' in 'dom' to show buttons
         buttons: [
             { extend: 'copy', text: 'Copy' },
             { extend: 'csv', text: 'CSV' },
-            { extend: 'excel', text: 'Excel' },
-            { extend: 'pdf', text: 'PDF' },
-            { extend: 'print', text: 'Print' }
-        ]
+            { extend: 'excel', text: 'Excel', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }},
+            },
+            { extend: 'pdf', text: 'PDF', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }},
+                customize: function (doc) {
+                    // Optional: Customize PDF document margins
+                    doc.pageMargins = [10, 5, 5, 5]; // Set custom margins for left, top, right, bottom
+                }
+            },
+            { extend: 'print', text: 'Print', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }}
+            }
+        ],
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
     });
 
     $('#btn-clear').on('click', function() {

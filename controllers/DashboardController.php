@@ -64,6 +64,7 @@ class DashboardController extends \yii\web\Controller
         $mergedTotal = [];
         $mergedData = [];
         $summaryChannel = [];
+        $footerMarketplace = [];
 
         // data pie chart
         // ['name' => 'Tokopedia', 'y' => array_sum($dataChart['jumlahTransaksi'])],
@@ -73,7 +74,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryByDateRange' => ShopeeIncome::getSummaryByDateRange($date_start, $date_end),
         //     'summaryTotal' => ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true)
         // ];
-        
+        $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'shopee');
         if ($channel == null || $channel == TableUpload::SHOPEE) {
             // $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             $summaryChannel = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
@@ -131,6 +132,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryByDateRange' => Tokopedia::getSummaryByDateRange($date_start, $date_end),
         //     'summaryTotal' => Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true),
         // ];
+        $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'tokopedia');
         if ($channel == null || $channel == TableUpload::TOKOPEDIA) {
             $summaryChannel = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data;
@@ -185,6 +187,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryByDateRange' => Tiktok::getSummaryByDateRange($date_start, $date_end),
         //     'summaryTotal' => Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true),
         // ];
+        $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'tiktok');
         if ($channel == null || $channel == TableUpload::TIKTOK) {
             $summaryChannel = Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
@@ -237,6 +240,7 @@ class DashboardController extends \yii\web\Controller
         
         // echo '<pre>'; var_dump($mergedData); echo '</pre>'; die();
         // $lazada = [];
+        $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'lazada');
         if ($channel == null || $channel == TableUpload::LAZADA) {
             $summaryChannel = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
@@ -271,7 +275,7 @@ class DashboardController extends \yii\web\Controller
                         "jumlah_transaksi" => (int) $data['jumlah_transaksi'],
                         "jumlah" => (int) $data['quantity'],
                         "amount_hjp" => (int) $data['amount_hjp'],
-                        "fee_marketplace" => (int) $data['fee_marketplace'],
+                        "fee_marketplace" => (int) abs($data['fee_marketplace']),
                         "amount_net" => (int) $data['amount_net']
                     ];
                 } else {
@@ -288,6 +292,7 @@ class DashboardController extends \yii\web\Controller
         }
 
         // $offline = [];
+        $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'offline');
         if ($channel == null || $channel == TableUpload::OFFLINE) {
             $summaryChannel = OFFLINE::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
@@ -368,9 +373,93 @@ class DashboardController extends \yii\web\Controller
             'summaryByDateRange' => $mergedData,
             'summaryTotal' => $mergedTotal,
             'dataChart' => $dataChart,
-            'pieData' => $pieData
+            'pieData' => $pieData,
+            'footerMarketplace' => $footerMarketplace
         ]);
     }
 
+    private function getDataFooterMarketplace($date_start, $date_end, $marketplace='')
+    {
+        switch (true) {
+            case $marketplace == 'shopee': {
+                $query = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+                $data = (array) $query[0];
+                return [
+                    'shopee' => [
+                        'jumlah_transaksi' => (int) $data['jumlah_transaksi'],
+                        'jumlah' => (int) $data['jumlah'],
+                        'amount_hjp' => (int) $data['amount_hjp'],
+                        'fee_marketplace' => (int) $data['amount_hjp'] - (int) $data['amount_net'],
+                        'amount_net' => (int) $data['amount_net'],
+                    ]
+                ];
+                break;
+            }
+
+            case $marketplace == 'tokopedia': {
+                $query = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+                $data = (array) $query[0];
+                return [
+                    'tokopedia' => [
+                        'jumlah_transaksi' => (int) $data['jumlah_transaksi'],
+                        'jumlah' => (int) $data['quantity'],
+                        'amount_hjp' => (int) $data['amount_hjp'],
+                        'fee_marketplace' => (int) $data['fee_marketplace'],
+                        'amount_net' => (int) $data['amount_net'],
+                    ]
+                ];
+                break;
+            }
+
+            case $marketplace == 'tiktok': {
+                $query = Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+                $data = (array) $query[0];
+                return [
+                    'tiktok' => [
+                        'jumlah_transaksi' => (int) $data['jumlah_transaksi'],
+                        'jumlah' => (int) $data['quantity'],
+                        'amount_hjp' => (int) $data['amount_hjp'],
+                        'fee_marketplace' => (int) $data['fee_marketplace'],
+                        'amount_net' => (int) $data['total_settlement_amount'],
+                    ]
+                ];
+                break;
+            }
+
+            case $marketplace == 'lazada': {
+                $query = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+                $data = (array) $query[0];
+                return [
+                    'lazada' => [
+                        'jumlah_transaksi' => (int) $data['jumlah_transaksi'],
+                        'jumlah' => (int) $data['quantity'],
+                        'amount_hjp' => (int) $data['amount_hjp'],
+                        'fee_marketplace' => (int) $data['fee_marketplace'],
+                        'amount_net' => (int) $data['amount_net'],
+                    ]
+                ];
+
+                break;
+            }
+
+            case $marketplace == 'offline': {
+                $query = OFFLINE::getSummaryByDateRange($date_start, $date_end, $is_total=true);
+                $data = (array) $query[0];
+                return [
+                    'offline' => [
+                        'jumlah_transaksi' => (int) $data['jumlah_transaksi'],
+                        'jumlah' => (int) $data['quantity'],
+                        'amount_hjp' => 0,
+                        'fee_marketplace' => 0,
+                        'amount_net' => (int) $data['amount_net'],
+                    ]
+                ];
+                break;
+            }
+
+            default: 
+            break;
+        }
+    }
 
 }

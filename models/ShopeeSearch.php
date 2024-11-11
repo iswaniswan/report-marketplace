@@ -71,11 +71,20 @@ class ShopeeSearch extends Shopee
             }
         }
 
-        if ($this->status != null) {
-            $query->andFilterWhere(['and',
-                ['like', 'status_pesanan', $this->status]
-            ]);
+        if ($this->status !== null) {
+            $statuses = json_decode($this->status, true); // Decode JSON and set `true` for associative array
+        
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    $orConditions[] = ['like', 'status_pesanan', $_status];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                $query->andFilterWhere(['like', 'status_pesanan', $this->status]);
+            }
         }
+        
 
         // if ($this->channel != null) {
         //     $query->andFilterWhere(['and',

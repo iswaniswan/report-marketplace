@@ -107,8 +107,22 @@ class TableUpload extends \yii\db\ActiveRecord
         return $count;
     }
 
-    public static function getListColorTheme()
+    public static function getListColorTheme($useText=false)
     {
+        if ($useText) {
+            return [
+                'ginee' => 'purple',
+                'lazada' => 'primary',
+                'shopee' => 'warning',
+                'tiktok' => 'dark',
+                'tokopedia' => 'success',
+                'tiktok_income' => 'dark',
+                'lazada_income' => 'primary',
+                'shopee_income' => 'warning',
+                'offline' => 'secondary',
+            ];
+        }
+
         return [
             static::GINEE => 'purple',
             static::LAZADA => 'primary',

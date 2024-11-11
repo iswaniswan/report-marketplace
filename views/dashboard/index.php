@@ -315,7 +315,8 @@ echo Highcharts::widget([
 <div class="row">
     <div class="col-12">
         <div class="card-box">
-            <div class="table-responsive">
+            <h5>Detail per Month (<?= $titleChart ?>)</h5>
+            <div class="table-responsive mb-4">
                 <table class="table table-hover table-bordered">
                     <thead class="bg-<?= $color ?> text-white">
                         <th style="text-align: left;">Tanggal</th>
@@ -359,7 +360,7 @@ echo Highcharts::widget([
                     </tbody>
                     <tfoot>
                         <tr class="bg-<?= $color ?> text-white">
-                            <th>#</th>
+                            <th><?= $titleChart ?></th>
                             <th style="text-align: right;"><?= number_format($grand_jumlah_transaksi) ?></th>
                             <th style="text-align: right;"><?= number_format($grand_jumlah) ?></th>
                             <th style="text-align: right;"><?= number_format($grand_amount_hjp) ?></th>
@@ -370,8 +371,50 @@ echo Highcharts::widget([
                                     <?= number_format($grand_fee_marketplace/$grand_amount_hjp * 100, 2) ?>%
                                 <?php } ?>
                             </th>
-                        </tr>
+                        </tr>                        
                     </tfoot>
+                </table>
+            </div>
+            <h5>Grand Total Per Marketplace - <?= date('F Y', strtotime($periode . '-01')) ?></h5>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Channel</th>
+                            <th style="text-align: center;">Jumlah Transaksi</th>
+                            <th style="text-align: center;">Qty</th>
+                            <th style="text-align: center;">Amount HJP</th>
+                            <th style="text-align: center;">Amount Net</th>
+                            <th style="text-align: center;">Fee Marketplace</th>
+                            <th style="text-align: center;">% Fee Marketplace</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (@$footerMarketplace as $object) { ?>
+
+                            <?php foreach ($object as $key => $items) { ?>
+
+                                <?php if (strtolower($key) == strtolower($titleChart)) { continue; } ?>
+
+                                <?php $tColor = TableUpload::getListColorTheme($useText=true)[$key] ?? 'primary'; ?>
+                                <tr class="bg-<?= $tColor ?> text-white">
+                                    <th><?= ucwords($key) ?></th>
+                                    <th style="text-align: right"><?= number_format($items['jumlah_transaksi']) ?></th>
+                                    <th style="text-align: right"><?= number_format($items['jumlah']) ?></th>
+                                    <th style="text-align: right"><?= number_format($items['amount_hjp']) ?></th>
+                                    <th style="text-align: right"><?= number_format($items['amount_net']) ?></th>
+                                    <th style="text-align: right"><?= number_format($items['fee_marketplace']) ?></th>
+                                    <?php if ($items['amount_hjp'] > 0) { ?>
+                                        <th style="text-align: right"><?= number_format($items['fee_marketplace']/$items['amount_hjp'] * 100, 2) ?>%</th>
+                                    <?php } else { ?>
+                                        <th style="text-align: right">0%</th>
+                                    <?php } ?>
+                                </tr>
+
+                            <?php } ?>
+
+                        <?php } ?>
+                    </tbody>
                 </table>
             </div>
         </div>
