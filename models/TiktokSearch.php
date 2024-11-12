@@ -71,10 +71,18 @@ class TiktokSearch extends Tiktok
             }
         }
 
-        if ($this->status != null) {
-            $query->andFilterWhere(['and',
-                ['like', 'order_status', $this->status]
-            ]);
+        if ($this->status !== null) {
+            $statuses = json_decode($this->status, true); // Decode JSON and set `true` for associative array
+        
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    $orConditions[] = ['like', 'order_status', $_status];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                $query->andFilterWhere(['like', 'order_status', $this->status]);
+            }
         }
 
         // add conditions that should always apply here

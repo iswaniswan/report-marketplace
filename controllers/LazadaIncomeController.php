@@ -59,7 +59,7 @@ class LazadaIncomeController extends Controller
         $params = [
             'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
             'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'status' => $request[1]['status'] ?? [],
         ];
 
         return $this->render('index-serverside', $params);
@@ -187,7 +187,7 @@ class LazadaIncomeController extends Controller
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -230,7 +230,7 @@ class LazadaIncomeController extends Controller
                 'order_creation_date' => $model->order_creation_date,
                 'order_status' => $model->order_status,
                 'fee_name' => $model->fee_name,
-                'amount_include_tax' => number_format($model->amount_include_tax),
+                'amount_include_tax' => number_format(abs($model->amount_include_tax)),
                 'vat_amount' => number_format($model->vat_amount),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];

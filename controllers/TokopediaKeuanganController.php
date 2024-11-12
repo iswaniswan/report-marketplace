@@ -59,7 +59,7 @@ class TokopediaKeuanganController extends Controller
         $params = [
             'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
             'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'status' => $request[1]['status'] ?? [],
         ];
 
         return $this->render('index-serverside', $params);
@@ -187,7 +187,7 @@ class TokopediaKeuanganController extends Controller
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         
         $dataProvider = $searchModel->search($this->request->queryParams);
 

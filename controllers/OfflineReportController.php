@@ -249,6 +249,8 @@ class OfflineReportController extends Controller
                 'number' => ++$number, // Increment the sequence number for each row
                 'tanggal_invoice' => date('d M Y', strtotime($model->tanggal_invoice)),
                 'no_invoice' => $model->no_invoice,
+                'nama_barang' => $model->nama_barang,
+                'kode_sku' => $model->kode_sku,
                 'tanggal_bayar' => date('d M Y', strtotime($model->tanggal_bayar)),
                 'subtotal' => number_format($model->subtotal),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),

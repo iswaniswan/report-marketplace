@@ -87,15 +87,15 @@ $this->registerCss($style);
     <div class="container-fluid">
         <div class="dt-button-wrapper">
             <?php // Html::a('<i class="ti-plus mr-2"></i> Add', ['create'], ['class' => 'btn btn-primary mb-1']) ?>
-            <?= Html::a('<i class="ti-printer mr-2"></i> Print', ['#'], ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
+            <?= Html::a('<i class="ti-printer mr-2"></i> Print', 'javascript:void(0)', ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
             <div class="btn-group mr-1">
                 <?= Html::a('<i class="ti-download mr-2"></i> Export', ['#'], [
                     'class' => 'btn btn-success mb-1 dropdown-toggle',
                     'data-toggle' => 'dropdown'
                 ]) ?>
                 <div class="dropdown-menu" x-placement="bottom-start">
-                    <?= Html::a('Excel', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel()']) ?>
-                    <?= Html::a('Pdf', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
+                    <?= Html::a('Excel', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel(event);']) ?>
+                    <?= Html::a('Pdf', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
                 </div>
             </div>
         </div>

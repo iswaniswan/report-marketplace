@@ -71,10 +71,18 @@ class LazadaSearch extends Lazada
             }
         }
 
-        if ($this->status != null) {
-            $query->andFilterWhere(['and',
-                ['like', 'status', $this->status]
-            ]);
+        if ($this->status !== null) {
+            $statuses = json_decode($this->status, true); // Decode JSON and set `true` for associative array
+        
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    $orConditions[] = ['like', 'status', $_status];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                $query->andFilterWhere(['like', 'status', $this->status]);
+            }
         }
 
         // add conditions that should always apply here

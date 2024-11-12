@@ -90,10 +90,17 @@ class TokopediaKeuangan extends \yii\db\ActiveRecord
 
     public static function getListStatus()
     {
-        return static::find()
+        $statuses = static::find()
             ->select('status_terakhir')
             ->groupBy('status_terakhir')
             ->column();
+
+        $normalizedStatuses = [];
+        foreach ($statuses as $status) {
+            $normalizedStatuses[] = str_replace(["\r\n", "\n", "\r"], '%', $status);
+        }
+
+        return $normalizedStatuses;
     }
     
 }

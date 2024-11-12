@@ -331,12 +331,7 @@ $script = <<<JS
                 }},
             }
         ],
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-        initComplete: function() {
-            $(document).on('click', '.buttons-excel', function(e) {
-                e.preventDefault();
-            });
-        }
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
     });
 
     $('#btn-clear').on('click', function() {

@@ -59,7 +59,7 @@ class TokopediaController extends Controller
         $params = [
             'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
             'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'status' => $request[1]['status'] ?? [],
         ];
 
         return $this->render('index-serverside', $params);
@@ -213,7 +213,7 @@ class TokopediaController extends Controller
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -253,8 +253,11 @@ class TokopediaController extends Controller
 
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
-                'nomor_invoice' => $model->nomor_invoice,
                 'tanggal_pembayaran' => $model->tanggal_pembayaran,
+                'nomor_invoice' => $model->nomor_invoice,
+                'nama_produk' => $model->nama_produk,
+                'nomor_sku' => $model->nomor_sku,
+                'tipe_produk' => $model->tipe_produk,
                 'status_terakhir' => $model->status_terakhir,
                 'jumlah_produk_dibeli' => number_format($model->jumlah_produk_dibeli),
                 'harga_jual_idr' => number_format($model->harga_jual_idr),

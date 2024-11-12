@@ -71,11 +71,33 @@ class TokopediaKeuanganSearch extends TokopediaKeuangan
             }
         }
 
-        if ($this->status != null) {
-            $query->andFilterWhere(['and',
-                ['like', 'status_terakhir', $this->status]
-            ]);
-        }
+        if ($this->status !== null) {
+            $cleanedString = trim($this->status, '"[]');
+            $array = preg_split('/","/', $cleanedString);
+    
+            // Optionally, remove any remaining quotes around each element
+            $array = array_map(function($item) {
+                return trim($item, '"');
+            }, $array);
+    
+            $statuses = $array;
+
+            // $statuses = json_decode($this->status, true); // Decode JSON and set `true` for associative array
+            // var_dump($statuses); die();
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    // Normalize newlines in the search term to handle database format
+                    $normalizedStatus = str_replace(["\r\n", "\n", "\r"], '%', $_status);
+                    $orConditions[] = ['like', 'status_terakhir', $normalizedStatus, false];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                // Handle single status case, normalizing newlines in the search term
+                $normalizedStatus = str_replace(["\r\n", "\n", "\r"], '%', $this->status);
+                $query->andFilterWhere(['like', 'status_terakhir', $normalizedStatus, false]);
+            }
+        }        
 
         // add conditions that should always apply here
 

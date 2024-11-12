@@ -59,7 +59,7 @@ class LazadaController extends Controller
         $params = [
             'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
             'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'status' => $request[1]['status'] ?? [],
         ];
 
         return $this->render('index-serverside', $params);
@@ -213,7 +213,7 @@ class LazadaController extends Controller
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -251,12 +251,15 @@ class LazadaController extends Controller
         foreach ($dataProvider->getModels() as $model) {
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
-                'order_item_id' => $model->order_item_id,
                 'create_time' => $model->create_time,
+                'order_item_id' => $model->order_item_id,
+                'item_name' => $model->item_name,
+                'seller_sku' => $model->seller_sku,
+                'variation' => $model->variation,
                 'status' => $model->status,
                 'order_number' => $model->order_number,
                 'unit_price' => number_format($model->unit_price),
-                'seller_discount_total' => number_format($model->seller_discount_total),
+                'seller_discount_total' => number_format(abs($model->seller_discount_total)),
                 'action' => Html::a('<i class="ti-eye"></i>', ['view', 'id' => $model->id], ['title' => 'Detail', 'data-pjax' => '0']),
             ];
         }

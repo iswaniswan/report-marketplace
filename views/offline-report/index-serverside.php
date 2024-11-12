@@ -23,7 +23,13 @@ echo \app\widgets\Breadcrumbs::widget([
 ]);
 
 $style = <<<CSS
-    #table-serverside tbody tr td:nth-child(5) {
+    #table-serverside tbody tr td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #table-serverside tbody tr td:nth-child(7) {
         text-align: right
     }
 CSS;
@@ -98,15 +104,15 @@ $this->registerCss($style);
     <div class="container-fluid">
         <div class="dt-button-wrapper">
             <?php // Html::a('<i class="ti-plus mr-2"></i> Add', ['create'], ['class' => 'btn btn-primary mb-1']) ?>
-            <?= Html::a('<i class="ti-printer mr-2"></i> Print', ['#'], ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
+            <?= Html::a('<i class="ti-printer mr-2"></i> Print', 'javascript:void(0)', ['class' => 'btn btn-info mb-1', 'onclick' => 'dtPrint()' ]) ?>
             <div class="btn-group mr-1">
                 <?= Html::a('<i class="ti-download mr-2"></i> Export', ['#'], [
                     'class' => 'btn btn-success mb-1 dropdown-toggle',
                     'data-toggle' => 'dropdown'
                 ]) ?>
                 <div class="dropdown-menu" x-placement="bottom-start">
-                    <?= Html::a('Excel', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel()']) ?>
-                    <?= Html::a('Pdf', ['#'], ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
+                    <?= Html::a('Excel', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportExcel(event);']) ?>
+                    <?= Html::a('Pdf', 'javascript:void(0)', ['class' => 'dropdown-item', 'onclick' => 'dtExportPdf()']) ?>
                 </div>
             </div>
         </div>
@@ -124,6 +130,8 @@ $this->registerCss($style);
                             <th>#</th>
                             <th>Tanggal<br/>Invoice</th>
                             <th>No Invoice</th>
+                            <th>Nama Barang</th>
+                            <th>Kode SKU</th>
                             <th>Tanggal<br/>Bayar</th>
                             <th>Subtotal</th>
                             <th>Action</th>
@@ -186,6 +194,8 @@ $script = <<<JS
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
             { data: 'tanggal_invoice', orderable: false},
             { data: 'no_invoice', orderable: false},
+            { data: 'nama_barang', orderable: false},
+            { data: 'kode_sku', orderable: false},
             { data: 'tanggal_bayar', orderable: false},
             { data: 'subtotal', orderable: false},
             { data: 'action', orderable: false},
@@ -196,14 +206,56 @@ $script = <<<JS
             // Calculate the sequence number based on the page index and page length
             $('td:eq(0)', row).html(pageInfo.start + index + 1);
         },
-        dom: 'Bfrtip', // Include the 'B' in 'dom' to show buttons
+        dom: 'Blfrtip', // Include the 'B' in 'dom' to show buttons
         buttons: [
             { extend: 'copy', text: 'Copy' },
             { extend: 'csv', text: 'CSV' },
-            { extend: 'excel', text: 'Excel' },
-            { extend: 'pdf', text: 'PDF' },
-            { extend: 'print', text: 'Print' }
-        ]
+            { extend: 'excel', text: 'Excel', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }},
+            },
+            { extend: 'pdf', text: 'PDF', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }},
+                customize: function (doc) {
+                    doc.pageOrientation = 'landscape';
+                    // Optional: Customize PDF document margins
+                    doc.pageMargins = [10, 5, 5, 5]; // Set custom margins for left, top, right, bottom
+                }
+            },
+            { extend: 'print', text: 'Print', exportOptions: {
+                columns: ':not(:last-child)', // include visible columns only
+                format: {
+                    body: function (data, row, column, node) {
+                        if (column === 0) {
+                            // Adjust sequence number for PDF export
+                            var pageInfo = $('#table-serverside').DataTable().page.info();
+                            return pageInfo.start + row + 1;
+                        }
+                        return data;
+                    }
+                }},
+            }
+        ],
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
     });
 
     $('#btn-clear').on('click', function() {

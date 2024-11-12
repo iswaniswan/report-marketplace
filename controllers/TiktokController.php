@@ -60,7 +60,7 @@ class TiktokController extends Controller
         $params = [
             'date_start' => $request[1]['date_start'] ?? date('Y-m-01'),
             'date_end' => $request[1]['date_end'] ?? date('Y-m-t'),
-            'status' => $request[1]['status'] ?? null,
+            'status' => $request[1]['status'] ?? [],
             'channel' => $request[1]['channel'] ?? null,
         ];
 
@@ -215,7 +215,7 @@ class TiktokController extends Controller
         // $searchModel->month = Yii::$app->request->get('month') ?? null;
         $searchModel->date_start = Yii::$app->request->get('date_start') ?? null;
         $searchModel->date_end = Yii::$app->request->get('date_end') ?? null;
-        $searchModel->status = Yii::$app->request->get('status') ?? null;
+        $searchModel->status = Yii::$app->request->get('status') ?? [];
         $searchModel->channel = Yii::$app->request->get('channel') ?? null;
         
         $dataProvider = $searchModel->search($this->request->queryParams);
@@ -255,6 +255,9 @@ class TiktokController extends Controller
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
                 'order_id' => $model->order_id,
+                'product_name' => $model->product_name,
+                'seller_sku' => $model->seller_sku,
+                'variation' => $model->variation,
                 'order_status' => $model->order_status,
                 'order_substatus' => $model->order_substatus,
                 'cancelation_return_type' => $model->cancelation_return_type,
