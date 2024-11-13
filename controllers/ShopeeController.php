@@ -268,6 +268,8 @@ class ShopeeController extends Controller
                 'harga_awal' => number_format($hargaAwal),
                 'total_diskon' => number_format($totalDiskon),
                 'jumlah_produk_di_pesan' => $model->jumlah_produk_di_pesan,
+                'status_pembatalan_pengembalian' => $model->status_pembatalan_pengembalian,
+                'returned_quantity' => $model->returned_quantity,
                 'total_harga_produk' => number_format($totalHargaProduk),
                 'total_pembayaran' => number_format($totalPembayaran),
                 // 'nama_toko' => $model->nama_toko,

@@ -170,10 +170,52 @@ class Shopee extends \yii\db\ActiveRecord
 
     public static function getListStatus()
     {
-        return static::find()
-            ->select('status_pesanan')
-            ->groupBy('status_pesanan')
-            ->column();
+        // return static::find()
+        //     ->select('status_pesanan')
+        //     ->groupBy('status_pesanan')
+        //     ->column();
+
+        // $sql = <<<SQL
+        //     SELECT
+        //         CASE WHEN status_pesanan = 'Permintaan Disetujui' THEN 'Retur'
+        //         ELSE status_pesanan
+        //         END status_pesanan 
+        //     FROM (
+        //         SELECT DISTINCT status_pesanan 
+        //         FROM shopee
+        //         UNION ALL
+        //         SELECT DISTINCT status_pembatalan_pengembalian AS status_pesanan  
+        //         FROM shopee
+        //     ) a
+        //     WHERE status_pesanan != ''
+        // SQL;
+
+        // $command = Yii::$app->db->createCommand($sql);
+        // return $command->queryAll();
+
+        $subquery1 = (new \yii\db\Query())
+            ->select(['status_pesanan'])
+            ->distinct()
+            ->from('shopee');
+
+        $subquery2 = (new \yii\db\Query())
+            ->select(['status_pesanan' => 'status_pembatalan_pengembalian'])
+            ->distinct()
+            ->from('shopee');
+
+        $query = (new \yii\db\Query())
+            ->select([
+                'status_pesanan' => new \yii\db\Expression("
+                    CASE 
+                        WHEN status_pesanan = 'Permintaan Disetujui' THEN 'Retur' 
+                        ELSE status_pesanan 
+                    END
+                ")
+            ])
+            ->from(['a' => $subquery1->union($subquery2, true)])
+            ->where(['!=', 'status_pesanan', '']);
+
+        return $query->column();
     }
 
     // public static function getListChannel()

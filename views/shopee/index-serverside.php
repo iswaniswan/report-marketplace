@@ -195,6 +195,8 @@ $this->registerCss($style);
                             <th>Harga<br/>Awal Produk</th>
                             <th>Total<br/>Diskon</th>
                             <th>Jumlah</th>
+                            <th>Status<br/>Pengembalian</th>
+                            <th>Jumlah<br/>Retur</th>
                             <th>Total<br/>Harga Produk</th>
                             <th>Total<br/>Pembayaran</th>
                             <th>Action</th>
@@ -271,7 +273,9 @@ $script = <<<JS
             { data: 'status_pesanan', orderable: false},
             { data: 'harga_awal', orderable: false},
             { data: 'total_diskon', orderable: false},
-            { data: 'jumlah_produk_di_pesan', orderable: false},
+            { data: 'jumlah_produk_di_pesan', orderable: false},            
+            { data: 'status_pembatalan_pengembalian', orderable: false},
+            { data: 'returned_quantity', orderable: false},
             { data: 'total_harga_produk', orderable: false},
             { data: 'total_pembayaran', orderable: false},
             { data: 'action', orderable: false},

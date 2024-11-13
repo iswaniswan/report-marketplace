@@ -77,7 +77,11 @@ class ShopeeSearch extends Shopee
             if (is_array($statuses)) {
                 $orConditions = ['or'];
                 foreach ($statuses as $_status) {
-                    $orConditions[] = ['like', 'status_pesanan', $_status];
+                    if (strtolower($_status) == 'retur') {
+                        $orConditions[] = ['>', 'returned_quantity', '0'];
+                    } else {
+                        $orConditions[] = ['like', 'status_pesanan', $_status];
+                    }
                 }
                 $query->andFilterWhere($orConditions);
             } else {
