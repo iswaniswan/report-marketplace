@@ -1,75 +1,91 @@
 <?php
 
 use app\components\Session;
+use app\models\RolePermissions;
 use app\widgets\UplonMenu;
 
-$itemsAdmin = [
-    ['label' => 'Administrator','header' => true],
-    ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']],
-    // ['label' => 'Tabel', 'icon' => 'ti-server', 'items' => [
-    //     ['label' => 'Ginee', 'url' => ['/ginee/index-serverside']]
-    // ]
-    // ],
-    ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
-            // ['label' => 'Ginee', 'items' => [
-            //         ['label' => 'Summary', 'url' =>['/ginee/index-summary']],
-            //         ['label' => 'Tabel', 'url' =>['/ginee/index-serverside']]
-            //     ],
-            // ],
-            
-            ['label' => 'Shopee', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']],
-                    ['label' => 'Tabel Income', 'url' =>['/shopee-income/index-serverside']]
-                ],
-            ], 
-            
-            ['label' => 'Tiktok', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']],
-                    ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
-                ],
-            ],
+$roleName = Yii::$app->user->identity->role->name;
 
-            ['label' => 'Tokopedia', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/tokopedia/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/tokopedia/index-serverside']],
-                    ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-keuangan/index-serverside']]
-                ],
-            ],
-
-            ['label' => 'Lazada', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/lazada/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/lazada/index-serverside']],
-                    ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
-                ],
-            ],
-
-            ['label' => 'Offline', 'items' => [
-                    ['label' => 'Summary', 'url' =>['/offline-report/index-summary']],
-                    ['label' => 'Tabel', 'url' =>['/offline-report/index-serverside']],
-                ],
-            ],
+$dashboard = ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']];
+$report = ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
             
-        ]
-    ],
-    ['label' => 'Input','header' => true],
-    ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']],
-    ['label' => 'Offline', 'icon' => 'ti-receipt', 'url' => ['/offline/index']],
-    ['label' => 'Pengaturan','header' => true],
-    ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
-        ['label' => 'User', 'url' =>['/user']],
-        // ['label' => 'Menu', 'url' =>['/menu']],
-        // ['label' => 'Access', 'url' =>['/access']],
-        // ['label' => 'Role', 'url' =>['/role']],
-        // ['label' => 'Approval Stage', 'url' =>['/approval-stage']],
-    ]],
-    ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],
+                ['label' => 'Shopee', 'items' => [
+                        ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
+                        ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']],
+                        ['label' => 'Tabel Income', 'url' =>['/shopee-income/index-serverside']]
+                    ],
+                ], 
+                
+                ['label' => 'Tiktok', 'items' => [
+                        ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
+                        ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']],
+                        ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
+                    ],
+                ],
+
+                ['label' => 'Tokopedia', 'items' => [
+                        ['label' => 'Summary', 'url' =>['/tokopedia/index-summary']],
+                        ['label' => 'Tabel', 'url' =>['/tokopedia/index-serverside']],
+                        ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-keuangan/index-serverside']]
+                    ],
+                ],
+
+                ['label' => 'Lazada', 'items' => [
+                        ['label' => 'Summary', 'url' =>['/lazada/index-summary']],
+                        ['label' => 'Tabel', 'url' =>['/lazada/index-serverside']],
+                        ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
+                    ],
+                ],
+
+                ['label' => 'Offline', 'items' => [
+                        ['label' => 'Summary', 'url' =>['/offline-report/index-summary']],
+                        ['label' => 'Tabel', 'url' =>['/offline-report/index-serverside']],
+                    ],
+                ],
+                
+            ]
+        ];
+$fileUnggah = ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']];
+$offline = ['label' => 'Offline', 'icon' => 'ti-receipt', 'url' => ['/offline/index']];
+$setting = ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
+            ['label' => 'User', 'url' =>['/user']],
+            ['label' => 'Role', 'url' =>['/role']],
+        ]];
+
+$sequenceMenu = [
+    ['type' => 'header', 'value' => '#', 'data' => ['label' => $roleName,'header' => true]],
+    ['type' => 'key', 'value' => 'Dashboard', 'data' => $dashboard], 
+    ['type' => 'key', 'value' => 'Report', 'data' => $report],
+    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Input','header' => true]],
+    ['type' => 'key', 'value' => 'File Unggah', 'data' => $fileUnggah],
+    ['type' => 'key', 'value' => 'Offline', 'data' => $offline],
+    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Pengaturan','header' => true]],
+    ['type' => 'key', 'value' => 'Setting', 'data' => $setting],
+    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>']]
 ];
 
-if (Session::isAdmin() === false) {
-    $itemsAdmin = [];
+$allUserRolePermission = RolePermissions::getAllUserPermission(Yii::$app->user->identity->id_role, $root=true);
+
+$itemsAdmin = [];
+
+foreach ($sequenceMenu as $menu) {
+    if ($menu['type'] == 'header') {
+        $itemsAdmin[] = $menu['data'];
+    } else {
+        $value = $menu['value'];
+        foreach (@$allUserRolePermission as $rolePermissions) {
+            $permissions = json_decode($rolePermissions->permission);
+            if ($rolePermissions->alias == $value && in_array('read', $permissions)) {
+                $itemsAdmin[] = $menu['data'];
+                continue;
+            }
+        }
+    }
 }
+
+// if (Session::isAdmin() === false) {
+//     $itemsAdmin = [];
+// }
 
 // $items = [
 //     ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],

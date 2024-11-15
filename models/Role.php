@@ -19,6 +19,8 @@ use yii\helpers\ArrayHelper;
 class Role extends \yii\db\ActiveRecord
 {
     const ADMIN = 1;
+
+    public $permissions;
     /**
      * {@inheritdoc}
      */
@@ -33,9 +35,9 @@ class Role extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'code'], 'required'],
+            [['id', 'name', 'code'], 'safe'],
             [['level', 'status'], 'integer'],
-            [['date_created', 'date_updated'], 'safe'],
+            [['date_created', 'date_updated', 'permissions'], 'safe'],
             [['name', 'code'], 'string', 'max' => 255],
             [['status'], 'default', 'value' => 1]
         ];

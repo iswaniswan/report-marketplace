@@ -4,17 +4,17 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\RoleSearch */
+/* @var $searchModel app\models\RolePermissionsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 
-$this->title = 'Daftar Role';
+$this->title = 'Daftar Role Permissions';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo \app\widgets\Breadcrumbs::widget([
     'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
     'options' => [
-        'title' => 'Role'    ],
+        'title' => 'Role Permissions'    ],
 ]) ?>
 
 <div class="row mb-4">
@@ -50,33 +50,39 @@ echo \app\widgets\Breadcrumbs::widget([
                 'buttons' => ['copy', 'csv', 'excel', 'pdf', 'print']
                 ],
                 'columns' => [
-                        ['class' => 'yii\grid\SerialColumn'],
+                                                        ['class' => 'yii\grid\SerialColumn'],
                                     [
-                        'attribute' => 'name',
+                        'attribute' => 'id_parent',
                         'format' => 'raw',
-                        'headerOptions' => ['style' => 'text-align:left;'],
-                        'contentOptions' => ['style' => 'text-align:left'],
-                        'value' => function ($model) {
-                                return ucwords($model->name);
-                            }
-                        ],
-                        //             [
-                        // 'attribute' => 'level',
-                        // 'format' => 'raw',
-                        // 'headerOptions' => ['style' => 'text-align:left;'],
-                        // 'contentOptions' => ['style' => 'text-align:left'],
-                        // ],
-                                    [
-                        'attribute' => 'status',
-                        'format' => 'raw',
-                        'value' => function ($model) {
-                            return @$model->getBadgeStatus();
-                        },
                         'headerOptions' => ['style' => 'text-align:left;'],
                         'contentOptions' => ['style' => 'text-align:left'],
                         ],
                                     [
-                        'attribute' => 'date_created',
+                        'attribute' => 'id_role',
+                        'format' => 'raw',
+                        'headerOptions' => ['style' => 'text-align:left;'],
+                        'contentOptions' => ['style' => 'text-align:left'],
+                        ],
+                                    [
+                        'attribute' => 'action',
+                        'format' => 'raw',
+                        'headerOptions' => ['style' => 'text-align:left;'],
+                        'contentOptions' => ['style' => 'text-align:left'],
+                        ],
+                                    [
+                        'attribute' => 'permission',
+                        'format' => 'raw',
+                        'headerOptions' => ['style' => 'text-align:left;'],
+                        'contentOptions' => ['style' => 'text-align:left'],
+                        ],
+                                    [
+                        'attribute' => 'created_at',
+                        'format' => 'raw',
+                        'headerOptions' => ['style' => 'text-align:left;'],
+                        'contentOptions' => ['style' => 'text-align:left'],
+                        ],
+                                    [
+                        'attribute' => 'updated_at',
                         'format' => 'raw',
                         'headerOptions' => ['style' => 'text-align:left;'],
                         'contentOptions' => ['style' => 'text-align:left'],

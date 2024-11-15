@@ -5,10 +5,11 @@ use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\User */
+/* @var $model app\models\RolePermissions */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $referrer string */
-/* @var $mode string|null */
+/* @var $mode Mode */
+
 
 $inputOptions = [];
 if (@$mode == Mode::READ) {
@@ -45,26 +46,17 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'id_parent')->textInput() ?>
 
-                    <?php // $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'id_role')->textInput() ?>
 
-                    <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'action')->textInput(['maxlength' => true]) ?>
 
-                    <?php // $form->field($model, 'id_role')->textInput() ?>
+<?= $form->field($model, 'permission')->textInput(['maxlength' => true]) ?>
 
-                    <?=  $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
-                            'prompt' => '- Pilih Role -',
-                            'required' => true,
-                    ])->label('Role') ?>
+<?= $form->field($model, 'created_at')->textInput() ?>
 
-                    <?php // $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
-
-                    <?php // $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
-
-                    <?php // $form->field($model, 'is_deleted')->textInput() ?>
-
-                    <?php // $form->field($model, 'date_create')->textInput() ?>
+<?= $form->field($model, 'updated_at')->textInput() ?>
 
                 </div>
                 <?= Html::hiddenInput('referrer', $referrer) ?>
@@ -74,11 +66,11 @@ if (@$mode == Mode::READ) {
 </div>
 <div class="row mb-5">
     <div class="container-fluid">
-        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['/user'], ['class' => 'btn btn-info mb-1']) ?>
+        <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', ['index'], ['class' => 'btn btn-info mb-1']) ?>
         <?php if ($mode == Mode::READ) { ?>
             <?= Html::a('<i class="ti-pencil-alt"></i><span class="ml-2">Edit</span>', ['update', 'id' => $model->id], ['class' => 'btn btn-warning mb-1']) ?>
         <?php } else { ?>
-            <?= Html::submitButton('<i class="ti-check"></i><span class="ml-2">Update</span>', ['class' => 'btn btn-primary mb-1']) ?>
+            <?= Html::submitButton('<i class="ti-check"></i><span class="ml-2">' . ucwords('update') .'</span>', ['class' => 'btn btn-primary mb-1']) ?>
         <?php } ?>
     </div>
 </div>

@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\components\Mode;
 use app\models\Role;
+use app\models\RolePermissions;
 use app\models\RoleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -79,11 +80,73 @@ class RoleController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $referrer = $_POST['referrer'];
+            if (@$_POST["Role"]["id"] != null) {
+                $model->id = $_POST["Role"]["id"];
+                $model->updateAttributes([
+                    'name' => $model->name,
+                    'code' => $model->name,
+                    'status' => $model->status
+                ]);
+            }
 
-            if ($model->save()) {
+            if ($model->id != null && $model->permissions != null) {
+                $allRolePermissions = RolePermissions::getAllUserPermission($model->id);
+                foreach (@$allRolePermissions as $rolePermissions) {                    
+                    // only update permission read
+                    $userPermissions = json_decode($rolePermissions->permission);
+
+                    if (@$model->permissions[$rolePermissions->id] && 
+                        @$model->permissions[$rolePermissions->id]['read'] == 'on') {
+                            array_push($userPermissions, 'read'); 
+                            $userPermissions = array_unique($userPermissions);
+                            $rolePermissions->updateAttributes([
+                                'permission' => json_encode($userPermissions)
+                            ]);
+                    } else {
+                        $userPermissions = array_diff($userPermissions, ["read"]);
+                        $userPermissions = array_values($userPermissions);
+                        $rolePermissions->updateAttributes([
+                            'permission' => json_encode($userPermissions)
+                        ]);
+                    }
+                }
+
                 Yii::$app->session->setFlash('success', 'Create success.');
                 return $this->redirect($referrer);
+
+            } else {
+
+                if ($model->save()) {
+                    
+                    if ($model->permissions != null) {
+                        // get all user permission
+                        $allRolePermissions = RolePermissions::getAllUserPermission($model->id);
+                        foreach (@$allRolePermissions as $rolePermissions) {                    
+                            // only update permission read
+                            $userPermissions = json_decode($rolePermissions->permission);
+    
+                            if (@$model->permissions[$rolePermissions->id] && 
+                                @$model->permissions[$rolePermissions->id]['read'] == 'on') {
+                                    array_push($userPermissions, 'read'); 
+                                    $userPermissions = array_unique($userPermissions);
+                                    $rolePermissions->updateAttributes([
+                                        'permission' => json_encode($userPermissions)
+                                    ]);
+                            } else {
+                                $userPermissions = array_diff($userPermissions, ["read"]);
+                                $userPermissions = array_values($userPermissions);
+                                $rolePermissions->updateAttributes([
+                                    'permission' => json_encode($userPermissions)
+                                ]);
+                            }
+                        }
+                    } 
+    
+                    Yii::$app->session->setFlash('success', 'Create success.');
+                    return $this->redirect($referrer);
+                }
             }
+
 
             Yii::$app->session->setFlash('error', 'An error occured when create.');
         }
@@ -111,7 +174,36 @@ class RoleController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $referrer = $_POST['referrer'];
 
-            if ($model->save()) {
+            if ($model->code == null) {
+                $model->code = $model->name;
+            }
+
+            if ($model->save()) {                
+
+                if ($model->permissions != null) {
+                    // get all user permission
+                    $allRolePermissions = RolePermissions::getAllUserPermission($model->id);
+                    foreach (@$allRolePermissions as $rolePermissions) {                    
+                        // only update permission read
+                        $userPermissions = json_decode($rolePermissions->permission);
+
+                        if (@$model->permissions[$rolePermissions->id] && 
+                            @$model->permissions[$rolePermissions->id]['read'] == 'on') {
+                                array_push($userPermissions, 'read'); 
+                                $userPermissions = array_unique($userPermissions);
+                                $rolePermissions->updateAttributes([
+                                    'permission' => json_encode($userPermissions)
+                                ]);
+                        } else {
+                            $userPermissions = array_diff($userPermissions, ["read"]);
+                            $userPermissions = array_values($userPermissions);
+                            $rolePermissions->updateAttributes([
+                                'permission' => json_encode($userPermissions)
+                            ]);
+                        }
+                    }
+                }
+                
                 Yii::$app->session->setFlash('success', 'Update success.');
                 return $this->redirect($referrer);
             }
@@ -136,8 +228,11 @@ class RoleController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $id_role = $model->id;
 
         if ($model->delete()) {
+            RolePermissions::deleteAll(['id_role' => $id_role]);
+
             Yii::$app->session->setFlash('success', 'Delete success');
         } else {
             Yii::$app->session->setFlash('error', 'An error occured when delete.');
