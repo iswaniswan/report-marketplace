@@ -14,6 +14,7 @@ use Yii;
  * @property string|null $permission Permission (e.g., create, read, update, delete)
  * @property string $created_at Creation Timestamp
  * @property string $updated_at Last Update Timestamp
+ * @property Menu|null $roleMenu
  */
 class RolePermissions extends \yii\db\ActiveRecord
 {
@@ -54,4 +55,55 @@ class RolePermissions extends \yii\db\ActiveRecord
             'updated_at' => 'Updated At',
         ];
     }
+
+    public static function getRootMenu()
+    {
+        return static::find()->where([
+            'id_parent' => null
+        ])->all();
+    }
+
+    public static function getChildMenu($id)
+    {
+        return static::find()->where([
+            'id_parent' => $id
+        ])->all();
+    }
+
+    public static function getDefaultPermissions($all=false)
+    {
+        if ($all) {
+            return [
+                'index', 'create', 'read', 'update', 'delete', 'download'
+            ];
+        }
+
+        return [
+            'read'
+        ];
+    }
+
+    public function isHasChild()
+    {
+        $query = static::find()->where([
+            'id_parent' => $this->id
+        ]);
+
+        return $query->count() >= 1 ? true : false;
+    }
+
+    public static function getAllRolePermission($id_role)
+    {
+        $query = static::find()->where([
+            'id_role' => $id_role
+        ]);
+
+        return $query->all();
+    }
+
+    public function getRoleMenu()
+    {
+        return $this->hasOne(Menu::class, ['id' => 'id_menu']);
+    }
+
 }

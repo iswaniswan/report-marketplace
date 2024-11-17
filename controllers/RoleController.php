@@ -4,7 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use app\components\Mode;
+use app\models\Menu;
 use app\models\Role;
+use app\models\RolePermissions;
 use app\models\RoleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -57,12 +59,18 @@ class RoleController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
-    {
+    {        
+        $model = $this->findModel($id);
+
+        $allMenu = Menu::getAllMenu($rootOnly=true);
+
         $referrer = $this->request->referrer;
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'referrer' => $referrer,
-            'mode' => Mode::READ
+            'mode' => Mode::READ,
+            'allMenu' => $allMenu,
+            'idRole' => $id
         ]);
     }
 
@@ -74,13 +82,48 @@ class RoleController extends Controller
     public function actionCreate()
     {
         $model = new Role();
+        $allMenu = Menu::getAllMenu($rootOnly=true);
 
         $referrer = Yii::$app->request->referrer;
 
         if ($model->load(Yii::$app->request->post())) {
             $referrer = $_POST['referrer'];
 
+            if ($model->code == null) {
+                $code = str_replace(" ", "_", $model->name);
+                $model->code = strtolower($code);
+            }
             if ($model->save()) {
+
+                $allIdMenu = array_keys($model->id_menu);
+                $allMenu = Menu::getAllMenu();
+                // update read access
+                foreach ($allMenu as $menu) {
+                    
+                    if (in_array($menu->id, $allIdMenu)) {
+
+                        $rolePermission = new RolePermissions([
+                            'id_role' => $model->id,
+                            'id_menu' => $menu->id,
+                            'action' => 'index',
+                            'permission' => json_encode(['read'])
+                        ]);
+    
+                        $rolePermission->save();
+                    } else {
+
+                        $rolePermission = new RolePermissions([
+                            'id_role' => $model->id,
+                            'id_menu' => $menu->id,
+                            'action' => 'index',
+                            'permission' => json_encode([])
+                        ]);
+    
+                        $rolePermission->save();
+                    }
+
+                }
+
                 Yii::$app->session->setFlash('success', 'Create success.');
                 return $this->redirect($referrer);
             }
@@ -91,7 +134,9 @@ class RoleController extends Controller
         return $this->render('view', [
             'model' => $model,
             'referrer' => $referrer,
-            'mode' => Mode::CREATE
+            'mode' => Mode::CREATE,
+            'allMenu' => $allMenu,
+            'idRole' => null
         ]);
     }
 
@@ -105,6 +150,7 @@ class RoleController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $allMenu = Menu::getAllMenu($rootOnly=true);
 
         $referrer = Yii::$app->request->referrer;
 
@@ -112,6 +158,33 @@ class RoleController extends Controller
             $referrer = $_POST['referrer'];
 
             if ($model->save()) {
+
+                $allIdMenu = array_keys($model->id_menu);
+                $allMenu = Menu::getAllMenu();
+                // update read access
+                foreach ($allMenu as $menu) {
+                    
+                    $rolePermission = RolePermissions::findOne(['id_menu' => $menu->id, 'id_role' => $model->id]);
+                    if (in_array($menu->id, $allIdMenu)) {    
+
+                        $newPermission = json_decode($rolePermission->permission) ;
+                        array_push($newPermission, 'read'); 
+                        $newPermission = array_unique($newPermission);
+                        $rolePermission->updateAttributes([
+                            'permission' => json_encode($newPermission)
+                        ]);
+                    } else {
+                        $newPermission = json_decode($rolePermission->permission) ;
+                        $newPermission = array_diff($newPermission, ["read"]);
+                        $newPermission = array_values($newPermission);
+                        $rolePermission->updateAttributes([
+                            'permission' => json_encode($newPermission)
+                        ]);
+                    }
+
+                }
+
+
                 Yii::$app->session->setFlash('success', 'Update success.');
                 return $this->redirect($referrer);
             }
@@ -122,7 +195,9 @@ class RoleController extends Controller
         return $this->render('view', [
             'model' => $model,
             'referrer' => $referrer,
-            'mode' => Mode::UPDATE
+            'mode' => Mode::UPDATE,
+            'allMenu' => $allMenu,
+            'idRole' => $id
         ]);
     }
 
@@ -136,8 +211,11 @@ class RoleController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $id_role = $model->id;
 
         if ($model->delete()) {
+            RolePermissions::deleteAll(['id_role' => $id_role]);
+
             Yii::$app->session->setFlash('success', 'Delete success');
         } else {
             Yii::$app->session->setFlash('error', 'An error occured when delete.');

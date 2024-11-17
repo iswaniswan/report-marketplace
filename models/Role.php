@@ -19,6 +19,9 @@ use yii\helpers\ArrayHelper;
 class Role extends \yii\db\ActiveRecord
 {
     const ADMIN = 1;
+
+    public $id_menu = [];
+
     /**
      * {@inheritdoc}
      */
@@ -35,7 +38,7 @@ class Role extends \yii\db\ActiveRecord
         return [
             [['name', 'code'], 'required'],
             [['level', 'status'], 'integer'],
-            [['date_created', 'date_updated'], 'safe'],
+            [['date_created', 'date_updated', 'id_menu'], 'safe'],
             [['name', 'code'], 'string', 'max' => 255],
             [['status'], 'default', 'value' => 1]
         ];

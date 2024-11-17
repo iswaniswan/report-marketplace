@@ -14,6 +14,7 @@ use yii\helpers\ArrayHelper;
  * @property string|null $alias text alias
  * @property string $created_at Creation Timestamp
  * @property string $updated_at Last Update Timestamp
+ * @property RolePermission|null $rolePermission
  */
 class Menu extends \yii\db\ActiveRecord
 {
@@ -102,5 +103,72 @@ class Menu extends \yii\db\ActiveRecord
 
         return $html;
     }
+
+    public function getLevel($menu=null, $level=0)
+    {   
+        if ($menu == null) {
+            $parent = $this->getParent()->one();
+        } else {
+            $parent = $menu->getParent()->one();
+        }
+
+        if ($parent == null) {
+            return $level;
+        }
+        
+        $level += 1;
+        return $this->getLevel($parent, $level);        
+    }
+
+    public static function getAllParentMenu()
+    {
+        return static::find()->where([
+            'id_parent' => 0
+        ])->all();
+    }
+
+    public static function getAllMenu($root=false)
+    {        
+        $query = static::find();
+
+        if ($root) {
+            $query->where([
+                'id_parent' => 0
+            ]);
+        }
+
+        return $query->orderBy(['n_order' => SORT_ASC])
+                ->all();
+    }
+
+    // public static function getAllUserRole($id_role)
+    // {
+    //     return static::find()->where([
+    //         'id_role' => $id_role
+    //     ])->all();
+    // }
+
+
+    public function getRolePermission($id_role=null)
+    {
+        if ($id_role != null) {
+            return RolePermissions::findOne(['id_role' => $id_role, 'id_menu' => $this->id]);
+        }
+    }
+
+    // public static function getAllRoleMenu($id_role, $root=false)
+    // {
+    //     $query =  static::find()->where([
+    //         'id_role' => $id_role
+    //     ]);
+        
+    //     if ($root) {
+    //         $query->andWhere([
+    //             'id_parent' => 0
+    //         ]);
+    //     }
+        
+    //     return $query->all();
+    // }
 
 }

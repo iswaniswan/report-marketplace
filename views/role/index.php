@@ -60,12 +60,12 @@ echo \app\widgets\Breadcrumbs::widget([
                                 return ucwords($model->name);
                             }
                         ],
-                                    [
-                        'attribute' => 'level',
-                        'format' => 'raw',
-                        'headerOptions' => ['style' => 'text-align:left;'],
-                        'contentOptions' => ['style' => 'text-align:left'],
-                        ],
+                        //             [
+                        // 'attribute' => 'level',
+                        // 'format' => 'raw',
+                        // 'headerOptions' => ['style' => 'text-align:left;'],
+                        // 'contentOptions' => ['style' => 'text-align:left'],
+                        // ],
                                     [
                         'attribute' => 'status',
                         'format' => 'raw',

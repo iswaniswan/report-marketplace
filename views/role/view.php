@@ -27,5 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?= $this->render('_form', [
     'model' => $model,
     'referrer'=> @$referrer,
-    'mode' => $mode
+    'mode' => $mode,
+    'allMenu' => $allMenu,
+    'idRole' => $idRole
 ]) ?>
