@@ -2,22 +2,18 @@
 
 namespace app\models;
 
-use app\utils\Permission;
 use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "menu".
+ * This is the model class for table "Menu".
  *
  * @property int $id
  * @property int|null $id_parent
- * @property string|null $name
- * @property string|null $code
- * @property int|null $status
- * @property string|null $date_created
- * @property string|null $date_updated
- * @property Menu|null $parent
- * @property Menu|null $childs
+ * @property string $route Route or controller name (e.g., dashboard, user)
+ * @property string|null $alias text alias
+ * @property string $created_at Creation Timestamp
+ * @property string $updated_at Last Update Timestamp
  */
 class Menu extends \yii\db\ActiveRecord
 {
@@ -26,7 +22,7 @@ class Menu extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'menu';
+        return 'Menu';
     }
 
     /**
@@ -35,12 +31,10 @@ class Menu extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_parent', 'status', 'n_order'], 'integer'],
-            [['date_created', 'date_updated'], 'safe'],
-            [['name'], 'string', 'max' => 255],
-            [['code'], 'string', 'max' => 288],
-            [['status'], 'default', 'value' => 1],
-            [['n_order'], 'default', 'value' => 0]
+            [['id_parent'], 'integer'],
+            [['route'], 'required'],
+            [['created_at', 'updated_at'], 'safe'],
+            [['route', 'alias'], 'string', 'max' => 255],
         ];
     }
 
@@ -52,12 +46,10 @@ class Menu extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'id_parent' => 'Id Parent',
-            'name' => 'Name',
-            'code' => 'Code',
-            'n_order' => 'Order',
-            'status' => 'Status',
-            'date_created' => 'Date Created',
-            'date_updated' => 'Date Updated',
+            'route' => 'Route',
+            'alias' => 'Alias',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -70,7 +62,7 @@ class Menu extends \yii\db\ActiveRecord
     {
         $query = static::find()->where([
             'status' => 1
-        ])->orderBy(['id_parent' => SORT_ASC, 'n_order' => SORT_ASC])
+        ])->orderBy(['id_parent' => SORT_ASC, 'id' => SORT_ASC])
             ->all();
 
         return ArrayHelper::map($query, 'id', 'name');

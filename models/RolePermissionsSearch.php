@@ -1,16 +1,16 @@
 <?php
 
-namespace app\Models;
+namespace app\models;
 
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\Models\Menu;
+use app\models\RolePermissions;
 
 /**
- * MenuSearch represents the model behind the search form of `app\Models\Menu`.
+ * RolePermissionsSearch represents the model behind the search form of `app\models\RolePermissions`.
  */
-class MenuSearch extends Menu
+class RolePermissionsSearch extends RolePermissions
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class MenuSearch extends Menu
     public function rules()
     {
         return [
-            [['id', 'id_parent', 'status'], 'integer'],
-            [['name', 'route', 'alias', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'id_role', 'id_menu'], 'integer'],
+            [['action', 'permission', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -34,7 +34,7 @@ class MenuSearch extends Menu
 
     public function getQuerySearch($params)
     {
-        $query = Menu::find();
+        $query = RolePermissions::find();
 
         $this->load($params);
 
@@ -43,15 +43,14 @@ class MenuSearch extends Menu
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'id_parent' => $this->id_parent,
-            'status' => $this->status,
+            'id_role' => $this->id_role,
+            'id_menu' => $this->id_menu,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'route', $this->route])
-            ->andFilterWhere(['like', 'alias', $this->alias]);
+        $query->andFilterWhere(['like', 'action', $this->action])
+            ->andFilterWhere(['like', 'permission', $this->permission]);
 
         return $query;
     }

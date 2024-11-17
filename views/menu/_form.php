@@ -52,9 +52,7 @@ if (@$mode == Mode::READ) {
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
-
-                    <?= $form->field($model, 'n_order')->textInput(['maxlength' => true])->label('Order') ?>
+                    <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'status')->textInput() ?>
 

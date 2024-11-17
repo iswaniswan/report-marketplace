@@ -5,7 +5,7 @@ use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Role */
+/* @var $model app\models\RolePermissions */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $referrer string */
 /* @var $mode Mode */
@@ -46,17 +46,17 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'id_role')->textInput() ?>
 
-                    <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'id_menu')->textInput() ?>
 
-                    <?php // $form->field($model, 'level')->textInput() ?>
+<?= $form->field($model, 'action')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'status')->textInput() ?>
+<?= $form->field($model, 'permission')->textarea(['rows' => 6]) ?>
 
-                    <?= $form->field($model, 'date_created')->textInput() ?>
+<?= $form->field($model, 'created_at')->textInput() ?>
 
-                    <?= $form->field($model, 'date_updated')->textInput() ?>
+<?= $form->field($model, 'updated_at')->textInput() ?>
 
                 </div>
                 <?= Html::hiddenInput('referrer', $referrer) ?>
