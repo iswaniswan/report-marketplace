@@ -45,7 +45,7 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'autocomplete' => 'off']) ?>
 
                     <?php // $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
