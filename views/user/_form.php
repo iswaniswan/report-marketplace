@@ -53,10 +53,10 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'id_role')->textInput() ?>
 
-                    <?php /* $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
+                    <?= $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
                             'prompt' => '- Pilih Role -',
                             'required' => true,
-                    ])->label('Role') */?>
+                    ])->label('Role') ?>
 
                     <?php // $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
 

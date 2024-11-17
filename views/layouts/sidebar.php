@@ -72,6 +72,7 @@ $itemsAdmin = [];
 foreach ($sequenceMenu as $menu) {
     if ($menu['type'] == 'header') {
         $itemsAdmin[] = $menu['data'];
+        continue;
     } else {
         $value = $menu['value'];
         foreach (@$allUserRoleMenu as $rolePermissions) {
@@ -84,9 +85,9 @@ foreach ($sequenceMenu as $menu) {
     }
 }
 
-if (Session::isAdmin() === false) {
-    $itemsAdmin = [];
-}
+// if (Session::isAdmin() === false) {
+//     $itemsAdmin = [];
+// }
 
 // $items = [
 //     ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'],
