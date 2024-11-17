@@ -118,7 +118,7 @@ echo \app\widgets\Breadcrumbs::widget([
                             return Html::a('<i class="ti-pencil"></i>', ['update', 'id' => @$model->id], ['title' => 'Detail', 'data-pjax' => '0']);
                             },
                         'delete' => function ($url, $model) {
-                            return Html::a('<i class="ti-trash"></i>', ['soft-delete', 'id' => @$model->id],['title' => 'Delete', 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'), 'data-method'  => 'post']);
+                            return Html::a('<i class="ti-trash"></i>', ['delete', 'id' => @$model->id],['title' => 'Delete', 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'), 'data-method'  => 'post']);
                             },
                     ],
                 ],
