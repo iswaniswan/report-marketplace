@@ -181,7 +181,7 @@ $this->registerCss($style);
                     <thead>
                         <tr>
                             <th style="width: 3%;">#</th>
-                            <th style="width:16%;">Create Time</th>
+                            <th style="width:16%;">Transaction Date</th>
                             <th style="width: 24%;">Order Number</th>
                             <th style="width: 8%;">Status</th>
                             <th style="width: 8%;">Fee Name</th>
@@ -249,7 +249,7 @@ $script = <<<JS
         },
         columns: [
             { data: null, title: '#', orderable: false, searchable: false, defaultContent: ''},
-            { data: 'order_creation_date', orderable: false},
+            { data: 'transaction_date', orderable: false},
             { data: 'order_number', orderable: false},
             { data: 'order_status', orderable: false},
             { data: 'fee_name', orderable: false},

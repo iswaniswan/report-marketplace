@@ -227,7 +227,7 @@ class LazadaIncomeController extends Controller
             $data[] = [
                 'number' => ++$number, // Increment the sequence number for each row
                 'order_number' => $model->order_number,
-                'order_creation_date' => $model->order_creation_date,
+                'transaction_date' => $model->transaction_date,
                 'order_status' => $model->order_status,
                 'fee_name' => $model->fee_name,
                 'amount_include_tax' => number_format(abs($model->amount_include_tax)),

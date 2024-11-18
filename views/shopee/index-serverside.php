@@ -273,7 +273,7 @@ $script = <<<JS
             { data: 'status_pesanan', orderable: false},
             { data: 'harga_awal', orderable: false},
             { data: 'total_diskon', orderable: false},
-            { data: 'jumlah_produk_di_pesan', orderable: false},            
+            { data: 'jumlah', orderable: false},            
             { data: 'status_pembatalan_pengembalian', orderable: false},
             { data: 'returned_quantity', orderable: false},
             { data: 'total_harga_produk', orderable: false},
