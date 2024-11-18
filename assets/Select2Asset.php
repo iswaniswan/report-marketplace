@@ -21,7 +21,7 @@ class Select2Asset extends AssetBundle
     public $sourcePath = '@themes/uplon/assets/libs';
     public $css = [
         'select2/select2.min.css',
-        'select2/multi-select.css'
+        // 'select2/multi-select.css'
     ];
     public $js = [
         'select2/select2.min.js'

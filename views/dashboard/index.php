@@ -3,6 +3,11 @@
 
 use app\models\TableUpload;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use app\assets\DataTableAsset;
+
+
+// DataTableAsset::register($this);
 
 
 $periodeDefault = date('Y-m');
@@ -315,9 +320,14 @@ echo Highcharts::widget([
 <div class="row">
     <div class="col-12">
         <div class="card-box">
-            <h5>Detail per Month (<?= $titleChart ?>)</h5>
-            <div class="table-responsive mb-4">
-                <table class="table table-hover table-bordered">
+            <div class="dt-button-wrapper" style="display: flex; flex-direction: row-reverse; justify-content:start">
+                <?php // Html::a('<i class="ti-plus mr-2"></i> Add', ['create'], ['class' => 'btn btn-primary mb-1']) ?>
+                <?= Html::a('<i class="ti-download mr-2"></i> Excel', ['export-excel', 'periode' => $periode, 'channel' => $channel], ['class' => 'btn btn-success mb-1 mr-1', 'target' => '_blank']) ?>                    
+                <?= Html::a('<i class="ti-printer mr-2"></i> Print', 'javascript:void(0)', ['class' => 'btn btn-info mb-1 mr-1', 'id' => 'btn-print' ]) ?>
+                <h5 style="flex-grow: 1;">Detail per Month (<?= $titleChart ?>)</h5>
+            </div>
+            <div class="table-responsive mb-4" id="table-detail-per-month-wrapper">
+                <table class="table table-hover table-bordered" id="table-detail-per-month">
                     <thead class="bg-<?= $color ?> text-white">
                         <th style="text-align: left;">Tanggal</th>
                         <th style="text-align: center;">Jumlah Transaksi</th>
@@ -374,9 +384,7 @@ echo Highcharts::widget([
                         </tr>                        
                     </tfoot>
                 </table>
-            </div>
-            <h5>Grand Total Per Marketplace - <?= date('F Y', strtotime($periode . '-01')) ?></h5>
-            <div class="table-responsive">
+                <h5 class="mt-4">Grand Total Per Marketplace - <?= date('F Y', strtotime($periode . '-01')) ?></h5>
                 <table class="table table-hover table-bordered">
                     <thead>
                         <tr>
@@ -391,11 +399,11 @@ echo Highcharts::widget([
                     </thead>
                     <tbody>
                         <?php foreach (@$footerMarketplace as $object) { ?>
-
+    
                             <?php foreach ($object as $key => $items) { ?>
-
+    
                                 <?php if (strtolower($key) == strtolower($titleChart)) { continue; } ?>
-
+    
                                 <?php $tColor = TableUpload::getListColorTheme($useText=true)[$key] ?? 'primary'; ?>
                                 <tr class="bg-<?= $tColor ?> text-white">
                                     <th><?= ucwords($key) ?></th>
@@ -410,9 +418,9 @@ echo Highcharts::widget([
                                         <th style="text-align: right">0%</th>
                                     <?php } ?>
                                 </tr>
-
+    
                             <?php } ?>
-
+    
                         <?php } ?>
                     </tbody>
                 </table>
@@ -422,14 +430,136 @@ echo Highcharts::widget([
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+
 <?php 
 
+$periodePrint = date('F Y', strtotime($periode . '-01'));
+
 $script = <<<JS
+    var periodePrint = '$periodePrint';
+    var styles = `<style>
+        /* General Table Styling */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 0 auto;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+            }
+
+            table th,
+            table td {
+                padding: 10px;
+                text-align: center;
+                border: 1px solid #ddd;
+            }
+
+            /* Header Styling */
+            table thead th {
+                background-color: #ff5722; /* Red-orange for header */
+                color: white;
+                font-weight: bold;
+            }
+
+            /* Footer Row Styling */
+            table tfoot td {
+                background-color: #ff5722; /* Matches header color */
+                color: white;
+                font-weight: bold;
+            }
+
+            /* Highlight Rows */
+            table tbody tr:nth-child(odd) {
+                background-color: #f9f9f9;
+            }
+
+            table tbody tr:nth-child(even) {
+                background-color: #fff;
+            }
+
+            /* Sub-table Headers */
+            .sub-table th {
+                background-color: #ffc107; /* Yellow for sub-table */
+                color: white;
+                font-weight: bold;
+            }
+
+            /* Sub-table Rows */
+            .sub-table tr:nth-child(odd) {
+                background-color: #e3e3e3; /* Light gray */
+            }
+
+            .sub-table tr:nth-child(even) {
+                background-color: white;
+            }
+
+            /* Sub-table Footer */
+            .sub-table tfoot td {
+                background-color: #ffc107; /* Matches sub-header */
+                color: white;
+                font-weight: bold;
+            }
+
+            /* Padding Around Printed Content */
+            body {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            /* Optional: Centered Print Title */
+            .print-title {
+                text-align: center;
+                font-size: 20px;
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+</style>`;
+
+    document.getElementById('btn-print').addEventListener('click', function () {
+        var table = document.getElementById('table-detail-per-month-wrapper').outerHTML;
+        var newWindow = window.open('', '_blank');
+        const html = `<html>
+                        <head>
+                        <title>Detail per month - `+periodePrint+`</title>
+                        `+styles+`</head>
+                        <body>
+                            <h2>Detail per Month (Semua Channel)</h2>
+                        `+table+`
+                        </body>
+                    </html>`
+        newWindow.document.write(html);
+        newWindow.document.close();
+        newWindow.print();
+    });
+
 
     $('#btn-clear').on('click', function() {
         $('#periode').val('');
         $('#channel').val('');
     })
+
+    // document.getElementById('btn-excel').addEventListener('click', function () {
+    //     var table = document.getElementById('table-detail-per-month-wrapper'); // Get the table element
+    //     var workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet 1" }); // Convert table to workbook
+    //     var ws = workbook.Sheets["Sheet 1"];      
+        
+    //     for (let col = 0; col < document.getElementById('table-detail-per-month').rows[0].cells.length; col++) {
+    //         const cellAddress = { r: 0, c: col }; // First row (index 0)
+    //         const cellRef = XLSX.utils.encode_cell(cellAddress);
+    //         if (!ws[cellRef]) {
+    //             ws[cellRef] = {}; // Ensure cell exists
+    //             console.log(ws[cellRef]);
+    //         } else {
+    //             console.log('not exists');
+    //         }
+    //         ws[cellRef].s = { font: { bold: true } }; // Set font style to bold
+    //     }
+        
+    //     // XLSX.writeFile(workbook, 'summary ' + periodePrint + '.xlsx'); // Export workbook to .xlsx
+    // });
+
 
 JS;
 

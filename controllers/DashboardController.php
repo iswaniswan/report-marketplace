@@ -16,6 +16,12 @@ use app\models\TableUpload;
 
 use app\utils\StringHelper;
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 class DashboardController extends \yii\web\Controller
 {
     public function behaviors()
@@ -25,7 +31,7 @@ class DashboardController extends \yii\web\Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'index-summary'],
+                        'actions' => ['index', 'index-summary', 'export-excel'],
                         'allow' => true,
                         'roles' => ['@']
                     ],
@@ -48,7 +54,7 @@ class DashboardController extends \yii\web\Controller
         // return $this->render('index');
     }
 
-    public function actionIndexSummary()
+    public function actionIndexSummary($asExport=false)
     {
         $request = Yii::$app->request->get();
         
@@ -366,6 +372,18 @@ class DashboardController extends \yii\web\Controller
             'amountNet' => $amountNet
         ];
 
+        if ($asExport) {
+            return [
+                'periode' => $periode,
+                'channel' => $channel,
+                'summaryByDateRange' => $mergedData,
+                'summaryTotal' => $mergedTotal,
+                'dataChart' => $dataChart,
+                'pieData' => $pieData,
+                'footerMarketplace' => $footerMarketplace
+            ];
+        }
+
         $this->layout = 'main';
         return $this->render('index', [
             'periode' => $periode,
@@ -460,6 +478,124 @@ class DashboardController extends \yii\web\Controller
             default: 
             break;
         }
+    }
+
+    public function actionExportExcel($periode=null, $channel=null)
+    {   
+        if ($periode == null) {
+            $periode = date('Y-m');
+        }
+
+        $titleChart = 'Semua Channel';
+        if ($channel != null) {
+            $titleChart = TableUpload::getListChannel()[$channel];
+            $titleChart = ucwords($titleChart);
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->setActiveSheetIndex(0);
+        $sheet = $spreadsheet->getActiveSheet();
+
+
+        $sheet->getColumnDimension('A')->setWidth(10);
+        $sheet->getColumnDimension('B')->setWidth(20);
+        $sheet->getColumnDimension('C')->setWidth(20);
+        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(20);
+
+        $sheet->setCellValue('A1', 'Detail Per Month ('.$titleChart.')');
+        $sheet->setCellValue('A3', 'Tanggal');
+        $sheet->setCellValue('B3', 'Jumlah Transaksi');
+        $sheet->setCellValue('C3', 'Qty');
+        $sheet->setCellValue('D3', 'Amount HJP');
+        $sheet->setCellValue('E3', 'Amount Net');
+        $sheet->setCellValue('F3', 'Fee Marketplace');
+        $sheet->setCellValue('G3', '%Fee Marketplace');
+
+        $row = 3;
+        $i=1;
+
+        $_GET[1]['periode'] = $periode;
+        $_GET[1]['channel'] = $channel;
+        $query = $this->actionIndexSummary($asExport=true);
+        $summaryByDateRange = $query['summaryByDateRange'];
+
+        $grand_jumlah_transaksi = 0;
+        $grand_jumlah = 0;
+        $grand_amount_hjp = 0;
+        $grand_amount_net = 0;
+        $grand_fee_marketplace = 0;
+
+        foreach($summaryByDateRange as $data){
+            $result = (object) $data;
+            $grand_jumlah_transaksi += $result->jumlah_transaksi;
+            $grand_jumlah += $result->jumlah;
+            $grand_amount_hjp += $result->amount_hjp;
+            $grand_amount_net += $result->amount_net;
+            $grand_fee_marketplace += $result->fee_marketplace;
+
+            $row++;
+            $sheet->setCellValue('A' . $row, date('d-m-Y', strtotime($result->waktu_pesanan_dibuat)));
+            $sheet->setCellValue('B' . $row, $result->jumlah_transaksi);
+            $sheet->setCellValue('C' . $row, $result->jumlah);
+            $sheet->setCellValue('D' . $row, $result->amount_hjp);
+            $sheet->setCellValue('E' . $row, $result->amount_net);
+            $sheet->setCellValue('F' . $row, $result->fee_marketplace);
+
+            $persenMarketplace = 0;
+            if ((int) @$result->amount_hjp > 0) {
+                $persenMarketplace = round($result->fee_marketplace/$result->amount_hjp * 100, 2);
+            }
+
+            $sheet->setCellValue('G' . $row, $persenMarketplace);
+
+            $i++;
+        }
+
+        $row += 2;
+        $sheet->setCellValue('A' . $row, 'Grand Total Per Marketplace - ' . date('F Y', strtotime($periode . '-01')));
+        $row += 2;
+
+        $sheet->setCellValue('A' . $row, 'Channel');
+        $sheet->setCellValue('B' . $row, 'Jumlah Transaksi');
+        $sheet->setCellValue('C' . $row, 'Qty');
+        $sheet->setCellValue('D' . $row, 'Amount HJP');
+        $sheet->setCellValue('E' . $row, 'Amount Net');
+        $sheet->setCellValue('F' . $row, 'Fee Marketplace');
+        $sheet->setCellValue('G' . $row, '%Fee Marketplace');
+
+        $footerMarketplace = $query['footerMarketplace'];
+        foreach($footerMarketplace as $object) {
+            
+            foreach ($object as $key => $items) {
+                if (strtolower($key) == strtolower($titleChart)) { continue; }
+
+                $sheet->setCellValue('A' . $row, ucwords($key));
+                $sheet->setCellValue('B' . $row, $items['jumlah_transaksi']);
+                $sheet->setCellValue('C' . $row, $items['jumlah']);
+                $sheet->setCellValue('D' . $row, $items['amount_hjp']);
+                $sheet->setCellValue('E' . $row, $items['amount_net']);
+                $sheet->setCellValue('F' . $row, $items['fee_marketplace']);
+
+                $persenFeeMarketplace = 0;
+                if ($items['amount_hjp'] > 0) {
+                    $persenFeeMarketplace = round($items['fee_marketplace']/$items['amount_hjp'] * 100, 2);
+                } 
+                $sheet->setCellValue('G' . $row, $persenFeeMarketplace);
+            }
+
+            $row++;
+            $i++;
+        }
+
+        $path = '../files/';
+        $filename = date('YmdHis') . '- Summary ' . $periode;
+        $filename = strtoupper($filename);
+        $filename = $filename.'.xlsx';
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save($path . $filename);
+        return $this->redirect(['file/get', 'fileName' => $filename]);
     }
 
 }
