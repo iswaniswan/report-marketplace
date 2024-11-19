@@ -31,6 +31,7 @@ if ($periode == null) {
 
 // var_dump($summaryTotal[0]); die();
 $summaryTotal = (object) $summaryTotal[0];
+
 ?>
 
 <form action="<?= Url::to(['shopee/index-summary']) ?>" method="GET">
@@ -69,28 +70,28 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-basket-loaded float-right text-warning"></i>
+            <i class="icon-basket-loaded float-right text-primary"></i>
             <h6 class="text-primary text-uppercase">Jumlah Transaksi</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah_transaksi) ?></span></h3>
         </div>
     </div>    
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-handbag float-right text-warning"></i>
+            <i class="icon-handbag float-right text-danger"></i>
             <h6 class="text-danger text-uppercase">Quantity</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah) ?></span></h3>
         </div>
     </div> 
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-paypal float-right text-warning"></i>
+            <i class="icon-paypal float-right text-purple"></i>
             <h6 class="text-purple text-uppercase">Fee Marketplace</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace) ?></span></h3>
         </div>
     </div>   
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-paypal float-right text-warning"></i>
+            <i class="icon-paypal float-right text-info"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
             <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
                 <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
@@ -109,11 +110,42 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
-            <i class="icon-credit-card float-right text-warning"></i>
+            <i class="icon-credit-card float-right text-success"></i>
             <h6 class="text-success text-uppercase">Amount Net</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_net) ?></span></h3>
         </div>
     </div>   
+</div>
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Pesanan Batal & Retur</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['batal']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Amount HJP Batal & Retur</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['batal']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Pesanan Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['sedang dikirim']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Amount HJP Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['sedang dikirim']) ?></span></h3>
+        </div>
+    </div>
 </div>
 
 <div class="row">

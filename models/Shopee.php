@@ -377,6 +377,42 @@ class Shopee extends \yii\db\ActiveRecord
         $command = Yii::$app->db->createCommand($sql);
         return $command->queryAll();
     }
+
+    public static function getCountStatusPesanan($date_start=null, $date_end=null)
+    {
+        if ($date_start == null) {
+            $date_start = date('Y-m-d');
+        }
+
+        if ($date_end == null) {
+            $date_end = date('Y-m-d');
+        }
+
+        $sql = <<<SQL
+                SELECT status_pesanan, sum(amount_hjp) AS amount_hjp, count(status_pesanan) AS jumlah
+                FROM (
+                        SELECT no_pesanan, sum(REPLACE(total_harga_produk, '.', '')) AS amount_hjp, status_pesanan
+                            FROM shopee 
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                        GROUP BY 1	
+                        UNION ALL 
+                        SELECT no_pesanan, sum(REPLACE(total_harga_produk, '.', '')) AS amount_hjp, 'Batal' AS status_pesanan
+                            FROM shopee 
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            AND no_pesanan IN (
+                                                SELECT DISTINCT no_pesanan
+                                                FROM shopee_income 
+                                                WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                        )
+                        AND status_pesanan  = 'Selesai' AND returned_quantity > 0
+                        GROUP BY 1	
+                ) a
+                GROUP BY 1
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
+    }
     
 
 }

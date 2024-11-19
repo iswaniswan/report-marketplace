@@ -84,12 +84,27 @@ class ShopeeController extends Controller
         $summaryTotal = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
         // $summaryByDateRange = ShopeeIncome::getSummaryByDateRange($date_start, $date_end);
         // $summaryTotal = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
-        // echo '<pre>'; var_dump($summaryByDateRange); echo '</pre>'; die();
+        
+        // ambil status pesanan yg tidak selesai
+        $countStatusPesanan = Shopee::getCountStatusPesanan($date_start, $date_end);
+        $allStatusPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['status_pesanan']); // Convert the key to lowercase
+            $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];  
+        }
+
+        $allHjpPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['status_pesanan']); // Convert the key to lowercase
+            $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];  
+        }
 
         return $this->render('index-summary', [
             'periode' => $periode,
             'summaryTotal' => $summaryTotal,
-            'summaryByDateRange' => $summaryByDateRange
+            'summaryByDateRange' => $summaryByDateRange,
+            'allStatusPesanan' => $allStatusPesanan,
+            'allHjpPesanan' => $allHjpPesanan
         ]);
     }
 
