@@ -18,7 +18,7 @@ if ($periode == null) {
 $summaryTotal = (object) @$summaryTotal ?? null;
 
 $color = '';
-if ((empty($channel) || $channel == null)) {
+if ((empty($channel) || count($channel) == count(TableUpload::getListChannel()))) {
     $color = 'danger';
 } else {
     if ((count($channel) > 1)) {
@@ -201,7 +201,7 @@ use miloschuman\highcharts\Highcharts;
 // }
 
 $titleChart = '';
-if ((empty($channel) || $channel == null)) {
+if ((empty($channel) || count($channel) == count(TableUpload::getListChannel()))) {
     $titleChart = 'Semua Channel';
 } else {
     if ((count($channel) > 1)) {
@@ -511,7 +511,11 @@ echo Highcharts::widget([
     
                             <?php foreach ($object as $key => $items) { ?>
 
-                                <?php if (in_array(TableUpload::getListValue(strtolower($key)), @$channel)) { continue; } ?>
+                                <?php if ((!empty($channel) && count($channel) != count(TableUpload::getListChannel())) 
+                                        && in_array(TableUpload::getListValue(strtolower($key)), @$channel)
+                                    ) {
+                                    continue; 
+                                } ?>
     
                                 <?php /* if (strtolower($key) == strtolower($titleChart)) { continue; } */ ?>
                                 
@@ -549,8 +553,11 @@ echo Highcharts::widget([
 
 $periodePrint = date('F Y', strtotime($periode . '-01'));
 
-$countAllStatus = count(TableUpload::getListChannel());
-$isAutoCheckedAll = (@$channel == [] || empty(@$channel) || @$channel[0] == '') ? 1 : 0;
+$countAllChannel = count(TableUpload::getListChannel());
+$isAutoCheckedAll = (empty(@$channel) || count($channel) == $countAllChannel) ? 1 : 0;
+
+
+
 
 $script = <<<JS
     var titleChart = '$titleChart';
@@ -696,12 +703,12 @@ $script = <<<JS
         });
 
         // isSelectedAll
-        if ($countAllStatus == $('#channel option:selected').length) {
+        if ($countAllChannel == $('#channel option:selected').length) {
             $('#selectAll').attr('checked', 'checked');
         }
 
         // auto checked all
-        if ($isAutoCheckedAll == 1) {
+        if ($isAutoCheckedAll == 1 && $('#selectAll').is(':checked') == false) {
             $('#selectAll').trigger('click');
         }
 
