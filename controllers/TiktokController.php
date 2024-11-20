@@ -84,12 +84,28 @@ class TiktokController extends Controller
         //     'status_pesanan' => 'Selesai'
         // ]);
 
+        // ambil status pesanan yg tidak selesai
+        $countStatusPesanan = Tiktok::getCountStatusPesanan($date_start, $date_end);
+        $allStatusPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['order_status']); // Convert the key to lowercase
+            $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];  
+        }
+
+        $allHjpPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['order_status']); // Convert the key to lowercase
+            $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];  
+        }
+
         return $this->render('index-summary', [
             'periode' => $periode,
             'date_start' => $date_start,
             'date_end' => $date_end,
             'summaryByDateRange' => $summaryByDateRange,
             'summaryTotal' => $summaryTotal,
+            'allStatusPesanan' => $allStatusPesanan,
+            'allHjpPesanan' => $allHjpPesanan
         ]);
     }
 

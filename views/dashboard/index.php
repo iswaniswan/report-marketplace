@@ -317,6 +317,38 @@ echo Highcharts::widget([
     </div>   
 </div>
 
+
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Pesanan Batal & Retur</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['batal']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Amount HJP Batal & Retur</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['batal']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Pesanan Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['sedang dikirim']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Amount HJP Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['sedang dikirim']) ?></span></h3>
+        </div>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12">
         <div class="card-box">

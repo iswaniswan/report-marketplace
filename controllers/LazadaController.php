@@ -81,6 +81,19 @@ class LazadaController extends Controller
         // $jumlahTransaksi = Tiktok::getCountUnique('no_pesanan', [
         //     'status_pesanan' => 'Selesai'
         // ]);
+        // ambil status pesanan yg tidak selesai
+        $countStatusPesanan = Lazada::getCountStatusPesanan($date_start, $date_end);
+        $allStatusPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['status']); // Convert the key to lowercase
+            $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];  
+        }
+
+        $allHjpPesanan = [];
+        foreach (@$countStatusPesanan as $statusPesanan) {
+            $key = strtolower($statusPesanan['status']); // Convert the key to lowercase
+            $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];  
+        }
 
         return $this->render('index-summary', [
             'periode' => $periode,
@@ -88,6 +101,8 @@ class LazadaController extends Controller
             'date_end' => $date_end,
             'summaryByDateRange' => $summaryByDateRange,
             'summaryTotal' => $summaryTotal,
+            'allStatusPesanan' => $allStatusPesanan,
+            'allHjpPesanan' => $allHjpPesanan
         ]);
     }
 

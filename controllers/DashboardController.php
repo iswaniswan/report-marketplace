@@ -76,6 +76,9 @@ class DashboardController extends \yii\web\Controller
         // ['name' => 'Tokopedia', 'y' => array_sum($dataChart['jumlahTransaksi'])],
         $pieData = [];
 
+        $allStatusPesanan = [];
+        $allHjpPesanan = [];
+
         // $shopee = [
         //     'summaryByDateRange' => ShopeeIncome::getSummaryByDateRange($date_start, $date_end),
         //     'summaryTotal' => ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true)
@@ -132,7 +135,24 @@ class DashboardController extends \yii\web\Controller
                     ];
                 }
             }
-        }                
+
+            // status pesanan
+            $countStatusPesanan = Shopee::getCountStatusPesanan($date_start, $date_end);
+            foreach (@$countStatusPesanan as $statusPesanan) {
+                $key = strtolower($statusPesanan['status_pesanan']); // Convert the key to lowercase
+                if (isset($allStatusPesanan[$key])) {
+                    $allStatusPesanan[$key] += (int)$statusPesanan['jumlah'];  
+                } else {
+                    $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];  
+                }
+
+                if (isset($allHjpPesanan[$key])) {
+                    $allHjpPesanan[$key] += (int)$statusPesanan['amount_hjp'];
+                } else {
+                    $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];  
+                }
+            }
+        }    
 
         // $tokopedia = [
         //     'summaryByDateRange' => Tokopedia::getSummaryByDateRange($date_start, $date_end),
@@ -187,6 +207,22 @@ class DashboardController extends \yii\web\Controller
                     ];
                 }
             }  
+
+            $countStatusPesanan = Tokopedia::getCountStatusPesanan($date_start, $date_end);
+            foreach (@$countStatusPesanan as $statusPesanan) {
+                $key = strtolower($statusPesanan['status_terakhir']); // Convert the key to lowercase
+                if (isset($allStatusPesanan[$key])) {
+                    $allStatusPesanan[$key] += (int)$statusPesanan['jumlah'];
+                } else {
+                    $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];
+                }
+
+                if (isset($allHjpPesanan[$key])) {
+                    $allHjpPesanan[$key] += (int)$statusPesanan['amount_hjp'];
+                } else {
+                    $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];
+                }
+            }
         }
 
         // $tiktok = [
@@ -242,6 +278,22 @@ class DashboardController extends \yii\web\Controller
                     ];
                 }
             }  
+
+            $countStatusPesanan = Tiktok::getCountStatusPesanan($date_start, $date_end);
+            foreach (@$countStatusPesanan as $statusPesanan) {
+                $key = strtolower($statusPesanan['order_status']); // Convert the key to lowercase
+                if (isset($allStatusPesanan[$key])) {
+                    $allStatusPesanan[$key] += (int)$statusPesanan['jumlah'];
+                } else {
+                    $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];
+                }
+
+                if (isset($allHjpPesanan[$key])) {
+                    $allHjpPesanan[$key] += (int)$statusPesanan['amount_hjp'];
+                } else {
+                    $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];
+                }
+            }
         }
         
         // echo '<pre>'; var_dump($mergedData); echo '</pre>'; die();
@@ -295,6 +347,22 @@ class DashboardController extends \yii\web\Controller
                     ];
                 }
             }  
+
+            $countStatusPesanan = Lazada::getCountStatusPesanan($date_start, $date_end);
+            foreach (@$countStatusPesanan as $statusPesanan) {
+                $key = strtolower($statusPesanan['status']); // Convert the key to lowercase
+                if (isset($allStatusPesanan[$key])) {
+                    $allStatusPesanan[$key] += (int)$statusPesanan['jumlah'];
+                } else {
+                    $allStatusPesanan[$key] = (int)$statusPesanan['jumlah'];
+                }
+
+                if (isset($allHjpPesanan[$key])) {
+                    $allHjpPesanan[$key] += (int)$statusPesanan['amount_hjp'];
+                } else {
+                    $allHjpPesanan[$key] = (int)$statusPesanan['amount_hjp'];
+                }
+            }
         }
 
         // $offline = [];
@@ -372,6 +440,9 @@ class DashboardController extends \yii\web\Controller
             'amountNet' => $amountNet
         ];
 
+        $allStatusPesanan = $this->mergeStatus($allStatusPesanan);
+        $allHjpPesanan = $this->mergeStatus($allHjpPesanan);
+
         if ($asExport) {
             return [
                 'periode' => $periode,
@@ -380,7 +451,9 @@ class DashboardController extends \yii\web\Controller
                 'summaryTotal' => $mergedTotal,
                 'dataChart' => $dataChart,
                 'pieData' => $pieData,
-                'footerMarketplace' => $footerMarketplace
+                'footerMarketplace' => $footerMarketplace,
+                'allStatusPesanan' => $allStatusPesanan,
+                'allHjpPesanan' => $allHjpPesanan
             ];
         }
 
@@ -392,8 +465,33 @@ class DashboardController extends \yii\web\Controller
             'summaryTotal' => $mergedTotal,
             'dataChart' => $dataChart,
             'pieData' => $pieData,
-            'footerMarketplace' => $footerMarketplace
+            'footerMarketplace' => $footerMarketplace,
+            'allStatusPesanan' => $allStatusPesanan,
+            'allHjpPesanan' => $allHjpPesanan
         ]);
+    }
+
+    private function mergeStatus($array=[])
+    {
+        $groups = [
+            "batal" => ["batal", "dibatalkan", "canceled"],
+            "sedang dikirim" => ["sedang dikirim"]
+        ];
+        
+        // Initialize the result array
+        $result = [];
+        
+        // Group and sum up the values
+        foreach ($groups as $groupKey => $aliases) {
+            $result[$groupKey] = 0; // Initialize group value
+            foreach ($aliases as $alias) {
+                if (isset($array[$alias])) {
+                    $result[$groupKey] += $array[$alias];
+                }
+            }
+        }
+
+        return $result;
     }
 
     private function getDataFooterMarketplace($date_start, $date_end, $marketplace='')

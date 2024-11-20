@@ -230,4 +230,29 @@ class Tokopedia extends \yii\db\ActiveRecord
             ->queryAll(\PDO::FETCH_OBJ);
     }   
 
+    public static function getCountStatusPesanan($date_start=null, $date_end=null)
+    {
+        if ($date_start == null) {
+            $date_start = date('Y-m-d');
+        }
+
+        if ($date_end == null) {
+            $date_end = date('Y-m-d');
+        }
+
+        $sql = <<<SQL
+            SELECT 
+                CASE
+                    WHEN LOWER(status_terakhir) LIKE '%dibatalkan%' THEN 'Dibatalkan'
+                    ELSE status_terakhir
+                END AS status_terakhir, sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp, count(status_terakhir) AS jumlah
+            FROM tokopedia a
+            WHERE STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') BETWEEN '$date_start' AND '$date_end'
+            GROUP BY 1
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
+    }
+
 }

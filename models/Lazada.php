@@ -310,4 +310,31 @@ class Lazada extends \yii\db\ActiveRecord
         return $command->queryAll();
     }
 
+    public static function getCountStatusPesanan($date_start=null, $date_end=null)
+    {
+        if ($date_start == null) {
+            $date_start = date('Y-m-d');
+        }
+
+        if ($date_end == null) {
+            $date_end = date('Y-m-d');
+        }
+
+        $sql = <<<SQL
+            SELECT 
+                CASE
+                    WHEN LOWER(status) NOT LIKE '%confirmed%' THEN 'canceled'
+                    ELSE status
+                END AS status,
+                sum(a.unit_price + a.seller_discount_total) amount_hjp,
+                count(a.status) AS jumlah
+            FROM lazada a
+            WHERE STR_TO_DATE(a.create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
+            GROUP BY 1
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
+    }
+
 }

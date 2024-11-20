@@ -248,4 +248,32 @@ class Tiktok extends \yii\db\ActiveRecord
     }    
 
 
+    public static function getCountStatusPesanan($date_start=null, $date_end=null)
+    {
+        if ($date_start == null) {
+            $date_start = date('Y-m-d');
+        }
+
+        if ($date_end == null) {
+            $date_end = date('Y-m-d');
+        }
+
+        $sql = <<<SQL
+            SELECT order_status, sum(amount_hjp) AS amount_hjp, count(order_status) AS jumlah
+            FROM (
+                    SELECT order_id, (
+                                    sum(a.sku_subtotal_before_discount) - sum(a.sku_seller_discount)
+                                    ) AS amount_hjp, order_status
+                    FROM tiktok a
+                    WHERE STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                    GROUP BY 1	
+            ) a
+            GROUP BY 1
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        return $command->queryAll();
+    }
+
+
 }

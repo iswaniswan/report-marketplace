@@ -115,6 +115,23 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>   
 </div>
 
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Pesanan Batal</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['dibatalkan']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <i class="icon-close float-right text-danger"></i>
+            <h6 class="text-danger text-uppercase">Amount HJP Batal</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['dibatalkan']) ?></span></h3>
+        </div>
+    </div>
+</div>
+
 
 <div class="row">
     <div class="col-12">
