@@ -431,7 +431,7 @@ echo Highcharts::widget([
         <div class="card-box">
             <div class="dt-button-wrapper" style="display: flex; flex-direction: row-reverse; justify-content:start">
                 <?php // Html::a('<i class="ti-plus mr-2"></i> Add', ['create'], ['class' => 'btn btn-primary mb-1']) ?>
-                <?= Html::a('<i class="ti-download mr-2"></i> Excel', ['export-excel', 'periode' => $periode, 'channel' => $channel], ['class' => 'btn btn-success mb-1 mr-1', 'target' => '_blank']) ?>                    
+                <?= Html::a('<i class="ti-download mr-2"></i> Excel', ['export-excel', 'periode' => $periode, 'channel' => json_encode($channel)], ['class' => 'btn btn-success mb-1 mr-1', 'target' => '_blank']) ?>
                 <?= Html::a('<i class="ti-printer mr-2"></i> Print', 'javascript:void(0)', ['class' => 'btn btn-info mb-1 mr-1', 'id' => 'btn-print' ]) ?>
                 <h5 style="flex-grow: 1;">Detail per Month (<?= $titleChart ?>)</h5>
             </div>
@@ -553,6 +553,7 @@ $countAllStatus = count(TableUpload::getListChannel());
 $isAutoCheckedAll = (@$channel == [] || empty(@$channel) || @$channel[0] == '') ? 1 : 0;
 
 $script = <<<JS
+    var titleChart = '$titleChart';
     var periodePrint = '$periodePrint';
     var styles = `<style>
         /* General Table Styling */
@@ -640,7 +641,7 @@ $script = <<<JS
                         <title>Detail per month - `+periodePrint+`</title>
                         `+styles+`</head>
                         <body>
-                            <h2>Detail per Month (Semua Channel)</h2>
+                            <h2>Detail per Month `+titleChart+`</h2>
                         `+table+`
                         </body>
                     </html>`

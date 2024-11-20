@@ -580,14 +580,19 @@ class DashboardController extends \yii\web\Controller
 
     public function actionExportExcel($periode=null, $channel=null)
     {   
+        $channel = json_decode($channel); 
         if ($periode == null) {
             $periode = date('Y-m');
         }
 
         $titleChart = 'Semua Channel';
-        if ($channel != null) {
-            $titleChart = TableUpload::getListChannel()[$channel];
-            $titleChart = ucwords($titleChart);
+        if (!empty($channel)) {
+            $_titleChart = [];
+            foreach ($channel as $key) {
+                $_text = TableUpload::getListChannel()[$key];
+                $_titleChart[] = ucwords($_text);
+            }
+            $titleChart = join(" & ", $_titleChart);
         }
 
         $spreadsheet = new Spreadsheet();
@@ -665,9 +670,14 @@ class DashboardController extends \yii\web\Controller
 
         $footerMarketplace = $query['footerMarketplace'];
         foreach($footerMarketplace as $object) {
-            
+            $addNewRow = true;
+
             foreach ($object as $key => $items) {
-                if (strtolower($key) == strtolower($titleChart)) { continue; }
+                // if (strtolower($key) == strtolower($titleChart)) { continue; }
+                if (in_array(TableUpload::getListValue(strtolower($key)), @$channel)) { 
+                    $addNewRow = false; 
+                    continue; 
+                }
 
                 $sheet->setCellValue('A' . $row, ucwords($key));
                 $sheet->setCellValue('B' . $row, $items['jumlah_transaksi']);
@@ -683,8 +693,10 @@ class DashboardController extends \yii\web\Controller
                 $sheet->setCellValue('G' . $row, $persenFeeMarketplace);
             }
 
-            $row++;
-            $i++;
+            if ($addNewRow) {
+                $row++;
+                $i++;
+            }
         }
 
         $path = '../files/';
