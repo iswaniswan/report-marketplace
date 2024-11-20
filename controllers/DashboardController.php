@@ -64,7 +64,7 @@ class DashboardController extends \yii\web\Controller
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
-        $channel = $request[1]['channel'] ?? null;        
+        $channel = $request[1]['channel'] ?? [];
 
         // summary
         $mergedTotal = [];
@@ -84,7 +84,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryTotal' => ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true)
         // ];
         $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'shopee');
-        if ($channel == null || $channel == TableUpload::SHOPEE) {
+        if ($channel == [] || in_array(TableUpload::SHOPEE, $channel)) {
             // $summaryChannel = ShopeeIncome::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             $summaryChannel = Shopee::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data;
@@ -159,7 +159,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryTotal' => Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true),
         // ];
         $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'tokopedia');
-        if ($channel == null || $channel == TableUpload::TOKOPEDIA) {
+        if ($channel == [] || in_array(TableUpload::TOKOPEDIA, $channel)) {
             $summaryChannel = Tokopedia::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data;
                 // total card
@@ -230,7 +230,7 @@ class DashboardController extends \yii\web\Controller
         //     'summaryTotal' => Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true),
         // ];
         $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'tiktok');
-        if ($channel == null || $channel == TableUpload::TIKTOK) {
+        if ($channel == [] || in_array(TableUpload::TIKTOK, $channel)) {
             $summaryChannel = Tiktok::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
                 // total card
@@ -299,7 +299,7 @@ class DashboardController extends \yii\web\Controller
         // echo '<pre>'; var_dump($mergedData); echo '</pre>'; die();
         // $lazada = [];
         $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'lazada');
-        if ($channel == null || $channel == TableUpload::LAZADA) {
+        if ($channel == [] || in_array(TableUpload::LAZADA, $channel)) {
             $summaryChannel = Lazada::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
                 // total card
@@ -367,7 +367,7 @@ class DashboardController extends \yii\web\Controller
 
         // $offline = [];
         $footerMarketplace[] = $this->getDataFooterMarketplace($date_start, $date_end, 'offline');
-        if ($channel == null || $channel == TableUpload::OFFLINE) {
+        if ($channel == [] || in_array(TableUpload::OFFLINE, $channel)) {
             $summaryChannel = OFFLINE::getSummaryByDateRange($date_start, $date_end, $is_total=true);
             foreach (@$summaryChannel as $data) { $data = (array) $data; 
                 // total card

@@ -17,12 +17,72 @@ if ($periode == null) {
 
 $summaryTotal = (object) @$summaryTotal ?? null;
 
-$color = ($channel == null) ? 'danger' : TableUpload::getListColorTheme()[$channel];
+$color = '';
+if ((empty($channel) || $channel == null)) {
+    $color = 'danger';
+} else {
+    if ((count($channel) > 1)) {
+        $color = TableUpload::getListColorTheme()[1];
+    } else {
+        $color = TableUpload::getListColorTheme()[$channel[0]];
+    }
+}
 
 $style = <<<CSS
     #chart-wrapper {
         margin-bottom: 2rem;
     }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #64b0f2 !important;
+        border: none !important;
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #fff !important;
+    }
+    .select2 .select2-container .select2-container--default {
+        line-height: 25px;
+    }
+
+    .custom-checkbox input[type="checkbox"] {
+        display: none;
+    }
+
+    /* Style the custom checkbox */
+    .custom-checkbox span {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ccc;
+        border-radius: 3px;
+        background-color: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    /* Change color when checkbox is checked */
+    .custom-checkbox input[type="checkbox"]:checked + span {
+        background-color: #64b0f2;
+        border-color: #64b0f2;
+    }
+
+    .custom-checkbox input[type="checkbox"]:checked + span::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: 3px;
+        width: 6px;
+        height: 12px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .select2-container .select2-selection--multiple {
+        min-height: 36px !important;
+    }
+
 CSS;
 $this->registerCss($style);
 
@@ -98,13 +158,13 @@ $this->registerCss($style);
                             <input type="month" id="periode" name="1[periode]" min="2020-01" max="2030-12" value="<?= $periode ?>" class="form-control" onclick="this.showPicker();">
                         </div>
                     </div>
-                    <div class="col-3">
+                    <div class="col-6">
                         <div class="form-group">
                             <label for="channel">Channel</label>
-                            <select name="1[channel]" id="channel" class="form-control">
-                                <option value="">Semua channel</option>
+                            <label class="float-right custom-checkbox"><input type="checkbox" id="selectAll"><span></span> Select All </label>
+                            <select name="1[channel][]" id="channel" class="form-control select2 select2-multiple" size="4" multiple>
                                 <?php foreach (TableUpload::getListChannel() as $key => $value) { ?>
-                                    <?php $isSelected = (@$channel == $key) ? 'selected' : '' ?>
+                                    <?php $isSelected = (in_array($key, @$channel)) ? 'selected' : '' ?>
                                     <option value="<?= $key ?>" <?= $isSelected ?>><?= $value ?></option>
                                 <?php } ?>
                             </select>
@@ -134,10 +194,27 @@ $this->registerCss($style);
 /* default chart */
 use miloschuman\highcharts\Highcharts;
 
-$titleChart = 'Semua Channel';
-if ($channel != null) {
-    $titleChart = TableUpload::getListChannel()[$channel];
-    $titleChart = ucwords($titleChart);
+// $titleChart = 'Semua Channel';
+// if ($channel != null) {
+//     $titleChart = TableUpload::getListChannel()[$channel];
+//     $titleChart = ucwords($titleChart);
+// }
+
+$titleChart = '';
+if ((empty($channel) || $channel == null)) {
+    $titleChart = 'Semua Channel';
+} else {
+    if ((count($channel) > 1)) {
+        $_titleChart = [];
+        foreach ($channel as $key) {
+            $_text = TableUpload::getListChannel()[$key];
+            $_titleChart[] = ucwords($_text);
+        }
+        $titleChart = join(" & ", $_titleChart);
+    } else {
+        $titleChart = TableUpload::getListChannel()[$channel[0]];
+        $titleChart = ucwords($titleChart);
+    }
 }
 
 // echo Highcharts::widget([
@@ -433,8 +510,11 @@ echo Highcharts::widget([
                         <?php foreach (@$footerMarketplace as $object) { ?>
     
                             <?php foreach ($object as $key => $items) { ?>
+
+                                <?php if (in_array(TableUpload::getListValue(strtolower($key)), @$channel)) { continue; } ?>
     
-                                <?php if (strtolower($key) == strtolower($titleChart)) { continue; } ?>
+                                <?php /* if (strtolower($key) == strtolower($titleChart)) { continue; } */ ?>
+                                
     
                                 <?php $tColor = TableUpload::getListColorTheme($useText=true)[$key] ?? 'primary'; ?>
                                 <tr class="bg-<?= $tColor ?> text-white">
@@ -468,6 +548,9 @@ echo Highcharts::widget([
 <?php 
 
 $periodePrint = date('F Y', strtotime($periode . '-01'));
+
+$countAllStatus = count(TableUpload::getListChannel());
+$isAutoCheckedAll = (@$channel == [] || empty(@$channel) || @$channel[0] == '') ? 1 : 0;
 
 $script = <<<JS
     var periodePrint = '$periodePrint';
@@ -591,6 +674,37 @@ $script = <<<JS
         
     //     // XLSX.writeFile(workbook, 'summary ' + periodePrint + '.xlsx'); // Export workbook to .xlsx
     // });
+
+    $(document).ready(function() {
+        $('#channel').select2({
+            placeholder: "Pilih Status",
+            width: '100%'
+        });        
+        $('#selectAll').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('#channel > option').prop("selected", true);
+            } else {
+                $('#channel > option').prop("selected", false);
+            }
+            $('#channel').trigger('change'); // Update Select2 display
+        });
+
+        // Update Select All checkbox based on individual selections
+        $('#channel').on('change', function() {
+            $('#selectAll').prop('checked', $('#channel option:selected').length === $('#channel option').length);
+        });
+
+        // isSelectedAll
+        if ($countAllStatus == $('#channel option:selected').length) {
+            $('#selectAll').attr('checked', 'checked');
+        }
+
+        // auto checked all
+        if ($isAutoCheckedAll == 1) {
+            $('#selectAll').trigger('click');
+        }
+
+    })
 
 
 JS;

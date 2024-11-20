@@ -147,4 +147,21 @@ class TableUpload extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getListValue($text='')
+    {
+        $array = [
+            'lazada' => static::LAZADA,
+            'shopee' => static::SHOPEE,
+            'tiktok' => static::TIKTOK,
+            'tokopedia' => static::TOKOPEDIA,
+            'offline' => static::OFFLINE
+        ];
+
+        if ($text != '') {
+            return @$array[$text] ?? '-';
+        }
+
+        return $array;
+    }
+
 }
