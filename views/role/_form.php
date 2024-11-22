@@ -123,7 +123,7 @@ if (@$mode == Mode::READ) {
                                             }
                                         ?>
                                         <td>
-                                            <input type="checkbox" name="Role[id_menu][<?= $menu->id ?>]" id="cb_<?= $menu->id ?>" <?= @$isChecked ?> <?= $isDisabled ?>>
+                                            <input type="checkbox" name="Role[id_menu][<?= $menu->id ?>]" id="cb_<?= $menu->id ?>" <?= @$isChecked ?> <?= $isDisabled ?> data-id="<?= $menu->id ?>" data-parent="<?= $menu->id_parent ?>">
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -161,7 +161,8 @@ $script = <<<JS
             $('#table-role-permissions input[type="checkbox"]').each(function() {
                 if ($(this).is(':checked') == false) {
                     isCheckedAll = false;
-                }            
+                }
+
             })
             if (isCheckedAll) {
                 $('#check_all').attr('checked', 'checked');
@@ -179,6 +180,26 @@ $script = <<<JS
         })
 
     });
+
+    $(document).on('change', 'input[type="checkbox"]', function () {
+        const checkParent = (childId) => {
+            const parentId = $(`input[type="checkbox"][data-id="`+childId+`"]`).data('parent');
+            if (parentId && parentId !== 0) {
+                // Check the parent checkbox
+                $(`input[type="checkbox"][data-id="`+parentId+`"]`).prop('checked', true);
+                // Recursively check the upper-level parent
+                checkParent(parentId);
+            }
+        };
+
+        // When a checkbox is checked, start the recursive check for its parents
+        if ($(this).is(':checked')) {
+            const currentId = $(this).data('id');
+            checkParent(currentId);
+        }
+    });
+
+
 
 JS;
 

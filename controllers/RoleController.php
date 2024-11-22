@@ -62,7 +62,7 @@ class RoleController extends Controller
     {        
         $model = $this->findModel($id);
 
-        $allMenu = Menu::getAllMenu($rootOnly=true);
+        $allMenu = Menu::getAllMenu($rootOnly=false);
 
         $referrer = $this->request->referrer;
         return $this->render('view', [
@@ -82,7 +82,7 @@ class RoleController extends Controller
     public function actionCreate()
     {
         $model = new Role();
-        $allMenu = Menu::getAllMenu($rootOnly=true);
+        $allMenu = Menu::getAllMenu($rootOnly=false);
 
         $referrer = Yii::$app->request->referrer;
 
@@ -150,7 +150,7 @@ class RoleController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $allMenu = Menu::getAllMenu($rootOnly=true);
+        $allMenu = Menu::getAllMenu($rootOnly=false);
 
         $referrer = Yii::$app->request->referrer;
 

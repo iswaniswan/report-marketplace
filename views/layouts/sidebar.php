@@ -5,85 +5,99 @@ use app\models\Menu;
 use app\widgets\UplonMenu;
 use app\models\RolePermissions;
 
+$id_role = Yii::$app->user->identity->role->id;
 $roleName = Yii::$app->user->identity->role->name;
 
-$dashboard = ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']];
-$report = ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
+$allMenu = Menu::getListMenu($asArray=false, $id_role);
+
+// Generate the menu array
+$newMenu = Menu::buildMenu($allMenu);
+
+$menuRoleName =  ['label' => $roleName,'header' => true];
+array_unshift($newMenu, $menuRoleName);
+
+$menuLogout = ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>'];
+array_push($newMenu, $menuLogout);
+
+// echo '<pre>'; var_dump($newMenu); echo '</pre>';
+
+// $dashboard = ['label' => 'Dashboard', 'icon' => 'ti-dashboard', 'url' => ['/dashboard/index']];
+// $report = ['label' => 'Report', 'icon' => 'ti-file', 'items' => [
             
-                ['label' => 'Shopee', 'items' => [
-                        ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
-                        ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']],
-                        ['label' => 'Tabel Income', 'url' =>['/shopee-income/index-serverside']]
-                    ],
-                ], 
+//                 ['label' => 'Shopee', 'items' => [
+//                         ['label' => 'Summary', 'url' =>['/shopee/index-summary']],
+//                         ['label' => 'Tabel', 'url' =>['/shopee/index-serverside']],
+//                         ['label' => 'Tabel Income', 'url' =>['/shopee-income/index-serverside']]
+//                     ],
+//                 ], 
                 
-                ['label' => 'Tiktok', 'items' => [
-                        ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
-                        ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']],
-                        ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
-                    ],
-                ],
+//                 ['label' => 'Tiktok', 'items' => [
+//                         ['label' => 'Summary', 'url' =>['/tiktok/index-summary']],
+//                         ['label' => 'Tabel', 'url' =>['/tiktok/index-serverside']],
+//                         ['label' => 'Tabel Income', 'url' =>['/tiktok-income/index-serverside']]
+//                     ],
+//                 ],
 
-                ['label' => 'Tokopedia', 'items' => [
-                        ['label' => 'Summary', 'url' =>['/tokopedia/index-summary']],
-                        ['label' => 'Tabel', 'url' =>['/tokopedia/index-serverside']],
-                        ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-keuangan/index-serverside']]
-                    ],
-                ],
+//                 ['label' => 'Tokopedia', 'items' => [
+//                         ['label' => 'Summary', 'url' =>['/tokopedia/index-summary']],
+//                         ['label' => 'Tabel', 'url' =>['/tokopedia/index-serverside']],
+//                         ['label' => 'Tabel Keuangan', 'url' =>['/tokopedia-keuangan/index-serverside']]
+//                     ],
+//                 ],
 
-                ['label' => 'Lazada', 'items' => [
-                        ['label' => 'Summary', 'url' =>['/lazada/index-summary']],
-                        ['label' => 'Tabel', 'url' =>['/lazada/index-serverside']],
-                        ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
-                    ],
-                ],
+//                 ['label' => 'Lazada', 'items' => [
+//                         ['label' => 'Summary', 'url' =>['/lazada/index-summary']],
+//                         ['label' => 'Tabel', 'url' =>['/lazada/index-serverside']],
+//                         ['label' => 'Tabel Income', 'url' =>['/lazada-income/index-serverside']]
+//                     ],
+//                 ],
 
-                ['label' => 'Offline', 'items' => [
-                        ['label' => 'Summary', 'url' =>['/offline-report/index-summary']],
-                        ['label' => 'Tabel', 'url' =>['/offline-report/index-serverside']],
-                    ],
-                ],
+//                 ['label' => 'Offline', 'items' => [
+//                         ['label' => 'Summary', 'url' =>['/offline-report/index-summary']],
+//                         ['label' => 'Tabel', 'url' =>['/offline-report/index-serverside']],
+//                     ],
+//                 ],
                 
-            ]
-        ];
-$fileUnggah = ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']];
-$offline = ['label' => 'Offline', 'icon' => 'ti-receipt', 'url' => ['/offline/index']];
-$setting = ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
-            ['label' => 'User', 'url' =>['/user']],
-            ['label' => 'Role', 'url' =>['/role']],
-        ]];
+//             ]
+//         ];
+// $fileUnggah = ['label' => 'File Unggah', 'icon' => 'ti-file', 'url' => ['/file-source/index']];
+// $offline = ['label' => 'Offline', 'icon' => 'ti-receipt', 'url' => ['/offline/index']];
+// $setting = ['label' => 'Setting', 'icon' => 'ti-settings', 'items' => [
+//             ['label' => 'User', 'url' =>['/user']],
+//             ['label' => 'Role', 'url' =>['/role']],
+//         ]];
 
-$sequenceMenu = [
-    ['type' => 'header', 'value' => '#', 'data' => ['label' => $roleName,'header' => true]],
-    ['type' => 'key', 'value' => 'Dashboard', 'data' => $dashboard], 
-    ['type' => 'key', 'value' => 'Report', 'data' => $report],
-    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Input','header' => true]],
-    ['type' => 'key', 'value' => 'File Unggah', 'data' => $fileUnggah],
-    ['type' => 'key', 'value' => 'Offline', 'data' => $offline],
-    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Pengaturan','header' => true]],
-    ['type' => 'key', 'value' => 'Setting', 'data' => $setting],
-    ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>']]
-];
+// $sequenceMenu = [
+//     ['type' => 'header', 'value' => '#', 'data' => ['label' => $roleName,'header' => true]],
+//     ['type' => 'key', 'value' => 'Dashboard', 'data' => $dashboard], 
+//     ['type' => 'key', 'value' => 'Report', 'data' => $report],
+//     ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Input','header' => true]],
+//     ['type' => 'key', 'value' => 'File Unggah', 'data' => $fileUnggah],
+//     ['type' => 'key', 'value' => 'Offline', 'data' => $offline],
+//     ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Pengaturan','header' => true]],
+//     ['type' => 'key', 'value' => 'Setting', 'data' => $setting],
+//     ['type' => 'header', 'value' => '#', 'data' => ['label' => 'Logout', 'icon'=>'ti-shift-right', 'url' => ['/site/logout'], 'template'=>'<a class="nav-link {active}" data-method="post" href="{url}" {target}>{icon} {label}</a>']]
+// ];
 
-$allUserRoleMenu = RolePermissions::getAllRolePermission(Yii::$app->user->identity->id_role);
+// $allUserRoleMenu = RolePermissions::getAllRolePermission(Yii::$app->user->identity->id_role);
 
-$itemsAdmin = [];
+// $itemsAdmin = [];
 
-foreach ($sequenceMenu as $menu) {
-    if ($menu['type'] == 'header') {
-        $itemsAdmin[] = $menu['data'];
-        continue;
-    } else {
-        $value = $menu['value'];
-        foreach (@$allUserRoleMenu as $rolePermissions) {
-            $permissions = json_decode($rolePermissions->permission);
-            if (@$rolePermissions->roleMenu->name == $value && in_array('read', $permissions)) {
-                $itemsAdmin[] = $menu['data'];
-                continue;
-            }
-        }
-    }
-}
+// foreach ($sequenceMenu as $menu) {
+//     if ($menu['type'] == 'header') {
+//         $itemsAdmin[] = $menu['data'];
+//         continue;
+//     } else {
+//         $value = $menu['value'];
+//         foreach (@$allUserRoleMenu as $rolePermissions) {
+//             $permissions = json_decode($rolePermissions->permission);
+//             if (@$rolePermissions->roleMenu->name == $value && in_array('read', $permissions)) {
+//                 $itemsAdmin[] = $menu['data'];
+//                 continue;
+//             }
+//         }
+//     }
+// }
 
 // if (Session::isAdmin() === false) {
 //     $itemsAdmin = [];
@@ -97,9 +111,13 @@ foreach ($sequenceMenu as $menu) {
 //     array_push($items, $item);
 // }
 
+
+// $menuItem = [];
+
+// echo '======================================';
+// echo '<pre>'; var_dump($itemsAdmin); echo '</pre>'; die()
+
 ?>
-
-
 
 
 <div class="left-side-menu">
@@ -108,7 +126,7 @@ foreach ($sequenceMenu as $menu) {
         <div id="sidebar-menu">
 
             <?= UplonMenu::widget([
-                'items' => $itemsAdmin
+                'items' => $newMenu
             ]) ?>
         </div>
         <!-- End Sidebar -->

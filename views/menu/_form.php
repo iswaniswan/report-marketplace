@@ -1,6 +1,7 @@
 <?php
 
 use app\components\Mode;
+use app\models\Menu;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
@@ -32,7 +33,8 @@ if (@$mode == Mode::READ) {
         ],
         'options' => ['style' => 'padding:unset'],
         'inputOptions' => $inputOptions,
-    ]
+    ],
+    'enableClientScript' => false
 ]); ?>
 
 <div class="row">
@@ -46,15 +48,42 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
-                    <?= $form->field($model, 'id_parent')->dropDownList(\app\models\Menu::getListMenu(), [
+                    <?php /* $form->field($model, 'id_parent')->dropDownList(\app\models\Menu::getListMenu(), [
                         'prompt' => '- Pilih Menu Parent -',
-                    ])->label('Parent') ?>
+                    ])->label('Parent') */?>
+
+                    <div class="mb-3 row field-menu-id_parent" style="padding:unset">
+                        <label class="col-2" for="menu-id_parent">Parent</label>
+                        <div class="col">
+                            <select id="menu-id_parent" class="form-select form-control" name="Menu[id_parent]">
+                                <option value="">Pilih Menu Parent</option>
+
+                                <?php $allMenu = Menu::getListMenu(); ?>
+                                <?php foreach ($allMenu as $menu) { ?>
+                                    <?php $indentation = ''; $level = $menu->getLevel(); 
+                                    for ($i=0; $i<$level; $i++) {
+                                        $indentation .= ' - ';
+                                    }
+                                    ?>
+                                    <option value="<?= $menu->id ?>" data-parent=<?= $menu->id_parent ?>>
+                                        <?= $indentation ?><?= ucwords($menu->name) ?>
+                                    </option>
+                                <?php } ?>
+
+                            </select>
+                            <div class="invalid-feedback "></div>
+                        </div>
+                    </div>
 
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'route')->textInput(['maxlength' => true]) ?>
+                    <?= $form->field($model, 'icon')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'status')->textInput() ?>
+                    <?= $form->field($model, 'url')->textInput(['maxlength' => true]) ?>
+
+                    <?php /* $form->field($model, 'route')->textInput(['maxlength' => true]) */?>
+
+                    <?php /* $form->field($model, 'status')->textInput() */?>
 
                 </div>
                 <?= Html::hiddenInput('referrer', $referrer) ?>
