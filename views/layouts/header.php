@@ -195,12 +195,12 @@ use app\components\Session;
     <div class="logo-box">
         <a href="javascript:void(0)" onclick="location.reload()" class="logo text-center logo-dark">
                         <span class="logo-lg">
-                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="16" style="width: 100%; object-fit: contain; transform: scale(2.5);">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="24" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                             <!-- <span class="logo-lg-text-dark">Uplon</span> -->
                         </span>
             <span class="logo-sm">
                             <!-- <span class="logo-lg-text-dark">U</span> -->
-                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="16" style="width: 100%; object-fit: contain; transform: scale(2.5);">
+                            <img src="<?= Yii::getAlias('@web').'/images/logo3.jpeg' ?>" alt="" height="24" style="width: 100%; object-fit: contain; transform: scale(2.5);">
                         </span>
         </a>
 
