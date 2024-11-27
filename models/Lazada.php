@@ -246,6 +246,7 @@ class Lazada extends \yii\db\ActiveRecord
                     sum(amount_net) amount_net
                 FROM CTE a
                 GROUP BY 1
+                ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {

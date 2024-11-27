@@ -334,6 +334,7 @@ class Shopee extends \yii\db\ActiveRecord
                 SELECT waktu_pesanan_dibuat, sum(jumlah_transaksi) jumlah_transaksi, sum(jumlah) jumlah, sum(amount_hjp) amount_hjp, sum(amount_net) amount_net, (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
                 FROM CTE a
                 GROUP BY 1
+                ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {

@@ -76,6 +76,7 @@ class Offline extends \yii\db\ActiveRecord
             WHERE TRIM(LOWER(nama_barang)) <> 'ongkos kirim'
                 AND STR_TO_DATE(tanggal_invoice, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
             GROUP BY 1
+            ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {

@@ -189,6 +189,7 @@ class Tokopedia extends \yii\db\ActiveRecord
                     ) a
                     WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
                     GROUP BY tanggal_pembayaran
+                    ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {

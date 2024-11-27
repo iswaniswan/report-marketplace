@@ -202,7 +202,7 @@ class Tiktok extends \yii\db\ActiveRecord
                         GROUP BY 1, 2
                 ) a
                 GROUP BY 1
-                ORDER BY 1
+                ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {
