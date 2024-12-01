@@ -52,14 +52,14 @@ class StringHelper
 
     public static function sanitizeCurrency($input) {
         // Remove non-numeric characters except for period
-        $numericValue = preg_replace('/[^\d]/', '', $input);
-        return (int)$numericValue;
+        $numericValue = preg_replace('/[^\d.]/', '', $input);
+        return (float)$numericValue;
     }
 
     public static function sanitizeCurrencyAbs($input) {
         // Remove non-numeric characters except for period and leading minus sign
-        $numericValue = preg_replace('/(?!^-)[^\d]/', '', $input);
-        return (int)$numericValue;
+        $numericValue = preg_replace('/(?!^-)[^\d.]/', '', $input);
+        return (float)$numericValue;
     }
 
     public static function camelToSnakeCase($input) {

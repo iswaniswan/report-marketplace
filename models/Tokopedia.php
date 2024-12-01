@@ -218,7 +218,7 @@ class Tokopedia extends \yii\db\ActiveRecord
                                     a.nomor_invoice,
                                     0 AS jumlah_produk_dibeli,
                                     0 AS amount_hjp,
-                                    sum(biaya_layanan_termasuk_ppn_dan_pph_idr) biaya_layanan_termasuk_ppn_dan_pph_idr
+                                    sum(biaya_layanan_termasuk_ppn_dan_pph_idr + nilai_kupon_toko_terpakai_idr) biaya_layanan_termasuk_ppn_dan_pph_idr
                                 FROM tokopedia_keuangan a
                                 WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
                                 GROUP BY 1, 2
