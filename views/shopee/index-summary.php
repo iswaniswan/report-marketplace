@@ -34,6 +34,22 @@ $summaryTotal = (object) $summaryTotal[0];
 
 ?>
 
+<style>
+    a:has(.card-icon-info) {
+        position: absolute;
+        right: 1.2rem;
+        top: 0px;
+    }
+    .card-icon-info {
+        border-radius: 50%;
+        background-color: #f7f9fa !important;
+        font-size: .6rem;
+        padding: .2rem;
+        border: 1px solid;
+        vertical-align: sub;
+    }
+</style>
+
 <form action="<?= Url::to(['shopee/index-summary']) ?>" method="GET">
     <div class="row mb-4">
         <div class="container-fluid">
@@ -70,13 +86,30 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Jumlah nomor pesanan unik yang memiliki status tidak sama dengan batal" 
+                data-original-title="Jumlah Transaksi">
+                <span class="ti-help card-icon-info text-primary"></span>
+            </a>
+            <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Separated link</a>
+            </div>
             <i class="icon-basket-loaded float-right text-primary"></i>
             <h6 class="text-primary text-uppercase">Jumlah Transaksi</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah_transaksi) ?></span></h3>
+            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah_transaksi) ?></span></h3>            
         </div>
     </div>    
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Total jumlah produk pesanan yang memiliki status tidak sama dengan batal" 
+                data-original-title="Quantity">
+                <span class="ti-help card-icon-info text-danger"></span>
+            </a>
             <i class="icon-handbag float-right text-danger"></i>
             <h6 class="text-danger text-uppercase">Quantity</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->jumlah) ?></span></h3>
@@ -84,6 +117,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div> 
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Amount HJP - Amount Net" 
+                data-original-title="Fee Marketplace">
+                <span class="ti-help card-icon-info text-purple"></span>
+            </a>
             <i class="icon-paypal float-right text-purple"></i>
             <h6 class="text-purple text-uppercase">Fee Marketplace</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace) ?></span></h3>
@@ -91,6 +129,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>   
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Persentase dari Amount HJP - Amount Net" 
+                data-original-title="% Fee Marketplace">
+                <span class="ti-help card-icon-info text-info"></span>
+            </a>
             <i class="icon-paypal float-right text-info"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
             <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
@@ -103,6 +146,11 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4"> 
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Total harga produk yang dihitung dari <?= number_format(@$summaryTotal->jumlah_transaksi) ?> transaksi"
+                data-original-title="Amount HJP">
+                <span class="ti-help card-icon-info text-warning"></span>
+            </a>
             <i class="icon-credit-card float-right text-warning"></i>
             <h6 class="text-warning text-uppercase">Amount HJP</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_hjp) ?></span></h3>
@@ -110,6 +158,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-6 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Jumlah total penghasilan dari Income Shopee "
+                data-original-title="Amount Net">
+                <span class="ti-help card-icon-info text-success"></span>
+            </a>
             <i class="icon-credit-card float-right text-success"></i>
             <h6 class="text-success text-uppercase">Amount Net</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->amount_net) ?></span></h3>
@@ -120,6 +173,11 @@ $summaryTotal = (object) $summaryTotal[0];
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Jumlah pesanan status batal atau selesai dengan returned quantity > 0 (permintaan pengembalian disetujui)"
+                data-original-title="Pesanan Batal & Retur">
+                <span class="ti-help card-icon-info text-danger"></span>
+            </a>
             <i class="icon-close float-right text-danger"></i>
             <h6 class="text-danger text-uppercase">Pesanan Batal & Retur</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['batal']) ?></span></h3>
@@ -127,6 +185,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Total amount HJP dari pesanan batal & retur"
+                data-original-title="Amount HJP Batal & Retur">
+                <span class="ti-help card-icon-info text-danger"></span>
+            </a>
             <i class="icon-close float-right text-danger"></i>
             <h6 class="text-danger text-uppercase">Amount HJP Batal & Retur</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['batal']) ?></span></h3>
@@ -134,6 +197,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Jumlah pesanan status sedang dikirim"
+                data-original-title="Pesanan Dikirim">
+                <span class="ti-help card-icon-info text-warning"></span>
+            </a>
             <i class="icon-action-redo float-right text-warning"></i>
             <h6 class="text-warning text-uppercase">Pesanan Dikirim</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['sedang dikirim']) ?></span></h3>
@@ -141,6 +209,11 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
+            <a avascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Total amount HJP dari pesanan sedang dikirim"
+                data-original-title="Amount HJP Dikirim">
+                <span class="ti-help card-icon-info text-warning"></span>
+            </a>
             <i class="icon-action-redo float-right text-warning"></i>
             <h6 class="text-warning text-uppercase">Amount HJP Dikirim</h6>
             <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['sedang dikirim']) ?></span></h3>
