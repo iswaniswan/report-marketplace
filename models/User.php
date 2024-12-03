@@ -40,8 +40,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return [
             [['username', 'password'], 'required'],
             [['id_role', 'is_deleted'], 'integer'],
-            [['date_create'], 'safe'],
-            [['username', 'email', 'password', 'pin', 'auth_key', 'access_token'], 'string', 'max' => 255],
+            [['date_create', 'image'], 'safe'],
+            [['username', 'email', 'password', 'pin', 'auth_key', 'access_token', 'image'], 'string', 'max' => 255],
             [['username'], 'unique'],
             [['remember_me', 'accept_terms'], 'safe']
         ];
@@ -63,6 +63,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'access_token' => 'Access Token',
             'is_deleted' => 'Is Deleted',
             'date_create' => 'Date Create',
+            'image' => 'Image'
         ];
     }
 
@@ -154,6 +155,33 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
                     <span class="badge badge-light-success">$text</span>
             HTML;
         }
+
+        return $html;
+    }
+
+    public function getLinkImage()
+    {
+        $defaultImage = Yii::getAlias('@web') . '/images/no-photo.jpg';
+        if ($this->image == null) {
+            return $defaultImage;
+        }
+
+        return Yii::getAlias('@web') . '/uploads/'.$this->image;
+    }
+
+    public function getThumbnailImage()
+    {
+        $urlImage = Yii::getAlias('@web').'/images/no-photo.jpg';
+
+        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $this->image;
+
+        if (file_exists($filePath)) {
+            $urlImage = Yii::getAlias('@web') . '/uploads/' . $this->image;
+        }
+
+        $html = <<<HTML
+            <img src="{$urlImage}" class="rounded-circle border-purple" style="width: 2rem; height: 2rem; object-fit: cover;">
+        HTML;
 
         return $html;
     }

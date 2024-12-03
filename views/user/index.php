@@ -54,8 +54,17 @@ echo \app\widgets\Breadcrumbs::widget([
                 [
                     [
                     'class' => 'yii\grid\SerialColumn',
-                    'headerOptions' => ['style' => 'text-align:left;'],
+                    'headerOptions' => ['style' => 'text-align:left; width: 8px;'],
                     'contentOptions' => ['style' => 'text-align:left'],
+                    ],
+                [
+                    'attribute' => 'image',
+                    'format' => 'raw',
+                    'headerOptions' => ['style' => 'text-align:left; width:4rem;'],
+                    'contentOptions' => ['style' => 'text-align:left; padding: .5rem'],
+                    'value' => function (User $model) {
+                        return $model->getThumbnailImage();
+                    }
                     ],
                 [
                     'attribute' => 'username',

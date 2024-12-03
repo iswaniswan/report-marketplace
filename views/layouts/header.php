@@ -1,6 +1,7 @@
 <?php
 
 use app\components\Session;
+use app\models\User;
 
  ?>
 
@@ -149,7 +150,11 @@ use app\components\Session;
             */ ?>
         <li class="dropdown notification-list">
             <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                <img src="<?= Yii::getAlias('@web').'/images/no-photo.jpg' ?>" alt="user-image" class="rounded-circle">
+                <?php 
+                    $user = User::findOne(['id' => Session::getIdUser()]);
+                    $urlImage = $user->getLinkImage();
+                ?>
+                <img src="<?= $urlImage ?>" alt="user-image" class="rounded-circle" style="width:2rem; height:2rem; object-fit: cover;">
                 <span class="d-none d-sm-inline-block ml-1 font-weight-medium"><?= Session::getUsername() ?></span>
                 <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
             </a>

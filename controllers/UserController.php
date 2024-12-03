@@ -11,6 +11,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\UploadedFile;
 
 /* custom controller, theme uplon integrated */
 /**
@@ -137,17 +138,31 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldImage = $model->image;
 
         $referrer = Yii::$app->request->referrer;
 
         if ($model->load(Yii::$app->request->post())) {
             $referrer = $_POST['referrer'];
 
+            $upload = UploadedFile::getInstanceByName('User[image]');
+            if ($upload !== null) {
+                $model->image = $upload->baseName . Yii::$app->formatter->asTimestamp(date('Y-d-m h:i:s')) . '.' . $upload->extension;
+            } else {
+                $model->image = $oldImage;
+            }
+
             $model->password = Yii::$app->getSecurity()->generatePasswordHash($model->password);
 
             if ($model->save()) {
+
+                if ($upload !== null) {
+                    $path = Yii::getAlias('@app').'/web/uploads/';
+                    $upload->saveAs($path.$model->image, false);
+                }
+
                 Yii::$app->session->setFlash('success', 'Update success.');
-                return $this->redirect($referrer);
+                return $this->redirect(['index']);
             }
 
             Yii::$app->session->setFlash('error', 'An error occured when update.');

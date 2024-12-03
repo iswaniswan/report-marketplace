@@ -1,14 +1,21 @@
 <?php
 
+use app\assets\DropifyAsset;
 use app\components\Mode;
+use app\components\Session;
+use app\models\User;
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
+use kartik\file\FileInput;
+use yii\web\View;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $referrer string */
 /* @var $mode string|null */
+
+DropifyAsset::register($this);
 
 $inputOptions = [];
 if (@$mode == Mode::READ) {
@@ -31,7 +38,8 @@ if (@$mode == Mode::READ) {
         ],
         'options' => ['style' => 'padding:unset'],
         'inputOptions' => $inputOptions,
-    ]
+    ],
+    'enableClientScript' => false
 ]); ?>
 
 <div class="row">
@@ -45,6 +53,36 @@ if (@$mode == Mode::READ) {
                 <div class="container-fluid">
                     <?= $form->errorSummary($model) ?>
 
+                    <div class="col-md-12 mb-4">
+                        <?php
+                        $initialPreview = '';
+                        if ($model->image) {
+                            $src = Yii::getAlias('@web').'/uploads/'.$model->image;
+                            $initialPreview = Html::img($src, [
+                                    'class'=>'file-preview-image img-rounded elevation-2 p-2 profile-picture'
+                            ]);
+                        }
+                        ?>
+                        <?= $form->field($model, 'image')->widget(FileInput::classname(), [
+                            'pluginOptions' => [
+                                'initialPreview'=> $initialPreview,
+                                'browseClass' => 'btn btn-success',
+                                'showCaption' => false,
+                                'showCancel' => false,
+                                'showUpload' => false,
+                                'removeClass' => 'btn btn-danger',
+                                'removeIcon' => '<span class="ti-trash"></span> ',
+                                'maxFileSize' => 2800
+                            ],
+                            'attribute' => 'file',
+                            'options' => [
+                                'multiple' => false,
+                                'accept' => 'image/*',
+                                'style' => 'margin-bottom: 200px;'
+                            ]
+                        ])->label('Profile Picture') ?>
+                    </div>
+
                     <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'autocomplete' => 'off']) ?>
 
                     <?php // $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
@@ -53,10 +91,14 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'id_role')->textInput() ?>
 
-                    <?= $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
-                            'prompt' => '- Pilih Role -',
-                            'required' => true,
-                    ])->label('Role') ?>
+
+                    <!-- Yang bisa ganti role hanya admin -->
+                    <?php if (Session::isAdmin()) { ?>
+                        <?= $form->field($model, 'id_role')->dropDownList(\app\models\Role::getList(), [
+                                'prompt' => '- Pilih Role -',
+                                'required' => true,
+                        ])->label('Role') ?>
+                    <?php } ?>
 
                     <?php // $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
 
@@ -84,3 +126,25 @@ if (@$mode == Mode::READ) {
 </div>
 
 <?php ActiveForm::end(); ?>
+
+<?php 
+
+$script = <<<JS
+
+    $(".dropify").dropify({
+        messages: {
+            default: "Drag and drop a file here or click",
+            replace: "Drag and drop or click to replace",
+            remove: "Remove",
+            error: "Ooops, something wrong appended."
+        },
+        error: {
+            fileSize: "The file size is too big (1M max)."
+        }
+    });
+
+JS;
+
+$this->registerJs($script, View::POS_END);
+
+?>
