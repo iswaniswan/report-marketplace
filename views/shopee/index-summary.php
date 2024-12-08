@@ -209,7 +209,7 @@ $summaryTotal = (object) $summaryTotal[0];
     </div>
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
-            <a avascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+            <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
                 data-content="Total amount HJP dari pesanan sedang dikirim"
                 data-original-title="Amount HJP Dikirim">
                 <span class="ti-help card-icon-info text-warning"></span>
