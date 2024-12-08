@@ -242,14 +242,24 @@ class Tokopedia extends \yii\db\ActiveRecord
         }
 
         $sql = <<<SQL
-            SELECT 
-                CASE
-                    WHEN LOWER(status_terakhir) LIKE '%dibatalkan%' THEN 'Dibatalkan'
-                    ELSE status_terakhir
-                END AS status_terakhir, sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp, count(status_terakhir) AS jumlah
-            FROM tokopedia a
-            WHERE STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') BETWEEN '$date_start' AND '$date_end'
-            GROUP BY 1
+                WITH CTE AS (
+                            SELECT 
+                                CASE
+                                    WHEN LOWER(status_terakhir) LIKE '%dibatalkan%' THEN 'Dibatalkan'
+                                    ELSE status_terakhir
+                                END AS status_terakhir, sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp, count(status_terakhir) AS jumlah
+                            FROM tokopedia a
+                            WHERE STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                )
+                SELECT 
+                    CASE
+                        WHEN LOWER(status_terakhir) LIKE '%dikirim%' THEN 'Sedang Dikirim'
+                        WHEN LOWER(status_terakhir) LIKE '%tiba%' THEN 'Sedang Dikirim'
+                        ELSE status_terakhir
+                    END AS status_terakhir, sum(amount_hjp) AS amount_hjp, sum(jumlah) AS jumlah
+                FROM CTE a
+                GROUP BY 1
         SQL;
 
         $command = Yii::$app->db->createCommand($sql);
