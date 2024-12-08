@@ -67,8 +67,8 @@ class TableUpload extends \yii\db\ActiveRecord
             static::LAZADA => 'lazada',
             static::SHOPEE => 'shopee',
             static::TIKTOK => 'tiktok',
-            static::TOKOPEDIA => 'tokopedia',
             static::TIKTOK_INCOME => 'tiktok income',
+            static::TOKOPEDIA => 'tokopedia',
             static::LAZADA_INCOME => 'lazada income',
             static::SHOPEE_INCOME => 'shopee income',
         ];

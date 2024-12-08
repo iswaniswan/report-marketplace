@@ -84,7 +84,8 @@ $summaryTotal = (object) $summaryTotal[0];
         <div class="card-box tilebox-two">
             <i class="icon-paypal float-right text-dark"></i>
             <h6 class="text-purple text-uppercase">Fee Marketplace</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace) ?></span></h3>
+            <?php $feeMarketplace = abs(@$summaryTotal->fee_marketplace) ?? 0; ?>
+            <h3><span data-plugin="counterup"><?= number_format($feeMarketplace) ?></span></h3>
         </div>
     </div>   
     <div class="col-xl-3 col-md-6">
@@ -92,7 +93,7 @@ $summaryTotal = (object) $summaryTotal[0];
             <i class="icon-paypal float-right text-dark"></i>
             <h6 class="text-info text-uppercase">% Fee Marketplace</h6>
             <?php if ((int) @$summaryTotal->amount_hjp > 0) { ?>
-                <h3><span data-plugin="counterup"><?= number_format(@$summaryTotal->fee_marketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
+                <h3><span data-plugin="counterup"><?= number_format($feeMarketplace/@$summaryTotal->amount_hjp * 100, 2) ?></span></h3>
             <?php } ?>
         </div>
     </div> 

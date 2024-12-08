@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 use app\models\FileUploadForm;
 use app\models\TableUpload;
+use app\utils\StringHelper;
 use yii\helpers\Url;
 
 /* custom controller, theme uplon integrated */
@@ -93,6 +94,7 @@ class FileSourceController extends Controller
         $model = $this->findModel($id);
         if ($model != null) {
             $route = TableUpload::getList()[$model->id_table];
+            $route = str_replace(' ', '-', $route);
             $route .= '/index-serverside';
 
             $date_start = date('Y-m-d', strtotime($model->getYear() . '-' . $model->getMonth() . '-01'));
@@ -237,7 +239,8 @@ class FileSourceController extends Controller
         $model = $this->findModel($id);
 
         $fileUploadForm = new FileUploadForm();
-        $isDeleted = $fileUploadForm->deleteFile($model->filename);
+        // $isDeleted = $fileUploadForm->deleteFile($model->filename, $model->code_name);
+        $isDeleted = $fileUploadForm->deleteTable($id, $model->id_table);
 
         if ($isDeleted && $model->delete()) {
             Yii::$app->session->setFlash('success', 'Delete success');
