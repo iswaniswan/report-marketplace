@@ -190,13 +190,77 @@ class FileUploadForm extends Model
         }
     }
 
-    public function deleteFile($fileName)
-    {
+    public function deleteFile($fileName, $codeName)
+    {        
         $filePath = 'uploads/' . $fileName;
         if (file_exists($filePath)) {
             return unlink($filePath);
         }
-        return false;
+        
+        $filePath = 'uploads/' . $codeName . '.xlsx';        
+        if (file_exists($filePath)) {
+            return unlink($filePath);
+        }
+
+        return true;
+    }
+
+    public function deleteTable($id, $id_table)
+    {
+        $isDeleted = false;
+
+        switch ($id_table) {
+            case TableUpload::GINEE: {
+                $model = Ginee::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::SHOPEE: {
+                $model = Shopee::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::SHOPEE_INCOME: {
+                $model = ShopeeIncome::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::TIKTOK: {
+                $model = Tiktok::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::TIKTOK_INCOME: {
+                $model = TiktokIncome::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::TOKOPEDIA: {
+                $model = Tokopedia::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::LAZADA: {
+                $model = Lazada::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+
+            case TableUpload::LAZADA_INCOME: {
+                $model = LazadaIncome::deleteAll(['id_file_source' => $id]);
+                $isDeleted = true;
+                break;
+            }
+            default: break;
+        }
+
+        return $isDeleted;
     }
 
     public function importToGinee($isDeleteInsert=false)
@@ -588,8 +652,14 @@ class FileUploadForm extends Model
             foreach ($cellIterator as $cell) {                
                 $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
                 $value = StringHelper::sanitizeValue($cell->getValue());
+                // if ($headerValue == 'sku_subtotal_before_discount') {
                 if (in_array($headerValue, $this->tiktokColumnsNumeric)) {
-                    $value = StringHelper::sanitizeCurrency($value);
+                    // var_dump($value);
+                    $value = str_replace('.', '', $value);
+                    $value = str_replace('IDR', '', $value);
+                    $value = StringHelper::sanitizeValue($value);
+                    // $value = StringHelper::sanitizeCurrency($value);
+                    // var_dump($value); die();
                 }
                 $rowData[$headerValue] = $value;
                 $columnIndex++;
@@ -640,6 +710,13 @@ class FileUploadForm extends Model
         }
     
         $skippedColumns = [];
+
+        // static skipped columns
+        $skippedColumnsName = [
+            'order_source',
+            'voucher_xtra_service_fee' 
+        ];
+
         // Read the header row
         foreach ($worksheet->getRowIterator(1, 1) as $row) {
             $cellIterator = $row->getCellIterator();
@@ -647,7 +724,6 @@ class FileUploadForm extends Model
             $columnIndex = 0;
             foreach ($cellIterator as $cell) {
                 $cellValue = $cell->getValue();
-                //  echo '<pre>'; var_dump($cellValue); echo '</pre>';
                 // Standardize header values using a utility function if needed
                 if ($cellValue === '' || $cellValue == NULL) {
                     $skippedColumns[] = $columnIndex;
@@ -656,13 +732,22 @@ class FileUploadForm extends Model
                     // $cellValue = $this->renameEmptyColumnName();
                 }
                 // echo '<pre>'; var_dump($cellValue); echo '</pre>';
-                $header[] = StringHelper::sanitizeColumnName($cellValue);
+                $headerValue = StringHelper::sanitizeColumnName($cellValue);
+
+                if (in_array($headerValue, $skippedColumnsName)) {
+                    $skippedColumns[] = $columnIndex;
+                    $columnIndex++;
+                    continue;
+                }
+
+                $header[] = $headerValue;
+
                 $columnIndex++;
             }
         }
             
         $header[] = 'id_file_source';
-
+        // echo '<pre>'; var_dump($header); echo '</pre>'; 
         // Maximum number of rows to insert per batch
         $batchSize = 1000;
 
@@ -675,12 +760,17 @@ class FileUploadForm extends Model
     
             foreach ($cellIterator as $cell) {    
                 // Skip columns if they are in the skippedColumns array
-                if (in_array($columnIndex, $skippedColumns)) {
+                // if (in_array($columnIndex, $skippedColumns)) {
+                //     $columnIndex++;
+                //     continue;
+                // }
+                
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value
+                
+                if ($headerValue == 'undefined' || in_array($headerValue, $skippedColumnsName)) {
                     $columnIndex++;
                     continue;
                 }
-                            
-                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value      
                 
                 if (in_array($headerValue, $this->tiktokIncomeColumnsNumeric)) {
                     $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
@@ -1147,5 +1237,6 @@ class FileUploadForm extends Model
             $this->insertIgnoreBatch($header, $data, $this->table_shopee_income);
         }
     }
+
 
 }

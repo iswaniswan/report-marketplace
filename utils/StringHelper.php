@@ -88,4 +88,17 @@ class StringHelper
         return $day;
     }
 
+    public static function toCamelCase($string) {
+        // Convert the string to lowercase and split it by spaces
+        $words = explode(' ', strtolower($string));
+        
+        // Capitalize the first letter of each word except the first one
+        $words = array_map(function ($word, $index) {
+            return $index === 0 ? $word : ucfirst($word);
+        }, $words, array_keys($words));
+        
+        // Join the words back together
+        return implode('', $words);
+    }    
+
 }

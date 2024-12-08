@@ -59,7 +59,7 @@ echo \app\widgets\Breadcrumbs::widget([
                             <label for="id_table">Import data ke tabel</label>
                             <select class="form-control" id="id_table" name="FileUploadForm[id_table]" placeholder="Pilih tabel">
                                 <option value="">Pilih Tabel</option>
-                                <?php foreach (TableUpload::getList() as $key => $value) { ?>
+                                <?php foreach (TableUpload::getListUpload() as $key => $value) { ?>
                                     <?php if ($value == 'ginee') {continue;} ?>
                                     <?php $isSelected = (@$fileSource->id_table != null && $fileSource->id_table == $key) ? 'selected' : ''; ?>
                                     <?php if (@$code != null && $code == $value) {
