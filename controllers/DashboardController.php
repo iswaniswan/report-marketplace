@@ -475,7 +475,7 @@ class DashboardController extends \yii\web\Controller
     {
         $groups = [
             "batal" => ["batal", "dibatalkan", "canceled"],
-            "sedang dikirim" => ["sedang dikirim"]
+            "sedang dikirim" => ["sedang dikirim", 'shipped', 'to ship']
         ];
         
         // Initialize the result array

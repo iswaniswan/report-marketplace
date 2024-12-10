@@ -131,6 +131,30 @@ $summaryTotal = (object) $summaryTotal[0];
             <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['canceled']) ?></span></h3>
         </div>
     </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <!-- <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Jumlah pesanan status sedang dikirim"
+                data-original-title="Pesanan Dikirim">
+                <span class="ti-help card-icon-info text-warning"></span>
+            </a> -->
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Pesanan Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allStatusPesanan['shipped'] + @$allStatusPesanan['to ship']) ?></span></h3>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card-box tilebox-two">
+            <!-- <a onclick="javascript:void(0)" tabindex="0" data-toggle="popover" data-trigger="focus" title="" 
+                data-content="Total amount HJP dari pesanan sedang dikirim"
+                data-original-title="Amount HJP Dikirim">
+                <span class="ti-help card-icon-info text-warning"></span>
+            </a> -->
+            <i class="icon-action-redo float-right text-warning"></i>
+            <h6 class="text-warning text-uppercase">Amount HJP Dikirim</h6>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['shipped'] + @$allHjpPesanan['to shop']) ?></span></h3>
+        </div>
+    </div>
 </div>
 
 

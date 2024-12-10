@@ -394,7 +394,6 @@ echo Highcharts::widget([
     </div>   
 </div>
 
-
 <div class="row mb-4">
     <div class="col-xl-3 col-md-6">
         <div class="card-box tilebox-two">
