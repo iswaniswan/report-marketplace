@@ -1107,7 +1107,10 @@ class FileUploadForm extends Model
                     continue;
                 }
                             
-                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value      
+                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value    
+                if ($headerValue == 'undefined') {
+                    continue;
+                }  
                 
                 if (in_array($headerValue, $this->tiktokIncomeColumnsNumeric)) {
                     $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
@@ -1119,7 +1122,13 @@ class FileUploadForm extends Model
                 $columnIndex++;
             }
     
-            $rowData['id_file_source'] = $this->id_file_source;
+            $rowData['id_file_source'] = $this->id_file_source;            
+
+            // cek bari kosong
+            if ($rowData['order_number'] == '') {
+                continue;
+            }
+
             if (!empty($rowData)) {
                 $data[] = $rowData; // Store the row data
             }
