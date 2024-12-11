@@ -331,20 +331,62 @@ class Lazada extends \yii\db\ActiveRecord
                                         count(order_number) AS jumlah,
                                         sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total  
                                     FROM lazada
-                                    WHERE status = 'confirmed'
+                                    WHERE (status = 'confirmed' OR lower(status) = 'dikonfirmasi')
                                         AND STR_TO_DATE(create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                     GROUP BY 1, 2, 3
                                 ) a
                                 INNER JOIN (
                                     SELECT
                                         order_number,
-                                        SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS payment_fee,
-                                        SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS item_price_credit,
-                                        SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS commission,
-                                        SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS promotional_charges_vouchers,
-                                        SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS free_shipping_max_fee,
-                                        SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS campaign_fee,
-                                        SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS lazcoins_discount_promotion_fee
+                                        SUM(
+                                            CASE 
+                                                WHEN trim(fee_name)= 'Payment Fee' OR REPLACE(REPLACE(fee_name, CHR(13), ''), CHR(10), '') = 'Biaya Transaksi'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS payment_fee,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Item Price Credit' OR trim(fee_name) = 'Omset Penjualan'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS item_price_credit,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Commission' OR fee_name = 'Komisi' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS commission,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Promotional Charges Vouchers' OR trim(fee_name) = 'Biaya Promosi Voucher' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS promotional_charges_vouchers,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Free Shipping Max Fee' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS free_shipping_max_fee,
+                                        SUM(
+                                            CASE
+                                                WHEN fee_name = 'Campaign Fee' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS campaign_fee,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'LazCoins Discount Promotion Fee' OR trim(fee_name) = 'Biaya Promosi Diskon LazKoin'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS lazcoins_discount_promotion_fee
                                     FROM lazada_income
                                     WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                         GROUP BY 1
@@ -388,20 +430,62 @@ class Lazada extends \yii\db\ActiveRecord
                                         count(order_number) AS jumlah,
                                         sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total  
                                     FROM lazada
-                                    WHERE status = 'confirmed'
+                                    WHERE (status = 'confirmed' OR lower(status) = 'dikonfirmasi')
                                         AND STR_TO_DATE(create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                     GROUP BY 1, 2, 3
                                 ) a
                                 INNER JOIN (
                                     SELECT
                                         order_number,
-                                        SUM(CASE WHEN fee_name = 'Payment Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS payment_fee,
-                                        SUM(CASE WHEN fee_name = 'Item Price Credit' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS item_price_credit,
-                                        SUM(CASE WHEN fee_name = 'Commission' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS commission,
-                                        SUM(CASE WHEN fee_name = 'Promotional Charges Vouchers' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS promotional_charges_vouchers,
-                                        SUM(CASE WHEN fee_name = 'Free Shipping Max Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS free_shipping_max_fee,
-                                        SUM(CASE WHEN fee_name = 'Campaign Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS campaign_fee,
-                                        SUM(CASE WHEN fee_name = 'LazCoins Discount Promotion Fee' THEN CAST(amount_include_tax AS SIGNED) ELSE 0 END) AS lazcoins_discount_promotion_fee
+                                        SUM(
+                                            CASE 
+                                                WHEN trim(fee_name)= 'Payment Fee' OR REPLACE(REPLACE(fee_name, CHR(13), ''), CHR(10), '') = 'Biaya Transaksi'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS payment_fee,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Item Price Credit' OR trim(fee_name) = 'Omset Penjualan'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS item_price_credit,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Commission' OR fee_name = 'Komisi' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS commission,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Promotional Charges Vouchers' OR trim(fee_name) = 'Biaya Promosi Voucher' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS promotional_charges_vouchers,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'Free Shipping Max Fee' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS free_shipping_max_fee,
+                                        SUM(
+                                            CASE
+                                                WHEN fee_name = 'Campaign Fee' 
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS campaign_fee,
+                                        SUM(
+                                            CASE 
+                                                WHEN fee_name = 'LazCoins Discount Promotion Fee' OR trim(fee_name) = 'Biaya Promosi Diskon LazKoin'
+                                                    THEN CAST(amount_include_tax AS SIGNED) 
+                                                ELSE 0 
+                                            END
+                                        ) AS lazcoins_discount_promotion_fee
                                     FROM lazada_income
                                     WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                         GROUP BY 1

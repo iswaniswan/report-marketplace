@@ -377,7 +377,13 @@ class Shopee extends \yii\db\ActiveRecord
 
         /** versi 3 */
         $sql = <<<SQL
-                    WITH CTE AS (
+                    WITH CTA AS (
+                                SELECT no_pesanan, sum(returned_quantity) returned_quantity
+                                FROM shopee
+                                WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                    AND status_pesanan LIKE '%Selesai%' AND returned_quantity > 0
+                                GROUP BY 1
+                    ),  CTE AS (
                             SELECT
                                 waktu_pesanan_dibuat,
                                 0 AS jumlah_transaksi,
@@ -392,8 +398,9 @@ class Shopee extends \yii\db\ActiveRecord
                             FROM (
                                     SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                     FROM shopee
-                                    WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
-                                        AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                    WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+                                        AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                        AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
                             ) a
                             GROUP BY 1
                             UNION ALL 			
@@ -424,7 +431,13 @@ class Shopee extends \yii\db\ActiveRecord
 
         if ($is_total) {
             $sql = <<<SQL
-                        WITH CTE AS (
+                        WITH CTA AS (
+                                    SELECT no_pesanan, sum(returned_quantity) returned_quantity
+                                    FROM shopee
+                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                        AND status_pesanan LIKE '%Selesai%' AND returned_quantity > 0
+                                    GROUP BY 1
+                        ), CTE AS (
                                     SELECT
                                         waktu_pesanan_dibuat,
                                         0 AS jumlah_transaksi,
@@ -439,8 +452,9 @@ class Shopee extends \yii\db\ActiveRecord
                                     FROM (
                                             SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                             FROM shopee
-                                            WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
-                                                AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                            WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+                                                AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                                AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
                                     ) a
                                     GROUP BY 1
                                     UNION ALL 			
@@ -503,24 +517,49 @@ class Shopee extends \yii\db\ActiveRecord
         //         GROUP BY 1
         // SQL;
 
+        // $sql = <<<SQL
+        //             WITH CTE AS (
+        //                         SELECT no_pesanan, status_pesanan, REPLACE(total_harga_produk, '.', '') AS total_harga_produk, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
+        //                         FROM shopee
+        //                         WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+        //                         GROUP BY 1, 2
+        //             )
+        //             SELECT 'Selesai' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+        //             FROM CTE a
+        //             WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+        //             UNION ALL 
+        //             SELECT 'Batal' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+        //             FROM CTE a
+        //             WHERE status_pesanan LIKE '%Batal%' OR (status_pesanan LIKE '%Selesai%' AND returned_quantity > 0)
+        //             UNION ALL
+        //             SELECT 'Sedang Dikirim' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+        //             FROM CTE a
+        //             WHERE status_pesanan LIKE '%Dikirim%'
+        // SQL;
+
         $sql = <<<SQL
                     WITH CTE AS (
-                                SELECT no_pesanan, status_pesanan, REPLACE(total_harga_produk, '.', '') AS total_harga_produk, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
+                                SELECT no_pesanan, status_pesanan, returned_quantity, SUM(REPLACE(total_harga_produk, '.', '')) AS total_harga_produk
                                 FROM shopee
                                 WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                GROUP BY 1, 2
+                                GROUP BY 1, 2, 3
+                    ), CTB AS (
+                                SELECT no_pesanan, sum(returned_quantity) returned_quantity
+                                FROM CTE
+                                WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity > 0
+                                GROUP BY 1
                     )
                     SELECT 'Selesai' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
-                    WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+                    WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0 AND no_pesanan NOT IN (SELECT no_pesanan FROM CTB)
                     UNION ALL 
                     SELECT 'Batal' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
-                    WHERE status_pesanan LIKE '%Batal%' OR (status_pesanan LIKE '%Selesai%' AND returned_quantity > 0)
+                    WHERE status_pesanan LIKE '%Batal%' OR (status_pesanan LIKE '%Selesai%' AND returned_quantity > 0)/* OR (status_pesanan LIKE '%Sedang Dikirim%' AND returned_quantity > 0)*/
                     UNION ALL
                     SELECT 'Sedang Dikirim' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
-                    WHERE status_pesanan LIKE '%Dikirim%'
+                    WHERE status_pesanan LIKE '%Dikirim%'/* AND returned_quantity = 0*/
         SQL;
 
         $command = Yii::$app->db->createCommand($sql);
