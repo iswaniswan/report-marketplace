@@ -152,7 +152,7 @@ $summaryTotal = (object) $summaryTotal[0];
             </a> -->
             <i class="icon-action-redo float-right text-warning"></i>
             <h6 class="text-warning text-uppercase">Amount HJP Dikirim</h6>
-            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['shipped'] + @$allHjpPesanan['to shop']) ?></span></h3>
+            <h3><span data-plugin="counterup"><?= number_format(@$allHjpPesanan['shipped'] + @$allHjpPesanan['to ship']) ?></span></h3>
         </div>
     </div>
 </div>
