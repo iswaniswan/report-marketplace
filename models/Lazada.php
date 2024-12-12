@@ -340,7 +340,7 @@ class Lazada extends \yii\db\ActiveRecord
                                         order_number,
                                         SUM(
                                             CASE 
-                                                WHEN trim(fee_name)= 'Payment Fee' OR REPLACE(REPLACE(fee_name, CHR(13), ''), CHR(10), '') = 'Biaya Transaksi'
+                                                WHEN trim(fee_name)= 'Payment Fee' OR REPLACE(REPLACE(fee_name, CHAR(13), ''), CHAR(10), '') = 'Biaya Transaksi'
                                                     THEN CAST(amount_include_tax AS SIGNED) 
                                                 ELSE 0 
                                             END
