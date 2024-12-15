@@ -398,7 +398,7 @@ class Shopee extends \yii\db\ActiveRecord
                             FROM (
                                     SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                     FROM shopee
-                                    WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+                                    WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                         AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
                                         AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
                             ) a
@@ -452,7 +452,7 @@ class Shopee extends \yii\db\ActiveRecord
                                     FROM (
                                             SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                             FROM shopee
-                                            WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0
+                                            WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                                 AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
                                                 AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
                                     ) a
