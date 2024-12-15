@@ -74,8 +74,8 @@ class ShopeeController extends Controller
         $request = Yii::$app->request->get();
         
         /** temporary periode karena data kosong */
-        // $periode = $request[1]['periode'] ?? date('Y-m');   
-        $periode = $request[1]['periode'] ?? '2024-09';
+        $periode = $request[1]['periode'] ?? date('Y-m');   
+        // $periode = $request[1]['periode'] ?? '2024-09';
 
         $date_start = date('Y-m-d', strtotime($periode. '-01'));
         $date_end = date('Y-m-t', strtotime($periode. '-01'));
