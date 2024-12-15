@@ -320,8 +320,11 @@ class FileSourceController extends Controller
 
     public function actionDownload($id) {
         $model = $this->findModel($id);
+        
+        $filename = $model->code_name . '.xlsx';
+
         if ($model) {
-            return Yii::$app->response->sendFile(Yii::getAlias('@webroot') . '/uploads/' . $model->filename);
+            return Yii::$app->response->sendFile(Yii::getAlias('@webroot') . '/uploads/' . $filename);
         }
 
         die('file not found');
