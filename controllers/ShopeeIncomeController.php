@@ -289,4 +289,54 @@ class ShopeeIncomeController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = ShopeeIncome::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+            $totalPengeluaran = 
+                ($model->jumlah_pengembalian_dana_ke_pembeli
+                + $model->diskon_produk_dari_shopee
+                + $model->diskon_voucher_ditanggung_penjual
+                + $model->cashback_koin_yang_ditanggung_penjual
+                + $model->ongkir_dibayar_pembeli
+                + $model->diskon_ongkir_ditanggung_jasa_kirim
+                + $model->gratis_ongkir_dari_shopee
+                + $model->ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim
+                + $model->ongkos_kirim_pengembalian_barang
+                + $model->pengembalian_biaya_kirim
+                + $model->biaya_komisi_ams
+                + $model->biaya_administrasi_termasuk_ppn_11
+                + $model->biaya_layanan_termasuk_ppn_11
+                + $model->premi
+                + $model->biaya_program
+                + $model->biaya_kartu_kredit
+                + $model->biaya_kampanye
+                + $model->bea_masuk_ppn_pph
+                + $model->kompensasi
+                + $model->promo_gratis_ongkir_dari_penjual
+                + $model->pengembalian_dana_ke_pembeli
+                + $model->pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang
+                + $model->pro_rata_voucher_shopee_untuk_pengembalian_barang);
+
+            $data[] = [
+                'number' => ++$number,
+                'waktu_pesanan_dibuat' => $model->waktu_pesanan_dibuat,
+                'no_pesanan' => $model->no_pesanan,
+                'harga_asli_produk' => number_format($model->harga_asli_produk),
+                'total_diskon_produk' => number_format(abs($model->total_diskon_produk)),
+                'total_pengeluaran' => number_format(abs($totalPengeluaran)),
+                'total_penghasilan' => number_format($model->total_penghasilan)
+            ];
+        }
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }

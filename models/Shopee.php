@@ -400,7 +400,7 @@ class Shopee extends \yii\db\ActiveRecord
                                     FROM shopee
                                     WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                         AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                        AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
+                                        /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
                             ) a
                             GROUP BY 1
                             UNION ALL 			
@@ -454,7 +454,7 @@ class Shopee extends \yii\db\ActiveRecord
                                             FROM shopee
                                             WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                                 AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                                AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)
+                                                /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
                                     ) a
                                     GROUP BY 1
                                     UNION ALL 			
@@ -601,6 +601,32 @@ class Shopee extends \yii\db\ActiveRecord
         $command = Yii::$app->db->createCommand($sql);
         return $command->queryAll();
     }
-    
+
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        $statuses = json_decode($status, true); // Decode JSON and set `true` for associative array
+        if (is_array($statuses)) {
+            $orConditions = ['or'];
+            foreach ($statuses as $_status) {
+                if (strtolower($_status) == 'retur') {
+                    $orConditions[] = ['>', 'returned_quantity', '0'];
+                } else {
+                    $orConditions[] = ['like', 'status_pesanan', $_status];
+                }
+            }
+            $query->andFilterWhere($orConditions);
+        } else {
+            $query->andFilterWhere(['like', 'status_pesanan', $status]);
+        }
+
+        return $query;        
+    }
 
 }

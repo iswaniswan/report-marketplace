@@ -233,4 +233,31 @@ class ShopeeIncome extends \yii\db\ActiveRecord
         return $command->queryAll();
     }
 
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        $statuses = json_decode($status, true); // Decode JSON and set `true` for associative array
+        if (is_array($statuses)) {
+            $orConditions = ['or'];
+            foreach ($statuses as $_status) {
+                if (strtolower($_status) == 'retur') {
+                    $orConditions[] = ['>', 'returned_quantity', '0'];
+                } else {
+                    $orConditions[] = ['like', 'status_pesanan', $_status];
+                }
+            }
+            $query->andFilterWhere($orConditions);
+        } else {
+            $query->andFilterWhere(['like', 'status_pesanan', $status]);
+        }
+
+        return $query;        
+    }
+
 }

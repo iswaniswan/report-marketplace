@@ -304,4 +304,41 @@ class ShopeeController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = Shopee::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+            $hargaAwal = str_replace(".", "", $model->harga_awal);
+            $totalDiskon = str_replace(".", "", $model->total_diskon);
+            $totalHargaProduk = str_replace(".", "", $model->total_harga_produk);
+            $totalPembayaran = str_replace(".", "", $model->total_pembayaran);
+
+            $data[] = [
+                'number' => ++$number, // Increment the sequence number for each row
+                'waktu_pesanan_dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
+                'no_pesanan' => $model->no_pesanan,
+                'status_pesanan' => $model->status_pesanan,
+                'nama_produk' => $model->nama_produk,
+                'nomor_referensi_sku' => $model->nomor_referensi_sku,
+                'nama_variasi' => $model->nama_variasi,
+                'harga_awal' => number_format($hargaAwal),
+                'total_diskon' => number_format($totalDiskon),
+                'jumlah' => $model->jumlah,
+                'status_pembatalan_pengembalian' => $model->status_pembatalan_pengembalian,
+                'returned_quantity' => $model->returned_quantity,
+                'total_harga_produk' => number_format($totalHargaProduk),
+                'total_pembayaran' => number_format($totalPembayaran),
+            ];
+        }
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }
