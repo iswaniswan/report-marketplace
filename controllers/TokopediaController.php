@@ -289,4 +289,35 @@ class TokopediaController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = Tokopedia::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+            $totalPenjualan = (int) $model->jumlah_produk_dibeli * (int) $model->harga_jual_idr;
+
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Tanggal Pembayaran' => $model->tanggal_pembayaran,
+                'Nomor Invoice' => $model->nomor_invoice,
+                'Nama Produk' => $model->nama_produk,
+                'Nomor SKU' => $model->nomor_sku,
+                'Tipe Produk' => $model->tipe_produk,
+                'Status Terakhir' => $model->status_terakhir,
+                'Jumlah Produk Dibeli' => number_format($model->jumlah_produk_dibeli),
+                'Harga Jual (IDR)' => number_format($model->harga_jual_idr),
+                'Total Penjualan' => number_format($totalPenjualan)                
+            ];
+        }
+        
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }

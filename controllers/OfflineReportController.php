@@ -265,4 +265,31 @@ class OfflineReportController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = Offline::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Tanggal Invoice' => date('d M Y', strtotime($model->tanggal_invoice)),
+                'No Invoice' => $model->no_invoice,
+                'Nama Barang' => $model->nama_barang,
+                'Kode SKU' => $model->kode_sku,
+                'Tanggal Bayar' => date('d M Y', strtotime($model->tanggal_bayar)),
+                'Subtotal' => number_format($model->subtotal)
+            ];
+        }
+        
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
+
 }

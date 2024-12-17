@@ -243,4 +243,30 @@ class TokopediaKeuanganController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = TokopediaKeuangan::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Nomor Invoice' => $model->nomor_invoice,
+                'Tanggal Pembayaran' => $model->tanggal_pembayaran,
+                'Status Terakhir' => $model->status_terakhir,
+                'Nilai Kupon Toko Terpakai (IDR)' => number_format($model->nilai_kupon_toko_terpakai_idr),
+                'Biaya Layanan Termasuk PPN dan PPH (IDR)' => number_format($model->biaya_layanan_termasuk_ppn_dan_pph_idr)
+            ];
+        }
+        
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }

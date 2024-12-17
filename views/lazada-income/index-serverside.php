@@ -196,8 +196,11 @@ $this->registerCss($style);
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <?php
 $urlServerside = Url::to(['lazada-income/serverside']);
+$urlExportAll = Url::to(['lazada-income/export-all']);
 
 if ($date_start == null) {
     $date_start = "";
@@ -267,18 +270,44 @@ $script = <<<JS
         buttons: [
             { extend: 'copy', text: 'Copy' },
             { extend: 'csv', text: 'CSV' },
-            { extend: 'excel', text: 'Excel', exportOptions: {
-                columns: ':not(:last-child)', // include visible columns only
-                format: {
-                    body: function (data, row, column, node) {
-                        if (column === 0) {
-                            // Adjust sequence number for PDF export
-                            var pageInfo = $('#table-serverside').DataTable().page.info();
-                            return pageInfo.start + row + 1;
-                        }
-                        return data;
+            // { extend: 'excel', text: 'Excel', exportOptions: {
+            //     columns: ':not(:last-child)', // include visible columns only
+            //     format: {
+            //         body: function (data, row, column, node) {
+            //             if (column === 0) {
+            //                 // Adjust sequence number for PDF export
+            //                 var pageInfo = $('#table-serverside').DataTable().page.info();
+            //                 return pageInfo.start + row + 1;
+            //             }
+            //             return data;
+            //         }
+            //     }},
+            // },
+            { extend: 'excel', text: 'Export All to Excel',
+                    action: function (e, dt, button, config) {
+                        // Custom AJAX request to fetch all data based on parameters
+                        $.ajax({
+                            url: '$urlExportAll', // Endpoint to fetch all data
+                            type: 'GET',
+                            data: {
+                                date_start: '$date_start',
+                                date_end: '$date_end',
+                                status: '$status',
+                            },
+                            success: function (response) {
+                                // Use the response data to create an Excel file
+                                let workbook = XLSX.utils.book_new(); // Create a new workbook
+                                let worksheet = XLSX.utils.json_to_sheet(response.data); // Convert data to a worksheet
+                                XLSX.utils.book_append_sheet(workbook, worksheet, 'Exported Data'); // Add the worksheet to the workbook
+
+                                // Export the workbook as an Excel file
+                                XLSX.writeFile(workbook, 'ExportedData.xlsx');
+                            },
+                            error: function () {
+                                alert('Failed to fetch data for export.');
+                            }
+                        });
                     }
-                }},
             },
             { extend: 'pdf', text: 'PDF', exportOptions: {
                 columns: ':not(:last-child)', // include visible columns only

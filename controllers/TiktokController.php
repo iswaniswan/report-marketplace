@@ -298,4 +298,40 @@ class TiktokController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = Tiktok::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Order ID' => $model->order_id,
+                'Product Name' => $model->product_name,
+                'Seller SKU' => $model->seller_sku,
+                'Variation' => $model->variation,
+                'Order Status' => $model->order_status,
+                'Order Substatus' => $model->order_substatus,
+                'Cancelation Return Type' => $model->cancelation_return_type,
+                'Quantity' => number_format($model->quantity),
+                'SKU Quantity of Return' => number_format($model->sku_quantity_of_return),
+                'SKU Unit Original Price' => number_format($model->sku_unit_original_price),
+                'SKU Subtotal Before Discount' => number_format($model->sku_subtotal_before_discount),
+                'SKU Platform Discount' => number_format($model->sku_platform_discount),
+                'SKU Seller Discount' => number_format($model->sku_seller_discount),
+                'SKU Subtotal After Discount' => number_format($model->sku_subtotal_after_discount),
+                'Created Time' => $model->created_time,
+                'Paid Time' => $model->paid_time                
+            ];
+        }
+        
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }

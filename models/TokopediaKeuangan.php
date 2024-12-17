@@ -102,5 +102,43 @@ class TokopediaKeuangan extends \yii\db\ActiveRecord
 
         return $normalizedStatuses;
     }
+
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(tanggal_pembayaran, '%d-%m-%Y')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        if ($status !== null) {
+            $cleanedString = trim($status, '"[]');
+            $array = preg_split('/","/', $cleanedString);
+    
+            // Optionally, remove any remaining quotes around each element
+            $array = array_map(function($item) {
+                return trim($item, '"');
+            }, $array);
+    
+            $statuses = $array;
+            
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    // Normalize newlines in the search term to handle database format
+                    $normalizedStatus = str_replace(["\r\n", "\n", "\r"], '%', $_status);
+                    $orConditions[] = ['like', 'status_terakhir', $normalizedStatus, false];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                // Handle single status case, normalizing newlines in the search term
+                $normalizedStatus = str_replace(["\r\n", "\n", "\r"], '%', $status);
+                $query->andFilterWhere(['like', 'status_terakhir', $normalizedStatus, false]);
+            }
+        }  
+
+        return $query;        
+    }
     
 }

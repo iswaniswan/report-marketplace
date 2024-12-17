@@ -95,5 +95,17 @@ class Offline extends \yii\db\ActiveRecord
         return $command->queryAll();
     }
 
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(tanggal_invoice, '%Y-%m-%d')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        return $query;        
+    }
+
 
 }

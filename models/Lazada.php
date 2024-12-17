@@ -534,4 +534,30 @@ class Lazada extends \yii\db\ActiveRecord
         return $command->queryAll();
     }
 
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(create_time, '%d %b %Y')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        if ($status !== null) {
+            $statuses = json_decode($status, true); // Decode JSON and set `true` for associative array
+        
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    $orConditions[] = ['like', 'status', $_status];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                $query->andFilterWhere(['like', 'status', $status]);
+            }
+        }
+
+        return $query;        
+    }
+
 }

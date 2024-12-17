@@ -275,5 +275,28 @@ class Tiktok extends \yii\db\ActiveRecord
         return $command->queryAll();
     }
 
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+            new \yii\db\Expression("STR_TO_DATE(created_time, '%d/%m/%Y')"), 
+            $date_start, 
+            $date_end
+        ]);
+
+        $statuses = json_decode($status, true); // Decode JSON and set `true` for associative array        
+        if (is_array($statuses)) {
+            $orConditions = ['or'];
+            foreach ($statuses as $_status) {
+                $orConditions[] = ['like', 'order_status', $_status];
+            }
+            $query->andFilterWhere($orConditions);
+        } else {
+            $query->andFilterWhere(['like', 'order_status', $status]);
+        }
+
+        return $query;        
+    }
+
 
 }

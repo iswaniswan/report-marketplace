@@ -136,4 +136,17 @@ class TiktokIncome extends \yii\db\ActiveRecord
             'shopping_center_items' => 'Shopping Center Items',
         ];
     }
+
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+            new \yii\db\Expression("STR_TO_DATE(order_created_time_utc, '%Y/%m/%d')"), 
+            $date_start, 
+            $date_end
+        ]);
+
+        return $query;        
+    }
+
 }

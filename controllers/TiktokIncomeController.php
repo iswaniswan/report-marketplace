@@ -243,4 +243,28 @@ class TiktokIncomeController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = TiktokIncome::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        $data = [];
+        foreach ($query->all() as $model) {
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Order Adjustment ID' => $model->order_adjustment_id,
+                'Order Created Time UTC' => date('d-m-Y', strtotime($model->order_created_time_utc)),
+                'Order Settled Time UTC' => date('d-m-Y', strtotime($model->order_settled_time_utc)),
+                'Total Settlement Amount' => number_format($model->total_settlement_amount)
+            ];
+        }
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
 }

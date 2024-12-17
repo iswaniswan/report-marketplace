@@ -244,4 +244,32 @@ class LazadaIncomeController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = LazadaIncome::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        foreach ($query->all() as $model) {
+
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Order Number' => $model->order_number,
+                'Transaction Date' => $model->transaction_date,
+                'Order Status' => $model->order_status,
+                'Fee Name' => $model->fee_name,
+                'Amount Include Tax' => number_format(abs($model->amount_include_tax)),
+                'VAT Amount' => number_format($model->vat_amount)
+            ];
+        }
+        
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
+
 }

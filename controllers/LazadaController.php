@@ -287,4 +287,34 @@ class LazadaController extends Controller
         ]);
     }
 
+    public function actionExportAll() 
+    {
+        $dateStart = Yii::$app->request->get('date_start');
+        $dateEnd = Yii::$app->request->get('date_end');
+        $status = Yii::$app->request->get('status');
+        
+        $query = Lazada::getExportAll($dateStart, $dateEnd, $status);
+
+        $number = 0;
+        $data = [];
+        $data = [];
+        foreach ($query->all() as $model) {
+            $data[] = [
+                '#' => ++$number, // Increment the sequence number for each row
+                'Create Time' => $model->create_time,
+                'Order Item ID' => $model->order_item_id,
+                'Item Name' => $model->item_name,
+                'Seller SKU' => $model->seller_sku,
+                'Variation' => $model->variation,
+                'Status' => $model->status,
+                'Order Number' => $model->order_number,
+                'Unit Price' => number_format($model->unit_price),
+                'Seller Discount Total' => number_format(abs($model->seller_discount_total))
+            ];
+        }
+    
+        return $this->asJson(['data' => $data]);
+    }    
+
+
 }

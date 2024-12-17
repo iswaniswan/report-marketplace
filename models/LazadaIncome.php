@@ -86,4 +86,30 @@ class LazadaIncome extends \yii\db\ActiveRecord
             ->column();
     }
 
+    public static function getExportAll($date_start, $date_end, $status)
+    {
+        $query = static::find();
+        $query->andFilterWhere(['between', 
+                new \yii\db\Expression("STR_TO_DATE(order_creation_date, '%d %b %Y')"), 
+                $date_start, 
+                $date_end
+            ]);
+
+        if ($status !== null) {
+            $statuses = json_decode($status, true); // Decode JSON and set `true` for associative array
+        
+            if (is_array($statuses)) {
+                $orConditions = ['or'];
+                foreach ($statuses as $_status) {
+                    $orConditions[] = ['like', 'order_status', $_status];
+                }
+                $query->andFilterWhere($orConditions);
+            } else {
+                $query->andFilterWhere(['like', 'order_status', $status]);
+            }
+        }
+
+        return $query;        
+    }
+
 }

@@ -321,20 +321,20 @@ class ShopeeController extends Controller
             $totalPembayaran = str_replace(".", "", $model->total_pembayaran);
 
             $data[] = [
-                'number' => ++$number, // Increment the sequence number for each row
-                'waktu_pesanan_dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
-                'no_pesanan' => $model->no_pesanan,
-                'status_pesanan' => $model->status_pesanan,
-                'nama_produk' => $model->nama_produk,
-                'nomor_referensi_sku' => $model->nomor_referensi_sku,
-                'nama_variasi' => $model->nama_variasi,
-                'harga_awal' => number_format($hargaAwal),
-                'total_diskon' => number_format($totalDiskon),
-                'jumlah' => $model->jumlah,
-                'status_pembatalan_pengembalian' => $model->status_pembatalan_pengembalian,
-                'returned_quantity' => $model->returned_quantity,
-                'total_harga_produk' => number_format($totalHargaProduk),
-                'total_pembayaran' => number_format($totalPembayaran),
+                '#' => ++$number, // Increment the sequence number for each row
+                'Waktu Pesanan Dibuat' => date('d-m-Y', strtotime($model->waktu_pesanan_dibuat)),
+                'No Pesanan' => $model->no_pesanan,
+                'Status Pesanan' => $model->status_pesanan,
+                'Nama Produk' => $model->nama_produk,
+                'Nomor Referensi SKU' => $model->nomor_referensi_sku,
+                'Nama Variasi' => $model->nama_variasi,
+                'Harga Awal' => number_format($hargaAwal),
+                'Total Diskon' => number_format($totalDiskon),
+                'Jumlah' => $model->jumlah,
+                'Status Pembatalan Pengembalian' => $model->status_pembatalan_pengembalian,
+                'Returned Quantity' => $model->returned_quantity,
+                'Total Harga Produk' => number_format($totalHargaProduk),
+                'Total Pembayaran' => number_format($totalPembayaran),
             ];
         }
     

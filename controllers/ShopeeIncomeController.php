@@ -326,13 +326,13 @@ class ShopeeIncomeController extends Controller
                 + $model->pro_rata_voucher_shopee_untuk_pengembalian_barang);
 
             $data[] = [
-                'number' => ++$number,
-                'waktu_pesanan_dibuat' => $model->waktu_pesanan_dibuat,
-                'no_pesanan' => $model->no_pesanan,
-                'harga_asli_produk' => number_format($model->harga_asli_produk),
-                'total_diskon_produk' => number_format(abs($model->total_diskon_produk)),
-                'total_pengeluaran' => number_format(abs($totalPengeluaran)),
-                'total_penghasilan' => number_format($model->total_penghasilan)
+                '#' => ++$number,
+                'Waktu Pesanan Dibuat' => $model->waktu_pesanan_dibuat,
+                'No Pesanan' => $model->no_pesanan,
+                'Harga Asli Produk' => number_format($model->harga_asli_produk),
+                'Total Diskon Produk' => number_format(abs($model->total_diskon_produk)),
+                'Total Pengeluaran' => number_format(abs($totalPengeluaran)),
+                'Total Penghasilan' => number_format($model->total_penghasilan)
             ];
         }
     
