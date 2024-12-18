@@ -2,6 +2,7 @@
 
 use app\assets\AppAsset;
 use app\assets\DataTableAsset;
+use app\assets\ExporterAsset;
 use app\assets\Select2Asset;
 use app\models\Shopee;
 use yii\helpers\Html;
@@ -14,6 +15,7 @@ use yii\helpers\Url;
 
 Select2Asset::register($this);
 DataTableAsset::register($this);
+ExporterAsset::register($this);
 
 $this->title = 'Tabel Shopee';
 $this->params['breadcrumbs'][] = $this->title;
@@ -208,8 +210,6 @@ $this->registerCss($style);
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
 <?php
 $urlServerside = Url::to(['shopee/serverside']);
 $urlExportAll = Url::to(['shopee/export-all']);
@@ -332,22 +332,57 @@ $script = <<<JS
                         });
                     }
             },
-            { extend: 'pdf', text: 'PDF', exportOptions: {
-                columns: ':not(:last-child)', // include visible columns only
-                format: {
-                    body: function (data, row, column, node) {
-                        if (column === 0) {
-                            // Adjust sequence number for PDF export
-                            var pageInfo = $('#table-serverside').DataTable().page.info();
-                            return pageInfo.start + row + 1;
+            // { extend: 'pdf', text: 'PDF', exportOptions: {
+            //     columns: ':not(:last-child)', // include visible columns only
+            //     format: {
+            //         body: function (data, row, column, node) {
+            //             if (column === 0) {
+            //                 // Adjust sequence number for PDF export
+            //                 var pageInfo = $('#table-serverside').DataTable().page.info();
+            //                 return pageInfo.start + row + 1;
+            //             }
+            //             return data;
+            //         }
+            //     }},
+            //     customize: function (doc) {
+            //         doc.pageOrientation = 'landscape';
+            //         // Optional: Customize PDF document margins
+            //         doc.pageMargins = [10, 5, 5, 5]; // Set custom margins for left, top, right, bottom
+            //     }
+            // },
+            { extend: 'pdf', text: 'Export All to PDF',
+                action: function (e, dt, button, config) {
+                    $.ajax({
+                        url: '$urlExportAll',
+                        type: 'GET',
+                        data: {
+                            date_start: '$date_start',
+                            date_end: '$date_end',
+                            status: '$status',
+                        },
+                        success: function (response) {
+                            // Initialize jsPDF
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF({ orientation: 'landscape' });
+
+                            // Add headers and data
+                            let headers = Object.keys(response.data[0]);
+                            let rows = response.data.map(item => headers.map(header => item[header]));
+
+                            doc.autoTable({
+                                head: [headers],
+                                body: rows,
+                                margin: { top: 10 },
+                                styles: { fontSize: 8 },
+                            });
+
+                            // Save the PDF
+                            doc.save('ExportedData.pdf');
+                        },
+                        error: function () {
+                            alert('Failed to fetch data for export.');
                         }
-                        return data;
-                    }
-                }},
-                customize: function (doc) {
-                    doc.pageOrientation = 'landscape';
-                    // Optional: Customize PDF document margins
-                    doc.pageMargins = [10, 5, 5, 5]; // Set custom margins for left, top, right, bottom
+                    });
                 }
             },
             { extend: 'print', text: 'Print', exportOptions: {
