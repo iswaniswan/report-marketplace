@@ -93,10 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'horizontalCssClasses' => [
                     'field' => 'mb-4',
                 ]
-            ],
-            'validateOnBlur'=>false,
-            'enableAjaxValidation'=>true,
-            'validateOnChange'=>false,
+            ]
         ]); ?>
         <div class="card p-2 leaves shadow-primary">
             <div class="card-header bg-transparent radius-top-left">
@@ -115,11 +112,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="card-body">
                 <?= $form->field($model, 'username')->textInput([
                     'autofocus' => true,
-                    'placeholder' => 'Username'
+                    'placeholder' => 'Username',
+                    'autocomplete' => 'on'
                 ])->label(false) ?>
 
                 <?= $form->field($model, 'password')->passwordInput([
-                    'placeholder' => 'Password'
+                    'placeholder' => 'Password',
+                    'autocomplete' => 'current-password'
                 ])->label(false) ?>
 
                 <?= $form->field($model, 'rememberMe')->checkbox([

@@ -68,7 +68,8 @@ $this->registerJs($js, yii\web\View::POS_READY);
                                     width: fit-content;
                                     top: 153px; 
                                     right: 30px;
-                                    text-align: right;'
+                                    text-align: right;
+                                    z-index: 9999'
                 ]
             ]) ?>
         <?php } ?>
