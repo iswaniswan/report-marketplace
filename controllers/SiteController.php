@@ -107,6 +107,8 @@ class SiteController extends Controller
     {
         Yii::$app->user->logout();
 
+        Yii::$app->session->setFlash('info', 'Thank you for using the Apps.. see you later :)');
+
         return $this->redirect([
             'site/login',
         ]);
