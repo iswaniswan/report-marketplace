@@ -140,6 +140,8 @@ if ($date_end == null) {
     $date_end = "";
 }
 
+$headerPrint = 'Shopee Income' . date('d M Y', strtotime($date_start)) . ' - ' . date('d M Y', strtotime($date_end));
+
 $script = <<<JS
     $(document).on('click', '.dt-buttons button', function(e) {
         e.preventDefault(); // Prevents reload
@@ -287,18 +289,65 @@ $script = <<<JS
                     });
                 }
             },
-            { extend: 'print', text: 'Print', exportOptions: {
-                columns: ':not(:last-child)', // include visible columns only
-                format: {
-                    body: function (data, row, column, node) {
-                        if (column === 0) {
-                            // Adjust sequence number for PDF export
-                            var pageInfo = $('#table-serverside').DataTable().page.info();
-                            return pageInfo.start + row + 1;
+            // { extend: 'print', text: 'Print', exportOptions: {
+            //     columns: ':not(:last-child)', // include visible columns only
+            //     format: {
+            //         body: function (data, row, column, node) {
+            //             if (column === 0) {
+            //                 // Adjust sequence number for PDF export
+            //                 var pageInfo = $('#table-serverside').DataTable().page.info();
+            //                 return pageInfo.start + row + 1;
+            //             }
+            //             return data;
+            //         }
+            //     }}
+            // }
+            { extend: 'print', text: 'Print All',
+                action: function (e, dt, button, config) {
+                    $.ajax({
+                        url: '$urlExportAll', // Endpoint to fetch all data
+                        type: 'GET',
+                        data: {
+                            date_start: '$date_start',
+                            date_end: '$date_end',
+                            status: '$status',
+                        },
+                        success: function (response) {
+                            let headers = Object.keys(response.data[0]);
+                            let rows = response.data.map(item => headers.map(header => item[header]));
+
+                            let printWindow = window.open('', '_blank');
+                            printWindow.document.write('<html><head><title>Print</title></head><body>');
+                            printWindow.document.write('<h2>$headerPrint</h2>');
+                            printWindow.document.write('<table border="1" style="width: 100%; border-collapse: collapse;">');
+                            
+                            // Add headers
+                            printWindow.document.write('<thead><tr>');
+                            headers.forEach(header => {
+                                printWindow.document.write(`<th style="padding: 8px; text-align: left; border: 1px solid black;">`+header+`</th>`);
+                            });
+                            printWindow.document.write('</tr></thead>');
+                            
+                            // Add rows
+                            printWindow.document.write('<tbody>');
+                            rows.forEach(row => {
+                                printWindow.document.write('<tr>');
+                                row.forEach(cell => {
+                                    printWindow.document.write(`<td style="padding: 8px; text-align: left; border: 1px solid black;">`+cell || ''+`</td>`);
+                                });
+                                printWindow.document.write('</tr>');
+                            });
+                            printWindow.document.write('</tbody>');
+                            printWindow.document.write('</table>');
+                            printWindow.document.write('</body></html>');
+                            printWindow.document.close();
+                            printWindow.print();
+                        },
+                        error: function () {
+                            alert('Failed to fetch data for printing.');
                         }
-                        return data;
-                    }
-                }}
+                    });
+                }
             }
         ],
         lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
