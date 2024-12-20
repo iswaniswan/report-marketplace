@@ -254,6 +254,7 @@ class Tokopedia extends \yii\db\ActiveRecord
                 )
                 SELECT 
                     CASE
+                        WHEN LOWER(status_terakhir) LIKE '%diproses%' THEN 'Sedang Dikirim'
                         WHEN LOWER(status_terakhir) LIKE '%dikirim%' THEN 'Sedang Dikirim'
                         WHEN LOWER(status_terakhir) LIKE '%tiba%' THEN 'Sedang Dikirim'
                         ELSE status_terakhir
