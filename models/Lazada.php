@@ -310,32 +310,33 @@ class Lazada extends \yii\db\ActiveRecord
         /** versi 2 */
         $sql = <<<SQL
                     WITH CTE AS (
-                                SELECT 
-                                    create_time, jumlah_transaksi, jumlah, unit_price, seller_discount_total, (unit_price + seller_discount_total) AS amount_hjp, 
-                                    payment_fee,
-                                    item_price_credit,
-                                    commission,
-                                    promotional_charges_vouchers,
-                                    free_shipping_max_fee,
-                                    campaign_fee,
-                                    lazcoins_discount_promotion_fee,
-                                    (
-                                        payment_fee + item_price_credit + commission + promotional_charges_vouchers + free_shipping_max_fee + campaign_fee + lazcoins_discount_promotion_fee
-                                    ) AS amount_net
-                                FROM (
+                            SELECT 
+                                create_time, jumlah_transaksi, jumlah, unit_price, seller_discount_total, (unit_price + promotional_charges_vouchers) AS amount_hjp, 
+                                payment_fee,
+                                item_price_credit,
+                                commission,
+                                promotional_charges_vouchers,
+                                free_shipping_max_fee,
+                                campaign_fee,
+                                lazcoins_discount_promotion_fee,
+                                (
+                                    payment_fee + item_price_credit + commission + promotional_charges_vouchers + free_shipping_max_fee + campaign_fee + lazcoins_discount_promotion_fee
+                                ) AS amount_net,
+                                amount_net_2
+                            FROM (
                                     SELECT
                                         STR_TO_DATE(create_time, '%d %b %Y') create_time, 
                                         order_number,
                                         status,
                                         count(DISTINCT order_number) AS jumlah_transaksi,
                                         count(order_number) AS jumlah,
-                                        sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total  
+                                        sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total
                                     FROM lazada
                                     WHERE (status = 'confirmed' OR lower(status) = 'dikonfirmasi')
                                         AND STR_TO_DATE(create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                     GROUP BY 1, 2, 3
-                                ) a
-                                INNER JOIN (
+                            ) a
+                            INNER JOIN (
                                     SELECT
                                         order_number,
                                         SUM(
@@ -391,50 +392,57 @@ class Lazada extends \yii\db\ActiveRecord
                                     WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                         GROUP BY 1
                                         ORDER BY 1
-                                    ) b ON b.order_number = a.order_number
-                                    ORDER BY 1
-                            ) 
-                            SELECT 
-                                create_time tanggal, 
-                                sum(jumlah_transaksi) jumlah_transaksi, 
-                                sum(jumlah) quantity, 
-                                sum(amount_hjp) amount_hjp,  
-                                sum(amount_net) amount_net,
-                                (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
-                            FROM CTE a
-                            GROUP BY 1
-                            ORDER BY 1 ASC
+                                ) b ON b.order_number = a.order_number
+                                INNER JOIN (
+                                    SELECT order_number, sum(amount_include_tax) AS amount_net_2
+                                    FROM lazada_income
+                                    WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
+                                    GROUP BY 1
+                                ) c ON c.order_number = a.order_number
+                                ORDER BY 1
+                        ) 
+                        SELECT 
+                            create_time tanggal, 
+                            sum(jumlah_transaksi) jumlah_transaksi, 
+                            sum(jumlah) quantity, 
+                            sum(amount_hjp) amount_hjp,  
+                            sum(amount_net_2) amount_net,
+                            (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                        FROM CTE a
+                        GROUP BY 1
+                        ORDER BY 1 ASC
         SQL;
 
         if ($is_total) {
             $sql = <<<SQL
                     WITH CTE AS (
-                                SELECT 
-                                    create_time, jumlah_transaksi, jumlah, unit_price, seller_discount_total, (unit_price + seller_discount_total) AS amount_hjp, 
-                                    payment_fee,
-                                    item_price_credit,
-                                    commission,
-                                    promotional_charges_vouchers,
-                                    free_shipping_max_fee,
-                                    campaign_fee,
-                                    lazcoins_discount_promotion_fee,
-                                    (
-                                        payment_fee + item_price_credit + commission + promotional_charges_vouchers + free_shipping_max_fee + campaign_fee + lazcoins_discount_promotion_fee
-                                    ) AS amount_net
-                                FROM (
+                            SELECT 
+                                create_time, jumlah_transaksi, jumlah, unit_price, seller_discount_total, (unit_price + promotional_charges_vouchers) AS amount_hjp, 
+                                payment_fee,
+                                item_price_credit,
+                                commission,
+                                promotional_charges_vouchers,
+                                free_shipping_max_fee,
+                                campaign_fee,
+                                lazcoins_discount_promotion_fee,
+                                (
+                                    payment_fee + item_price_credit + commission + promotional_charges_vouchers + free_shipping_max_fee + campaign_fee + lazcoins_discount_promotion_fee
+                                ) AS amount_net,
+                                amount_net_2
+                            FROM (
                                     SELECT
                                         STR_TO_DATE(create_time, '%d %b %Y') create_time, 
                                         order_number,
                                         status,
                                         count(DISTINCT order_number) AS jumlah_transaksi,
                                         count(order_number) AS jumlah,
-                                        sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total  
+                                        sum(unit_price) unit_price, sum(seller_discount_total) seller_discount_total
                                     FROM lazada
                                     WHERE (status = 'confirmed' OR lower(status) = 'dikonfirmasi')
                                         AND STR_TO_DATE(create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                     GROUP BY 1, 2, 3
-                                ) a
-                                INNER JOIN (
+                            ) a
+                            INNER JOIN (
                                     SELECT
                                         order_number,
                                         SUM(
@@ -490,16 +498,22 @@ class Lazada extends \yii\db\ActiveRecord
                                     WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
                                         GROUP BY 1
                                         ORDER BY 1
-                                    ) b ON b.order_number = a.order_number
-                                    ORDER BY 1
-                            ) 
-                            SELECT 
-                                sum(jumlah_transaksi) jumlah_transaksi, 
-                                sum(jumlah) quantity, 
-                                sum(amount_hjp) amount_hjp,  
-                                sum(amount_net) amount_net,
-                                (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
-                            FROM CTE a
+                                ) b ON b.order_number = a.order_number
+                                INNER JOIN (
+                                    SELECT order_number, sum(amount_include_tax) AS amount_net_2
+                                    FROM lazada_income
+                                    WHERE STR_TO_DATE(order_creation_date, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
+                                    GROUP BY 1
+                                ) c ON c.order_number = a.order_number
+                                ORDER BY 1
+                        ) 
+                        SELECT 
+                            sum(jumlah_transaksi) jumlah_transaksi, 
+                            sum(jumlah) quantity, 
+                            sum(amount_hjp) amount_hjp,  
+                            sum(amount_net_2) amount_net,
+                            (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                        FROM CTE a
             SQL;
         }
 
