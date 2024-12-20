@@ -714,7 +714,9 @@ class FileUploadForm extends Model
         // static skipped columns
         $skippedColumnsName = [
             'order_source',
-            'voucher_xtra_service_fee' 
+            'voucher_xtra_service_fee',
+            'replacement_shipping_fee_passed_on_to_the_customer',
+            'exchange_shipping_fee_passed_on_to_the_customer'
         ];
 
         // Read the header row
