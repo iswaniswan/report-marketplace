@@ -50,6 +50,8 @@ class FileSourceSearch extends FileSource
         $query->andFilterWhere(['like', 'filename', $this->filename])
             ->andFilterWhere(['like', 'path', $this->path]);
 
+        $query->orderBy(['date_created' => SORT_DESC]);
+
         return $query;
     }
 

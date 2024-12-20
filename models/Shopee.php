@@ -411,7 +411,7 @@ class Shopee extends \yii\db\ActiveRecord
                                             SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, status_pesanan, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
                                             FROM shopee
                                             WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                                AND status_pesanan LIKE '%Selesai%' 
+                                                AND status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                             GROUP BY 1, 2, 3            		
                                     ) x WHERE returned_quantity = 0
                             ) a
@@ -465,7 +465,7 @@ class Shopee extends \yii\db\ActiveRecord
                                                     SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, status_pesanan, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
                                                     FROM shopee
                                                     WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                                        AND status_pesanan LIKE '%Selesai%' 
+                                                        AND status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
                                                     GROUP BY 1, 2, 3            		
                                             ) x WHERE returned_quantity = 0
                                     ) a
