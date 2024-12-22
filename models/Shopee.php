@@ -207,11 +207,14 @@ class Shopee extends \yii\db\ActiveRecord
             ->select([
                 'status_pesanan' => new \yii\db\Expression("
                     CASE 
-                        WHEN status_pesanan = 'Permintaan Disetujui' THEN 'Retur' 
+                        WHEN LOWER(status_pesanan) = 'permintaan disetujui' THEN 'Retur' 
+                        WHEN LOWER(status_pesanan) LIKE '%pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian%' THEN 'Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian'
+                        WHEN LOWER(status_pesanan) LIKE '%pengembalian sedang diproses%' THEN 'Pengembalian Diproses'
                         ELSE status_pesanan 
                     END
                 ")
             ])
+            ->distinct()
             ->from(['a' => $subquery1->union($subquery2, true)])
             ->where(['!=', 'status_pesanan', '']);
 
@@ -376,7 +379,7 @@ class Shopee extends \yii\db\ActiveRecord
         // }
 
         /** versi 3 */
-        $sql = <<<SQL
+        $cte = <<<SQL
                     WITH CTA AS (
                                 SELECT no_pesanan, sum(returned_quantity) returned_quantity
                                 FROM shopee
@@ -398,7 +401,8 @@ class Shopee extends \yii\db\ActiveRecord
                             FROM (
                                     SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                     FROM shopee
-                                    WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
+                                    WHERE LOWER(status_pesanan) NOT LIKE '%batal%' AND returned_quantity = 0
+                                        /*AND LOWER(status_pesanan) NOT LIKE '%namun pembeli masih dapat mengajukan pengembalian%'*/
                                         AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
                                         /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
                             ) a
@@ -408,7 +412,13 @@ class Shopee extends \yii\db\ActiveRecord
                             FROM (
                                     SELECT waktu_pesanan_dibuat, no_pesanan, status_pesanan, jumlah, returned_quantity
                                     FROM (
-                                            SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, status_pesanan, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
+                                            SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, 
+                                                CASE 
+                                                    WHEN lower(status_pesanan) LIKE '%Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian%'
+                                                        THEN 'Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian'
+                                                    WHEN lower(status_pesanan) LIKE '%pengembalian sedang diproses%' THEN 'Pengembalian Diproses'
+                                                    ELSE status_pesanan
+                                                END AS status_pesanan, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
                                             FROM shopee
                                             WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
                                                 AND status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
@@ -417,6 +427,10 @@ class Shopee extends \yii\db\ActiveRecord
                             ) a
                             GROUP BY 1
                 )
+        SQL;
+
+        $sql = <<<SQL
+                $cte
                 SELECT
                     waktu_pesanan_dibuat,
                     sum(jumlah_transaksi) jumlah_transaksi,
@@ -431,46 +445,7 @@ class Shopee extends \yii\db\ActiveRecord
 
         if ($is_total) {
             $sql = <<<SQL
-                        WITH CTA AS (
-                                    SELECT no_pesanan, sum(returned_quantity) returned_quantity
-                                    FROM shopee
-                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                        AND status_pesanan LIKE '%Selesai%' AND returned_quantity > 0
-                                    GROUP BY 1
-                        ), CTE AS (
-                                    SELECT
-                                        waktu_pesanan_dibuat,
-                                        0 AS jumlah_transaksi,
-                                        0 AS jumlah,
-                                        0 AS amount_hjp,
-                                        sum(total_penghasilan) AS amount_net
-                                    FROM shopee_income
-                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                    GROUP BY 1
-                                    UNION ALL
-                                    SELECT waktu_pesanan_dibuat, 0 AS jumlah_transaksi, 0 AS jumlah, sum(total_harga_produk) amount_hjp, 0 AS amount_net
-                                    FROM (
-                                            SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
-                                            FROM shopee
-                                            WHERE status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
-                                                AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                                /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
-                                    ) a
-                                    GROUP BY 1
-                                    UNION ALL 			
-                                    SELECT waktu_pesanan_dibuat, count(status_pesanan) jumlah_transaksi, sum(jumlah) AS jumlah, 0 AS amount_hjp, 0 AS amount_net
-                                    FROM (
-                                            SELECT waktu_pesanan_dibuat, no_pesanan, status_pesanan, jumlah, returned_quantity
-                                            FROM (
-                                                    SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, status_pesanan, sum(jumlah) AS jumlah, sum(returned_quantity) AS returned_quantity
-                                                    FROM shopee
-                                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
-                                                        AND status_pesanan NOT LIKE '%Batal%' AND returned_quantity = 0
-                                                    GROUP BY 1, 2, 3            		
-                                            ) x WHERE returned_quantity = 0
-                                    ) a
-                                    GROUP BY 1
-                        )
+                        $cte
                         SELECT
                             sum(jumlah_transaksi) jumlah_transaksi,
                             sum(jumlah) jumlah,
@@ -559,7 +534,7 @@ class Shopee extends \yii\db\ActiveRecord
                     UNION ALL
                     SELECT 'Sedang Dikirim' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
-                    WHERE status_pesanan LIKE '%Dikirim%'/* AND returned_quantity = 0*/
+                    WHERE LOWER(status_pesanan) LIKE '%dikirim%' OR LOWER(status_pesanan) LIKE '%namun pembeli masih dapat mengajukan pengembalian%' OR LOWER(status_pesanan) LIKE '%pesanan diterima%'
         SQL;
 
         $command = Yii::$app->db->createCommand($sql);

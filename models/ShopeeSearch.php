@@ -80,11 +80,13 @@ class ShopeeSearch extends Shopee
                         $orConditions[] = ['>', 'returned_quantity', '0'];
                     } else {
                         $orConditions[] = ['like', 'status_pesanan', $_status];
+                        $orConditions[] = ['like', 'status_pembatalan_pengembalian', $_status];
                     }
                 }
                 $query->andFilterWhere($orConditions);
             } else {
                 $query->andFilterWhere(['like', 'status_pesanan', $this->status]);
+                $query->andFilterWhere(['like', 'status_pembatalan_pengembalian', $this->status]);
             }
         }
         
