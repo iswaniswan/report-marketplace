@@ -28,7 +28,8 @@ class StringHelper
     public static function sanitizeValue($value)
     {
         // Replace spaces and invalid characters with an underscore
-        return preg_replace('/[\'"\\%]+/', '', $value);
+        $value =  preg_replace('/[\'"\\%]+/', '', $value);
+        return trim($value);
     }
 
     public static function getDatesInPeriod($period, $format='Y-m-d')

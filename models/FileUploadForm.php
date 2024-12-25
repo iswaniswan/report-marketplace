@@ -102,6 +102,38 @@ class FileUploadForm extends Model
         'pro_rated_bank_payment_channel_promotion_for_return_refund_items', 'pro_rated_shopee_payment_channel_promotion_for_return_refund_ite'
     ];
 
+    protected $allColumnTiktok = [
+        "id","id_file_source","order_id","order_status","order_substatus","cancelation_return_type","normal_or_pre_order","sku_id","seller_sku","product_name","variation","quantity","sku_quantity_of_return","sku_unit_original_price","sku_subtotal_before_discount","sku_platform_discount","sku_seller_discount","sku_subtotal_after_discount","shipping_fee_after_discount","original_shipping_fee","shipping_fee_seller_discount","shipping_fee_platform_discount","payment_platform_discount","buyer_service_fee","taxes","order_amount","order_refund_amount","created_time","paid_time","rts_time","shipped_time","delivered_time","cancelled_time","cancel_by","cancel_reason","fulfillment_type","warehouse_name","tracking_id","delivery_option","shipping_provider_name","buyer_message","buyer_username","recipient","phone","zipcode","country","province","regency_and_city","districts","villages","detail_address","additional_address_information","payment_method","weight_kg","product_category","package_id","seller_note","checked_status","checked_marked_by","order_adjustment_id","`type`","order_created_time_utc","order_settled_time_utc","currency","total_settlement_amount","total_revenue","subtotal_after_seller_discounts","subtotal_before_discounts","seller_discounts","refund_subtotal_after_seller_discounts","refund_subtotal_before_seller_discounts","refund_of_seller_discounts","total_fees","tiktok_shop_commission_fee","flat_fee","sales_fee","mall_service_fee","payment_fee","shipping_cost","shipping_costs_passed_on_to_the_logistics_provider","shipping_cost_borne_by_the_platform","shipping_cost_paid_by_the_customer","refunded_shipping_cost_paid_by_the_customer","return_shipping_costs_passed_on_to_the_customer","shipping_cost_subsidy","affiliate_commission","affiliate_partner_commission","affiliate_shop_ads_commission","sfp_service_fee","live_specials_service_fee","bonus_cashback_service_fee","ajustment_amount","related_order_id","`_`","customer_payment","customer_refund","seller_co_funded_voucher_discount","refund_of_seller_co_funded_voucher_discount","platform_discounts","refund_of_platform_discounts","platform_co_funded_voucher_discounts","refund_of_platform_co_funded_voucher_discounts","seller_shipping_cost_discount","estimated_package_weight_g","actual_package_weight_g","shopping_center_items"
+    ];
+
+    protected $allColumnTiktokIncome = [
+        "id","id_file_source","order_adjustment_id","`type`","order_created_time_utc","order_settled_time_utc","currency","total_settlement_amount","total_revenue","subtotal_after_seller_discounts","subtotal_before_discounts","seller_discounts","refund_subtotal_after_seller_discounts","refund_subtotal_before_seller_discounts","refund_of_seller_discounts","total_fees","tiktok_shop_commission_fee","flat_fee","sales_fee","mall_service_fee","payment_fee","shipping_cost","shipping_costs_passed_on_to_the_logistics_provider","shipping_cost_borne_by_the_platform","shipping_cost_paid_by_the_customer","refunded_shipping_cost_paid_by_the_customer","return_shipping_costs_passed_on_to_the_customer","shipping_cost_subsidy","affiliate_commission","affiliate_partner_commission","affiliate_shop_ads_commission","sfp_service_fee","live_specials_service_fee","bonus_cashback_service_fee","ajustment_amount","related_order_id","`#`","customer_payment","customer_refund","seller_co_funded_voucher_discount","refund_of_seller_co_funded_voucher_discount","platform_discounts","refund_of_platform_discounts","platform_co_funded_voucher_discounts","refund_of_platform_co_funded_voucher_discounts","seller_shipping_cost_discount","estimated_package_weight_g","actual_package_weight_g","shopping_center_items"
+    ];
+
+    protected $allColumnLazada = [
+        "id","id_file_source","order_item_id","order_type","guarantee","delivery_type","lazada_id","seller_sku","lazada_sku","ware_house","create_time","update_time","rts_sla","tts_sla","order_number","invoice_required","invoice_number","delivered_date","customer_name","customer_email","national_registration_number","shipping_name","shipping_address","shipping_address2","shipping_address3","shipping_address4","shipping_address5","shipping_phone","shipping_phone2","shipping_city","shipping_post_code","shipping_country","shipping_region","billing_name","billing_addr","billing_addr2","billing_addr3","billing_addr4","billing_addr5","billing_phone","billing_phone2","billing_city","billing_post_code","billing_country","tax_code","branch_number","tax_invoice_requested","pay_method","paid_price","unit_price","seller_discount_total","shipping_fee","wallet_credit","item_name","variation","cd_shipping_provider","shipping_provider","shipment_type_name","shipping_provider_type","cd_tracking_code","tracking_code","tracking_url","shipping_provider_fm","tracking_code_fm","tracking_url_fm","promised_shipping_time","premium","status","buyer_failed_delivery_return_initiator","buyer_failed_delivery_reason","buyer_failed_delivery_detail","buyer_failed_delivery_user_name","bundle_id","semi_managed","flexible_delivery_time","bundle_discount","refund_amount","seller_note"
+    ];
+
+    protected $allColumnLazadaIncome = [
+        "id","id_file_source","statement_period","statement_number","transaction_date","fee_name","amount_include_tax","vat_amount","release_status","release_date","comment","order_creation_date","order_number","order_line_id","seller_sku","lazada_sku","wht_amount","wht_included_in_amount","order_status","product_name"
+    ];
+
+    protected $allColumnShopee = [
+        "id","id_file_source","no_pesanan","status_pesanan","alasan_pembatalan","status_pembatalan_pengembalian","no_resi","opsi_pengiriman","antar_ke_counter_pick_up","pesanan_harus_dikirimkan_sebelum_menghindari_keterlambatan","waktu_pengiriman_diatur","waktu_pesanan_dibuat","waktu_pembayaran_dilakukan","metode_pembayaran","sku_induk","nama_produk","nomor_referensi_sku","nama_variasi","harga_awal","harga_setelah_diskon","jumlah","returned_quantity","total_harga_produk","total_diskon","diskon_dari_penjual","diskon_dari_shopee","berat_produk","jumlah_produk_di_pesan","total_berat","voucher_ditanggung_penjual","cashback_koin","voucher_ditanggung_shopee","paket_diskon","paket_diskon_diskon_dari_shopee","paket_diskon_diskon_dari_penjual","potongan_koin_shopee","diskon_kartu_kredit","ongkos_kirim_dibayar_oleh_pembeli","estimasi_potongan_biaya_pengiriman","ongkos_kirim_pengembalian_barang","total_pembayaran","perkiraan_ongkos_kirim","catatan_dari_pembeli","catatan","username_pembeli","nama_penerima","no_telepon","alamat_pengiriman","kota_kabupaten","provinsi","waktu_pesanan_selesai"
+    ];
+
+    protected $allColumnShopeeIncome = [
+        "id","id_file_source","`no`","no_pesanan","no_pengajuan","username_pembeli","waktu_pesanan_dibuat","metode_pembayaran_pembeli","tanggal_dana_dilepaskan","harga_asli_produk","total_diskon_produk","jumlah_pengembalian_dana_ke_pembeli","diskon_produk_dari_shopee","diskon_voucher_ditanggung_penjual","cashback_koin_yang_ditanggung_penjual","ongkir_dibayar_pembeli","diskon_ongkir_ditanggung_jasa_kirim","gratis_ongkir_dari_shopee","ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim","ongkos_kirim_pengembalian_barang","pengembalian_biaya_kirim","biaya_komisi_ams","biaya_administrasi_termasuk_ppn_11","biaya_layanan_termasuk_ppn_11","premi","biaya_program","biaya_kartu_kredit","biaya_kampanye","bea_masuk_ppn_pph","total_penghasilan","kode_voucher","kompensasi","promo_gratis_ongkir_dari_penjual","jasa_kirim","nama_kurir","`#`","pengembalian_dana_ke_pembeli","pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang","pro_rata_voucher_shopee_untuk_pengembalian_barang","pro_rated_bank_payment_channel_promotion_for_return_refund_items","pro_rated_shopee_payment_channel_promotion_for_return_refund_ite"
+    ];
+
+    protected $allColumnTokopedia = [
+        "id","id_file_source","nomor","nomor_invoice","tanggal_pembayaran","status_terakhir","tanggal_pesanan_selesai","waktu_pesanan_selesai","tanggal_pesanan_dibatalkan","waktu_pesanan_dibatalkan","nama_produk","tipe_produk","nomor_sku","catatan_produk_pembeli","catatan_produk_penjual","jumlah_produk_dibeli","harga_awal_idr","harga_satuan_bundling_idr","diskon_produk_idr","harga_jual_idr","jumlah_subsidi_tokopedia_idr","nilai_kupon_toko_terpakai_idr","jenis_kupon_toko_terpakai","kode_kupon_toko_yang_digunakan","biaya_pengiriman_tunai_idr","biaya_asuransi_pengiriman_idr","total_biaya_pengiriman_idr","total_penjualan_idr","nama_pembeli","no_telp_pembeli","nama_penerima","no_telp_penerima","alamat_pengiriman","kota","provinsi","nama_kurir","tipe_pengiriman_regular_same_day_etc","no_resi_kode_booking","tanggal_pengiriman_barang","waktu_pengiriman_barang","gudang_pengiriman","nama_campaign","nama_bundling","tipe_bebas_ongkir_bebas_ongkir_bebas_ongkir_dt","cod","jumlah_produk_yang_dikurangkan","total_pengurangan_idr","nama_penawaran_terpakai","tingkatan_promosi_terpakai","diskon_penawaran_terpakai_idr"
+    ];
+
+    protected $allColumnTokopediaKeuangan = [
+        "id","id_file_source","nomor","nomor_invoice","tanggal_pembayaran","status_terakhir","tanggal_pesanan_selesai","waktu_pesanan_selesai","tanggal_pesanan_dibatalkan","waktu_pesanan_dibatalkan","nama_produk","jumlah_produk_dibeli","harga_jual_idr","jumlah_subsidi_tokopedia_idr","nilai_kupon_toko_terpakai_idr","jenis_kupon_toko_terpakai","kode_kupon_toko_yang_digunakan","jumlah_produk_yang_dikurangkan","total_pengurangan_idr","nama_biaya_layanan","persentase_biaya_layanan","biaya_layanan_termasuk_ppn_dan_pph_idr","biaya_layanan_di_luar_ppn_dan_pph_idr","ppn_idr","pph_idr"
+    ];
+
     private $emptyColumnCount = 0;
 
     public function rules()
@@ -626,13 +658,35 @@ class FileUploadForm extends Model
             ]);
         }
     
+        // sterilize column according to table column name
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+        
+            $columnIndex = 1; // Start from the first column
+            while ($columnIndex <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn())) {
+                $cell = $worksheet->getCellByColumnAndRow($columnIndex, 1);
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
+
+                if (!in_array($headerValue, $this->allColumnTiktok)) {
+                    // Remove the column if it's not in the allowed list
+                    $worksheet->removeColumnByIndex($columnIndex);
+                    // Skip incrementing columnIndex to re-check the new column at the same position
+                    continue;
+                }
+
+                $columnIndex++; // Increment only if the column is kept
+            }
+        }        
+
         // Read the header row
         foreach ($worksheet->getRowIterator(1, 1) as $row) {
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
             foreach ($cellIterator as $cell) {
                 // Standardize header values using a utility function if needed
-                $header[] = StringHelper::sanitizeColumnName($cell->getValue());
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
+                $header[] = $headerValue;
             }
         }
             
@@ -641,23 +695,28 @@ class FileUploadForm extends Model
         // Maximum number of rows to insert per batch
         $batchSize = 1000;
 
-        // Read the data rows
-        // foreach ($worksheet->getRowIterator(2) as $row) { // Start from row 2 to skip the header
+        // Read the data rows        
         foreach ($worksheet->getRowIterator(3) as $row) { // 
             $rowData = [];
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
             $columnIndex = 0;
     
-            foreach ($cellIterator as $cell) {                
-                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                
+            foreach ($cellIterator as $cell) {           
+                // Ensure that the $header matches the current column
+                if (!isset($header[$columnIndex])) {
+                    $columnIndex++;
+                    continue; // Skip columns that do not have a corresponding header
+                }     
+
+                $headerValue = $header[$columnIndex]; // Map header to column
                 $value = StringHelper::sanitizeValue($cell->getValue());
-                // if ($headerValue == 'sku_subtotal_before_discount') {
+                
                 if (in_array($headerValue, $this->tiktokColumnsNumeric)) {
                     // var_dump($value);
                     $value = str_replace('.', '', $value);
                     $value = str_replace('IDR', '', $value);
-                    $value = StringHelper::sanitizeValue($value);
+                    $value = StringHelper::sanitizeValue($value);                    
                     // $value = StringHelper::sanitizeCurrency($value);
                     // var_dump($value); die();
                 }
@@ -709,47 +768,40 @@ class FileUploadForm extends Model
             ]);
         }
     
-        $skippedColumns = [];
+        // sterilize column according to table column name
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+        
+            $columnIndex = 1; // Start from the first column
+            while ($columnIndex <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn())) {
+                $cell = $worksheet->getCellByColumnAndRow($columnIndex, 1);
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
 
-        // static skipped columns
-        $skippedColumnsName = [
-            'order_source',
-            'voucher_xtra_service_fee',
-            'replacement_shipping_fee_passed_on_to_the_customer',
-            'exchange_shipping_fee_passed_on_to_the_customer'
-        ];
+                if (!in_array($headerValue, $this->allColumnTiktokIncome)) {
+                    // Remove the column if it's not in the allowed list
+                    $worksheet->removeColumnByIndex($columnIndex);
+                    // Skip incrementing columnIndex to re-check the new column at the same position
+                    continue;
+                }
+
+                $columnIndex++; // Increment only if the column is kept
+            }
+        }  
 
         // Read the header row
         foreach ($worksheet->getRowIterator(1, 1) as $row) {
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
-            $columnIndex = 0;
             foreach ($cellIterator as $cell) {
-                $cellValue = $cell->getValue();
                 // Standardize header values using a utility function if needed
-                if ($cellValue === '' || $cellValue == NULL) {
-                    $skippedColumns[] = $columnIndex;
-                    continue;
-                    // $this->emptyColumnCount += 1;
-                    // $cellValue = $this->renameEmptyColumnName();
-                }
-                // echo '<pre>'; var_dump($cellValue); echo '</pre>';
-                $headerValue = StringHelper::sanitizeColumnName($cellValue);
-
-                if (in_array($headerValue, $skippedColumnsName)) {
-                    $skippedColumns[] = $columnIndex;
-                    $columnIndex++;
-                    continue;
-                }
-
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
                 $header[] = $headerValue;
-
-                $columnIndex++;
             }
         }
             
         $header[] = 'id_file_source';
-        // echo '<pre>'; var_dump($header); echo '</pre>'; 
+
         // Maximum number of rows to insert per batch
         $batchSize = 1000;
 
@@ -760,26 +812,22 @@ class FileUploadForm extends Model
             $cellIterator->setIterateOnlyExistingCells(false);
             $columnIndex = 0;
     
-            foreach ($cellIterator as $cell) {    
-                // Skip columns if they are in the skippedColumns array
-                // if (in_array($columnIndex, $skippedColumns)) {
-                //     $columnIndex++;
-                //     continue;
-                // }
-                
-                $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value
-                
-                if ($headerValue == 'undefined' || in_array($headerValue, $skippedColumnsName)) {
+            foreach ($cellIterator as $cell) {      
+                // Ensure that the $header matches the current column
+                if (!isset($header[$columnIndex])) {
                     $columnIndex++;
-                    continue;
-                }
+                    continue; // Skip columns that do not have a corresponding header
+                }   
                 
-                if (in_array($headerValue, $this->tiktokIncomeColumnsNumeric)) {
-                    $value = StringHelper::sanitizeCurrencyAbs($cell->getValue());
-                } else {
-                    $value = StringHelper::sanitizeValue($cell->getValue());
+                $headerValue = $header[$columnIndex]; // Map header to column
+                $value = StringHelper::sanitizeValue($cell->getValue());
+                
+                if (in_array($headerValue, $this->tiktokColumnsNumeric)) {
+                    // var_dump($value);
+                    $value = str_replace('.', '', $value);
+                    $value = str_replace('IDR', '', $value);
+                    $value = StringHelper::sanitizeValue($value);    
                 }
-
                 $rowData[$headerValue] = $value;
                 $columnIndex++;
             }
