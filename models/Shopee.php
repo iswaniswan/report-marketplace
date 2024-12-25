@@ -524,17 +524,20 @@ class Shopee extends \yii\db\ActiveRecord
                                 WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity > 0
                                 GROUP BY 1
                     )
-                    SELECT 'Selesai' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+                    SELECT 'Selesai' AS status_pesanan, count(DISTINCT no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
                     WHERE status_pesanan LIKE '%Selesai%' AND returned_quantity = 0 AND no_pesanan NOT IN (SELECT no_pesanan FROM CTB)
                     UNION ALL 
-                    SELECT 'Batal' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+                    SELECT 'Batal' AS status_pesanan, count(DISTINCT no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
                     WHERE status_pesanan LIKE '%Batal%' OR (status_pesanan LIKE '%Selesai%' AND returned_quantity > 0)/* OR (status_pesanan LIKE '%Sedang Dikirim%' AND returned_quantity > 0)*/
                     UNION ALL
-                    SELECT 'Sedang Dikirim' AS status_pesanan, count(no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
+                    SELECT 'Sedang Dikirim' AS status_pesanan, count(DISTINCT no_pesanan) AS jumlah, sum(total_harga_produk) AS amount_hjp
                     FROM CTE a
-                    WHERE LOWER(status_pesanan) LIKE '%dikirim%' OR LOWER(status_pesanan) LIKE '%namun pembeli masih dapat mengajukan pengembalian%' OR LOWER(status_pesanan) LIKE '%pesanan diterima%'
+                    WHERE LOWER(status_pesanan) LIKE '%dikirim%' 
+                        OR LOWER(status_pesanan) LIKE '%namun pembeli masih dapat mengajukan pengembalian%' 
+                        OR LOWER(status_pesanan) LIKE '%pesanan diterima%'
+                        OR LOWER(status_pesanan) LIKE '%belum bayar%'
         SQL;
 
         $command = Yii::$app->db->createCommand($sql);

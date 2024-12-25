@@ -1127,7 +1127,7 @@ class FileUploadForm extends Model
             $rowData['id_file_source'] = $this->id_file_source;            
 
             // cek bari kosong
-            if ($rowData['order_number'] == '') {
+            if (@$rowData['order_number'] != null && $rowData['order_number'] == '') {
                 continue;
             }
 
