@@ -123,7 +123,7 @@ class FileUploadForm extends Model
     ];
 
     protected $allColumnShopeeIncome = [
-        "id","id_file_source","`no`","no_pesanan","no_pengajuan","username_pembeli","waktu_pesanan_dibuat","metode_pembayaran_pembeli","tanggal_dana_dilepaskan","harga_asli_produk","total_diskon_produk","jumlah_pengembalian_dana_ke_pembeli","diskon_produk_dari_shopee","diskon_voucher_ditanggung_penjual","cashback_koin_yang_ditanggung_penjual","ongkir_dibayar_pembeli","diskon_ongkir_ditanggung_jasa_kirim","gratis_ongkir_dari_shopee","ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim","ongkos_kirim_pengembalian_barang","pengembalian_biaya_kirim","biaya_komisi_ams","biaya_administrasi_termasuk_ppn_11","biaya_layanan_termasuk_ppn_11","premi","biaya_program","biaya_kartu_kredit","biaya_kampanye","bea_masuk_ppn_pph","total_penghasilan","kode_voucher","kompensasi","promo_gratis_ongkir_dari_penjual","jasa_kirim","nama_kurir","`#`","pengembalian_dana_ke_pembeli","pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang","pro_rata_voucher_shopee_untuk_pengembalian_barang","pro_rated_bank_payment_channel_promotion_for_return_refund_items","pro_rated_shopee_payment_channel_promotion_for_return_refund_ite"
+        "id","id_file_source","no","no_pesanan","no_pengajuan","username_pembeli","waktu_pesanan_dibuat","metode_pembayaran_pembeli","tanggal_dana_dilepaskan","harga_asli_produk","total_diskon_produk","jumlah_pengembalian_dana_ke_pembeli","diskon_produk_dari_shopee","diskon_voucher_ditanggung_penjual","cashback_koin_yang_ditanggung_penjual","ongkir_dibayar_pembeli","diskon_ongkir_ditanggung_jasa_kirim","gratis_ongkir_dari_shopee","ongkir_yang_diteruskan_oleh_shopee_ke_jasa_kirim","ongkos_kirim_pengembalian_barang","pengembalian_biaya_kirim","biaya_komisi_ams","biaya_administrasi_termasuk_ppn_11","biaya_layanan_termasuk_ppn_11","premi","biaya_program","biaya_kartu_kredit","biaya_kampanye","bea_masuk_ppn_pph","total_penghasilan","kode_voucher","kompensasi","promo_gratis_ongkir_dari_penjual","jasa_kirim","nama_kurir","`#`","pengembalian_dana_ke_pembeli","pro_rata_koin_yang_ditukarkan_untuk_pengembalian_barang","pro_rata_voucher_shopee_untuk_pengembalian_barang","pro_rated_bank_payment_channel_promotion_for_return_refund_items","pro_rated_shopee_payment_channel_promotion_for_return_refund_ite"
     ];
 
     protected $allColumnTokopedia = [
@@ -584,6 +584,27 @@ class FileUploadForm extends Model
                 'id_file_source' => $this->id_file_source
             ]);
         }
+
+        // sterilize column according to table column name
+        foreach ($worksheet->getRowIterator(1, 1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+        
+            $columnIndex = 1; // Start from the first column
+            while ($columnIndex <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn())) {
+                $cell = $worksheet->getCellByColumnAndRow($columnIndex, 1);
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
+
+                if (!in_array($headerValue, $this->allColumnShopee)) {
+                    // Remove the column if it's not in the allowed list
+                    $worksheet->removeColumnByIndex($columnIndex);
+                    // Skip incrementing columnIndex to re-check the new column at the same position
+                    continue;
+                }
+
+                $columnIndex++; // Increment only if the column is kept
+            }
+        }  
     
         // Read the header row
         foreach ($worksheet->getRowIterator(1, 1) as $row) {
@@ -1218,27 +1239,38 @@ class FileUploadForm extends Model
             ShopeeIncome::deleteAll([
                 'id_file_source' => $this->id_file_source
             ]);
-        }
-    
-        $skippedColumns = [];
+        }    
+
+        
+        // sterilize column according to table column name
+        foreach ($worksheet->getRowIterator(6) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            
+            $columnIndex = 1; // Start from the first column
+            while ($columnIndex <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn())) {
+                $cell = $worksheet->getCellByColumnAndRow($columnIndex, 6);
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
+
+                if (!in_array($headerValue, $this->allColumnShopeeIncome)) {
+                    // Remove the column if it's not in the allowed list
+                    $worksheet->removeColumnByIndex($columnIndex);
+                    // Skip incrementing columnIndex to re-check the new column at the same position
+                    continue;
+                }
+
+                $columnIndex++; // Increment only if the column is kept
+            }
+        }  
+            
         // Read the header row
         foreach ($worksheet->getRowIterator(6, 1) as $row) {
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(false);
             $columnIndex = 0;
             foreach ($cellIterator as $cell) {
-                $cellValue = $cell->getValue();
-                // Standardize header values using a utility function if needed
-                if ($cellValue === '' || $cellValue == NULL) {
-                    $skippedColumns[] = $columnIndex;
-                    continue;
-                    // $this->emptyColumnCount += 1;
-                    // $cellValue = $this->renameEmptyColumnName();
-                }
-                // echo '<pre>'; var_dump($cellValue); echo '</pre>';
-                $cellValue = StringHelper::sanitizeColumnName($cellValue);
+                $cellValue = StringHelper::sanitizeColumnName($cell->getValue());
                 $header[] = StringHelper::truncateString($cellValue);
-                $columnIndex++;
             }
         }
         
@@ -1254,13 +1286,7 @@ class FileUploadForm extends Model
             $cellIterator->setIterateOnlyExistingCells(false);
             $columnIndex = 0;
     
-            foreach ($cellIterator as $cell) {                    
-                // Skip columns if they are in the skippedColumns array
-                // if (in_array($columnIndex, $skippedColumns)) {
-                //     $columnIndex++;
-                //     continue;
-                // }
-                            
+            foreach ($cellIterator as $cell) {                                 
                 $headerValue = $header[$columnIndex] ?? 'undefined'; // Get header value                    
                 
                 if (in_array($headerValue, $this->shopeeIncomeColumnsNumeric)) {
@@ -1277,9 +1303,6 @@ class FileUploadForm extends Model
             if (!empty($rowData)) {
                 $data[] = $rowData; // Store the row data
             }
-
-            // echo '<pre>'; var_dump($header);
-            // echo '<pre>'; var_dump($rowData); echo '</pre>'; die();
     
             // Insert in batches of 1000 rows
             if (count($data) >= $batchSize) {
