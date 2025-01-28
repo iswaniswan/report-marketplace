@@ -461,15 +461,25 @@ class Lazada extends \yii\db\ActiveRecord
         }
 
         $sql = <<<SQL
+            WITH CTE AS (
+                SELECT 
+                    CASE
+                        WHEN LOWER(status) NOT LIKE '%confirmed%' AND LOWER(status) NOT LIKE '%delivered%' AND LOWER(status) NOT LIKE '%shipped%' THEN 'canceled'
+                        ELSE status
+                    END AS status,
+                    sum(a.unit_price + a.seller_discount_total) amount_hjp,
+                    count(a.status) AS jumlah
+                FROM lazada a
+                WHERE STR_TO_DATE(a.create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
+                GROUP BY 1
+            )
             SELECT 
                 CASE
-                    WHEN LOWER(status) NOT LIKE '%confirmed%' AND LOWER(status) NOT LIKE '%delivered%' AND LOWER(status) NOT LIKE '%shipped%' THEN 'canceled'
+                    WHEN LOWER(status) LIKE '%delivered%' THEN 'Sedang Dikirim'
+                    WHEN LOWER(status) LIKE '%shipped%' THEN 'Sedang Dikirim'
                     ELSE status
-                END AS status,
-                sum(a.unit_price + a.seller_discount_total) amount_hjp,
-                count(a.status) AS jumlah
-            FROM lazada a
-            WHERE STR_TO_DATE(a.create_time, '%d %b %Y') BETWEEN '$date_start' AND '$date_end'
+                END AS status, sum(amount_hjp) AS amount_hjp, sum(jumlah) AS jumlah
+            FROM CTE a
             GROUP BY 1
         SQL;
 
