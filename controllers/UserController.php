@@ -162,6 +162,11 @@ class UserController extends Controller
                 }
 
                 Yii::$app->session->setFlash('success', 'Update success.');
+
+                if (Session::isAdmin() == false) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+
                 return $this->redirect(['index']);
             }
 

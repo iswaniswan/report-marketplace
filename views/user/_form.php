@@ -87,7 +87,23 @@ if (@$mode == Mode::READ) {
 
                     <?php // $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
 
-                    <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
+                    <?php // $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
+
+                    <div class="mb-3 row field-user-password required" style="padding:unset">
+                        <label class="col-2" for="user-password">Password</label>
+                        <div class="col">
+                            <div class="input-group mb-3 mr-3">
+                                <input type="password" class="form-control" id="user-password" name="User[password]" value="<?= $model->password ?>" maxlength="255" aria-required="true">
+                                <div class="input-group-append">
+                                    <button class="btn btn-info" type="button" id="btn-toggle-password">
+                                        <i id="icon-show-password" class="far fa-eye" style="display: none;"></i>
+                                        <i id="icon-hide-password" class="far fa-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="invalid-feedback "></div>
+                        </div>
+                    </div>
 
                     <?php // $form->field($model, 'id_role')->textInput() ?>
 
@@ -140,6 +156,23 @@ $script = <<<JS
         },
         error: {
             fileSize: "The file size is too big (1M max)."
+        }
+    });
+
+
+    $('#btn-toggle-password').on('click', function() {
+        var password = $('#user-password');
+        var iconShow = $('#icon-show-password');
+        var iconHide = $('#icon-hide-password');
+
+        if (password.attr('type') === 'password') {
+            password.attr('type', 'text');
+            iconShow.show();
+            iconHide.hide();
+        } else {
+            password.attr('type', 'password');
+            iconShow.hide();
+            iconHide.show();
         }
     });
 
