@@ -33,12 +33,25 @@ $config = [
             // send all mails to a file by default.
             'useFileTransport' => true,
         ],
+        // 'log' => [
+        //     'traceLevel' => YII_DEBUG ? 3 : 0,
+        //     'targets' => [
+        //         [
+        //             'class' => 'yii\log\FileTarget',
+        //             'levels' => ['error', 'warning'],
+        //         ],
+        //     ],
+        // ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'class' => 'app\components\UrlDbTarget', //'yii\log\DbTarget',
+                    'levels' => ['info'],
+                    // 'categories' => ['url'],
+                    // 'except' => ['yii\\*'], 
+                    'logTable' => '{{%log}}',
+                    'exportInterval' => 1, // flush after every log message
                 ],
             ],
         ],
@@ -60,6 +73,7 @@ $config = [
         ]
     ],
     'params' => $params,
+    'timezone' => 'Asia/Jakarta'
 ];
 
 if (YII_ENV_DEV) {
