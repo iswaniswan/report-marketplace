@@ -116,6 +116,7 @@ echo \app\widgets\Breadcrumbs::widget([
 
                 <?= $form->field($model, 'file')->widget(FileInput::classname(), [
                     'pluginOptions' => [
+                        'uploadAsync' => true,
                         'showPreview' => true,
                         'showUpload' => false,
                         'browseLabel' => 'Select File',
@@ -132,9 +133,9 @@ echo \app\widgets\Breadcrumbs::widget([
                         'multiple' => false,
                         'accept' => '.xls,.xlsx',
                         'style' => 'margin-bottom: 200px;'
-                    ]
+                    ],
                 ]); ?>
-
+                
                 <?= Html::a('<i class="ti-arrow-left"></i><span class="ml-2">Back</span>', $referrer, ['class' => 'btn btn-info mb-1 mt-4']) ?>
                 <?php ActiveForm::end(); ?>
             </div>            
@@ -152,7 +153,20 @@ echo \app\widgets\Breadcrumbs::widget([
 <?php 
 
 $script = <<<JS
+    $(document).on('click', '.kv-fileinput-upload, button[type="submit"]', function(e) {
+        let t = $(this);
+        if (t.data('clicked')) {
+            e.preventDefault();
+            return false;
+        }
+        t.data('clicked', true);
+        setTimeout(() => {
+            $(this).attr('disabled', 'disabled');
+        }, 250);
+    });
+
     $(document).ready(function() {
+
         $('button[type="submit"]').on('click', function() {
             const idTable = $('#id_table').val();
             const periode = $('#periode').val();
@@ -172,7 +186,6 @@ $script = <<<JS
                 alert('File belum dipilih!');
                 return false;
             }
-            
         })
     });
 JS;
