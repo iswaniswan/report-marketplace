@@ -242,7 +242,7 @@ class Shopee extends \yii\db\ActiveRecord
         return $query->count();
     }
 
-    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false, $is_yearly=false)
     {
         // $query = static::find()
         //     ->select([
@@ -393,7 +393,12 @@ class Shopee extends \yii\db\ActiveRecord
                                 0 AS jumlah,
                                 0 AS amount_hjp,
                                 sum(total_penghasilan) AS amount_net
-                            FROM shopee_income
+                            FROM (
+                                    SELECT DISTINCT no_pesanan, waktu_pesanan_dibuat, total_penghasilan 
+                                    FROM shopee_income 
+                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                    ORDER BY id_file_source DESC
+                            ) a
                             WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
                             GROUP BY 1
                             UNION ALL
@@ -429,6 +434,81 @@ class Shopee extends \yii\db\ActiveRecord
                 )
         SQL;
 
+        if ($is_yearly) {
+            $cte = <<<SQL
+                WITH CTE AS (
+                            SELECT
+                                DATE_FORMAT(STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d'), '%Y-%m') AS waktu_pesanan_dibuat,
+                                0 AS jumlah_transaksi,
+                                0 AS jumlah,
+                                0 AS amount_hjp,
+                                sum(total_penghasilan) AS amount_net
+                            FROM (
+                                    SELECT DISTINCT no_pesanan, waktu_pesanan_dibuat, total_penghasilan 
+                                    FROM shopee_income 
+                                    WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' 
+                                    ORDER BY id_file_source DESC
+                            ) a
+                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                            UNION ALL
+                            SELECT
+                                DATE_FORMAT(STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d'), '%Y-%m') AS waktu_pesanan_dibuat,
+                                0 AS jumlah_transaksi,
+                                0 AS jumlah,
+                                sum(total_harga_produk) amount_hjp,
+                                0 AS amount_net
+                            FROM (
+                                    SELECT
+                                        no_pesanan,
+                                        STR_TO_DATE(waktu_pesanan_dibuat,
+                                        '%Y-%m-%d') waktu_pesanan_dibuat,
+                                        jumlah,
+                                        REPLACE(total_harga_produk, '.', '') total_harga_produk
+                                    FROM shopee
+                                    WHERE LOWER(status_pesanan) NOT LIKE '%batal%'
+                                            AND returned_quantity = 0 /*AND LOWER(status_pesanan) NOT LIKE '%namun pembeli masih dapat mengajukan pengembalian%'*/
+                                            AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
+                                ) a
+                            GROUP BY 1
+                            UNION ALL
+                            SELECT
+                                DATE_FORMAT(STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d'), '%Y-%m') AS waktu_pesanan_dibuat,
+                                count(status_pesanan) jumlah_transaksi,
+                                sum(jumlah) AS jumlah,
+                                0 AS amount_hjp,
+                                0 AS amount_net
+                            FROM (
+                                    SELECT
+                                        waktu_pesanan_dibuat,
+                                        no_pesanan,
+                                        status_pesanan,
+                                        jumlah,
+                                        returned_quantity
+                                    FROM (
+                                            SELECT
+                                                STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat,
+                                                no_pesanan,
+                                                CASE
+                                                    WHEN lower(status_pesanan) LIKE '%Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian%' THEN 'Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian'
+                                                    WHEN lower(status_pesanan) LIKE '%pengembalian sedang diproses%' THEN 'Pengembalian Diproses'
+                                                    ELSE status_pesanan
+                                                END AS status_pesanan,
+                                                sum(jumlah) AS jumlah,
+                                                sum(returned_quantity) AS returned_quantity
+                                            FROM shopee
+                                            WHERE STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                                                    AND status_pesanan NOT LIKE '%Batal%'
+                                                    AND returned_quantity = 0
+                                            GROUP BY 1, 2, 3 
+                                        ) x
+                                    WHERE returned_quantity = 0 
+                                ) a
+                            GROUP BY 1 
+                    )
+            SQL;
+        }
+
         $sql = <<<SQL
                 $cte
                 SELECT
@@ -442,6 +522,22 @@ class Shopee extends \yii\db\ActiveRecord
                 GROUP BY 1
                 ORDER BY 1 ASC
         SQL;
+
+        if ($is_yearly) {
+            $sql = <<<SQL
+                $cte
+                SELECT
+                    DATE_FORMAT(STR_TO_DATE(CONCAT(waktu_pesanan_dibuat, '-01'), '%Y-%m-%d'), '%m') AS waktu_pesanan_dibuat,
+                    sum(jumlah_transaksi) jumlah_transaksi,
+                    sum(jumlah) jumlah,
+                    sum(amount_hjp) amount_hjp,
+                    sum(amount_net) amount_net,
+                    (sum(amount_hjp) - sum(amount_net)) AS fee_marketplace
+                FROM CTE a
+                GROUP BY 1
+                ORDER BY 1 ASC 
+            SQL;
+        }
 
         if ($is_total) {
             $sql = <<<SQL
