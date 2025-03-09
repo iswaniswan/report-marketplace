@@ -154,19 +154,10 @@ class Tokopedia extends \yii\db\ActiveRecord
         return $normalizedStatuses;
     }
 
-    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false, $is_yearly=false)
     {
-        $sql = <<<SQL
-                    SELECT 
-                        a.tanggal_pembayaran AS tanggal, 
-                        count(DISTINCT nomor_invoice) jumlah_transaksi,
-                        sum(jumlah_produk_dibeli) quantity, 
-                        sum(amount_hjp) amount_hjp, 
-                        sum(biaya_layanan_termasuk_ppn_dan_pph_idr) fee_marketplace,
-                        (
-                            sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
-                        ) amount_net
-                    FROM (
+        $cte = <<<SQL
+                    WITH CTE AS (
                             SELECT 
                                 STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
                                 a.nomor_invoice,
@@ -186,14 +177,48 @@ class Tokopedia extends \yii\db\ActiveRecord
                             FROM tokopedia_keuangan a
                             WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
                             GROUP BY 1, 2
-                    ) a
+                    )
+        SQL;
+
+        $sql = <<<SQL
+                    $cte
+                    SELECT 
+                        a.tanggal_pembayaran AS tanggal, 
+                        count(DISTINCT nomor_invoice) jumlah_transaksi,
+                        sum(jumlah_produk_dibeli) quantity, 
+                        sum(amount_hjp) amount_hjp, 
+                        sum(biaya_layanan_termasuk_ppn_dan_pph_idr) fee_marketplace,
+                        (
+                            sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
+                        ) amount_net
+                    FROM CTE a
                     WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
                     GROUP BY tanggal_pembayaran
                     ORDER BY 1 ASC
         SQL;
 
+        if ($is_yearly) {
+            $sql = <<<SQL
+                $cte
+                SELECT 
+                    DATE_FORMAT(STR_TO_DATE(CONCAT(tanggal_pembayaran, '-01'), '%Y-%m-%d'), '%m') AS tanggal,
+                    count(DISTINCT nomor_invoice) jumlah_transaksi,
+                    sum(jumlah_produk_dibeli) quantity, 
+                    sum(amount_hjp) amount_hjp, 
+                    sum(biaya_layanan_termasuk_ppn_dan_pph_idr) fee_marketplace,
+                    (
+                        sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
+                    ) amount_net
+                FROM CTE a
+                WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
+                GROUP BY 1
+                ORDER BY 1 ASC
+            SQL;
+        }
+
         if ($is_total) {
             $sql = <<<SQL
+                        $cte
                         SELECT 
                             count(DISTINCT nomor_invoice) jumlah_transaksi,
                             sum(jumlah_produk_dibeli) quantity, 
@@ -202,27 +227,7 @@ class Tokopedia extends \yii\db\ActiveRecord
                             (
                                 sum(amount_hjp) - sum(biaya_layanan_termasuk_ppn_dan_pph_idr) 
                             ) amount_net
-                        FROM (
-                                SELECT 
-                                    STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
-                                    a.nomor_invoice,
-                                    sum(a.jumlah_produk_dibeli) AS jumlah_produk_dibeli,			
-                                    sum(a.jumlah_produk_dibeli * a.harga_jual_idr) AS amount_hjp,
-                                    0 AS biaya_layanan_termasuk_ppn_dan_pph_idr
-                                FROM tokopedia a
-                                WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
-                                GROUP BY 1,2	
-                                UNION ALL 
-                                SELECT 
-                                    STR_TO_DATE(a.tanggal_pembayaran, '%d-%m-%Y') AS tanggal_pembayaran,
-                                    a.nomor_invoice,
-                                    0 AS jumlah_produk_dibeli,
-                                    0 AS amount_hjp,
-                                    sum(biaya_layanan_termasuk_ppn_dan_pph_idr + nilai_kupon_toko_terpakai_idr) biaya_layanan_termasuk_ppn_dan_pph_idr
-                                FROM tokopedia_keuangan a
-                                WHERE a.status_terakhir NOT LIKE '%Dibatalkan%'
-                                GROUP BY 1, 2
-                        ) a
+                        FROM CTE a
                         WHERE tanggal_pembayaran BETWEEN '$date_start' AND '$date_end'
             SQL;
         }

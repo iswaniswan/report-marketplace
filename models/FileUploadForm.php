@@ -855,6 +855,9 @@ class FileUploadForm extends Model
     
             $rowData['id_file_source'] = $this->id_file_source;
             if (!empty($rowData)) {
+                if ($rowData['order_adjustment_id'] == '' || $rowData['order_adjustment_id'] == null) {
+                    continue;
+                }
                 $data[] = $rowData; // Store the row data
             }
 

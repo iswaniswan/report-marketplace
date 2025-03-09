@@ -64,7 +64,7 @@ class Offline extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false, $is_yearly=false)
     {
         $sql = <<<SQL
             SELECT 
@@ -78,6 +78,21 @@ class Offline extends \yii\db\ActiveRecord
             GROUP BY 1
             ORDER BY 1 ASC
         SQL;
+
+        if ($is_yearly) {
+            $sql = <<<SQL
+                SELECT 
+                    DATE_FORMAT(STR_TO_DATE(CONCAT(tanggal_invoice, '-01'), '%Y-%m-%d'), '%m') AS tanggal,
+                    count(DISTINCT no_invoice) jumlah_transaksi,
+                    sum(quantity) quantity,
+                    sum(subtotal) amount_net
+                FROM offline 
+                WHERE TRIM(LOWER(nama_barang)) <> 'ongkos kirim'
+                    AND STR_TO_DATE(tanggal_invoice, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end'
+                GROUP BY 1
+                ORDER BY 1 ASC
+            SQL;
+        }
 
         if ($is_total) {
             $sql = <<<SQL

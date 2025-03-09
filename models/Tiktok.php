@@ -165,9 +165,38 @@ class Tiktok extends \yii\db\ActiveRecord
             ->column();
     }
 
-    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false)
+    public static function getSummaryByDateRange($date_start, $date_end, $is_total=false, $is_yearly=false)
     {
+        $cte = <<<SQL
+                WITH CTE AS (
+                            SELECT STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
+                                count(DISTINCT a.order_id) AS jumlah_transaksi,
+                                sum(a.quantity) AS quantity,
+                                (
+                                    sum(a.sku_subtotal_before_discount)
+                                    - sum(a.sku_seller_discount)
+                                ) AS amount_hjp,
+                                0 AS total_settlement_amount 
+                            FROM tiktok a 
+                            WHERE sku_quantity_of_return = 0
+                                AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                            GROUP BY 1
+                            UNION ALL
+                            SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
+                                FROM (
+                                    SELECT DISTINCT a.order_id, STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time, 
+                                        b.total_settlement_amount
+                                    FROM tiktok a 
+                                    LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
+                                    WHERE sku_quantity_of_return = 0
+                                        AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                            ) a
+                            GROUP BY 1, 2
+                )
+        SQL;
+
         $sql = <<<SQL
+                $cte
                 SELECT created_time AS tanggal, 
                         sum(jumlah_transaksi) AS jumlah_transaksi, 
                         sum(quantity) AS quantity, 
@@ -176,37 +205,32 @@ class Tiktok extends \yii\db\ActiveRecord
                         (
                             sum(amount_hjp)-sum(total_settlement_amount)
                         ) AS fee_marketplace
-                FROM (
-                        SELECT STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
-                            count(DISTINCT a.order_id) AS jumlah_transaksi,
-                            sum(a.quantity) AS quantity,
-                            (
-                                sum(a.sku_subtotal_before_discount)
-                                - sum(a.sku_seller_discount)
-                            ) AS amount_hjp,
-                            0 AS total_settlement_amount 
-                        FROM tiktok a 
-                        WHERE sku_quantity_of_return = 0
-                            AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
-                        GROUP BY 1
-                        UNION ALL
-                        SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
-                            FROM (
-                                SELECT DISTINCT a.order_id, STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time, 
-                                    b.total_settlement_amount
-                                FROM tiktok a 
-                                LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
-                                WHERE sku_quantity_of_return = 0
-                                    AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
-                        ) a
-                        GROUP BY 1, 2
-                ) a
+                FROM CTE a
                 GROUP BY 1
                 ORDER BY 1 ASC
         SQL;
 
+        if ($is_yearly) {
+            $sql = <<<SQL
+                        $cte
+                        SELECT 
+                                DATE_FORMAT(STR_TO_DATE(CONCAT(created_time, '-01'), '%Y-%m-%d'), '%m') AS tanggal,
+                                sum(jumlah_transaksi) AS jumlah_transaksi, 
+                                sum(quantity) AS quantity, 
+                                sum(amount_hjp) AS amount_hjp,
+                                sum(total_settlement_amount) AS total_settlement_amount,
+                                (
+                                    sum(amount_hjp)-sum(total_settlement_amount)
+                                ) AS fee_marketplace
+                        FROM CTE a
+                        GROUP BY 1
+                        ORDER BY 1 ASC
+            SQL;
+        }
+
         if ($is_total) {
             $sql = <<<SQL
+                        $cte
                         SELECT 
                                 sum(jumlah_transaksi) AS jumlah_transaksi, 
                                 sum(quantity) AS quantity, 
@@ -215,31 +239,7 @@ class Tiktok extends \yii\db\ActiveRecord
                                 (
                                     sum(amount_hjp)-sum(total_settlement_amount)
                                 ) AS fee_marketplace
-                        FROM (
-                                SELECT STR_TO_DATE(a.created_time, '%d/%m/%Y') AS tanggal,
-                                    count(DISTINCT a.order_id) AS jumlah_transaksi,
-                                    sum(a.quantity) AS quantity,
-                                    (
-                                        sum(a.sku_subtotal_before_discount)
-                                        - sum(a.sku_seller_discount)
-                                    ) AS amount_hjp,
-                                    0 AS total_settlement_amount 
-                                FROM tiktok a 
-                                WHERE sku_quantity_of_return = 0 
-                                    AND  STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
-                                GROUP BY 1
-                                UNION ALL
-                                SELECT a.created_time, 0 AS jumlah_transaksi, 0 AS quantity, 0 AS amount_hjp, sum(a.total_settlement_amount) AS total_settlement_amount
-                                    FROM (
-                                        SELECT DISTINCT a.order_id, STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time, 
-                                            b.total_settlement_amount
-                                        FROM tiktok a 
-                                        LEFT JOIN tiktok_income b ON b.order_adjustment_id = a.order_id
-                                        WHERE sku_quantity_of_return = 0
-                                            AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
-                                ) a                                
-                                GROUP BY 1, 2
-                        ) a
+                        FROM CTE a
             SQL;
         }
     
