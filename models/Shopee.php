@@ -404,7 +404,7 @@ class Shopee extends \yii\db\ActiveRecord
                             UNION ALL
                             SELECT waktu_pesanan_dibuat, 0 AS jumlah_transaksi, 0 AS jumlah, sum(total_harga_produk) amount_hjp, 0 AS amount_net
                             FROM (
-                                    SELECT DISTINCT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
+                                    SELECT no_pesanan, STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                     FROM shopee
                                     WHERE LOWER(status_pesanan) NOT LIKE '%batal%' AND returned_quantity = 0 /*AND LOWER(status_pesanan) NOT LIKE '%namun pembeli masih dapat mengajukan pengembalian%'*/
                                         AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') BETWEEN '$date_start' AND '$date_end' /*AND no_pesanan NOT IN (SELECT no_pesanan FROM CTA)*/
