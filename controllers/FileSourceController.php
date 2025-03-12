@@ -19,6 +19,7 @@ use yii\helpers\Url;
 /**
  * FileSourceController implements the CRUD actions for FileSource model.
  */
+date_default_timezone_set('Asia/Jakarta');
 class FileSourceController extends Controller
 {
     /**
@@ -208,6 +209,15 @@ class FileSourceController extends Controller
             $model->id_file_source = $fileSourceExists->id;
             // file is uploaded successfully
             if ($model->upload()) {
+                /** clear unmatched periode 
+                 * @see app\commands\UploadController
+                */
+                try {
+                    $model->removeUnmatchPeriode();
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                
                 Yii::$app->session->setFlash('success', 'File uploaded successfully.');
                 return $this->redirect(['index']);
             } else {
@@ -302,6 +312,15 @@ class FileSourceController extends Controller
             $model->id_file_source = $fileSourceExists->id;
             // file is uploaded successfully
             if ($model->upload()) {
+                /** clear unmatched periode 
+                 * @see app\commands\UploadController
+                */
+                try {
+                    $model->removeUnmatchPeriode();
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+
                 Yii::$app->session->setFlash('success', 'File uploaded successfully.');
                 return $this->redirect(['index']);
             } else {

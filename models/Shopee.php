@@ -415,7 +415,7 @@ class Shopee extends \yii\db\ActiveRecord
                             FROM (
                                     SELECT waktu_pesanan_dibuat, no_pesanan, status_pesanan, jumlah, returned_quantity
                                     FROM (
-                                            SELECT DISTINCT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, 
+                                            SELECT STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, no_pesanan, 
                                                 CASE 
                                                     WHEN lower(status_pesanan) LIKE '%Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian%'
                                                         THEN 'Pesanan diterima, namun Pembeli masih dapat mengajukan pengembalian'
@@ -457,7 +457,7 @@ class Shopee extends \yii\db\ActiveRecord
                                 sum(total_harga_produk) amount_hjp,
                                 0 AS amount_net
                             FROM (
-                                    SELECT DISTINCT
+                                    SELECT
                                         no_pesanan,
                                         STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat, jumlah, REPLACE(total_harga_produk, '.', '') total_harga_produk
                                     FROM shopee
@@ -480,7 +480,7 @@ class Shopee extends \yii\db\ActiveRecord
                                         jumlah,
                                         returned_quantity
                                     FROM (
-                                            SELECT DISTINCT 
+                                            SELECT 
                                                 STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') waktu_pesanan_dibuat,
                                                 no_pesanan,
                                                 CASE

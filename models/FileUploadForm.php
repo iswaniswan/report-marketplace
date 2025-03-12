@@ -1323,5 +1323,47 @@ class FileUploadForm extends Model
         }
     }
 
+    public function removeUnmatchPeriode()
+    {
+        $date_start = date('Y-m-01', strtotime($this->getYear(). '-' . $this->getMonth()));
+        $date_end = date('Y-m-t', strtotime($this->getYear(). '-' . $this->getMonth()));
+
+        /** shopee */
+        $sql = <<<SQL
+            DELETE FROM $this->table_shopee
+            WHERE id_file_source = $this->id_file_source AND STR_TO_DATE(waktu_pesanan_dibuat, '%Y-%m-%d') NOT BETWEEN '$date_start' AND '$date_end';
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        $command->queryAll();
+
+        /** tiktok */
+        $sql = <<<SQL
+            DELETE FROM $this->table_tiktok
+            WHERE id_file_source = $this->id_file_source AND STR_TO_DATE(created_time, '%d/%m/%Y') NOT BETWEEN '$date_start' AND '$date_end';
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        $command->queryAll();
+
+        /** tokopedia */
+        $sql = <<<SQL
+            DELETE FROM $this->table_tokopedia
+            WHERE id_file_source = $this->id_file_source AND STR_TO_DATE(tanggal_pembayaran, '%d-%m-%Y') NOT BETWEEN '$date_start' AND '$date_end';
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        $command->queryAll();
+
+        /** lazada */
+        $sql = <<<SQL
+            DELETE FROM $this->table_lazada
+            WHERE id_file_source = $this->id_file_source AND STR_TO_DATE(create_time, '%d %b %Y') NOT BETWEEN '$date_start' AND '$date_end';
+        SQL;
+
+        $command = Yii::$app->db->createCommand($sql);
+        $command->queryAll();
+    }
+
 
 }
