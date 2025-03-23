@@ -195,31 +195,69 @@ class Tiktok extends \yii\db\ActiveRecord
         //         )
         // SQL;
 
+        // $cte = <<<SQL
+        //     WITH CTE AS (
+        //                 SELECT
+        //                     STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
+        //                     count(DISTINCT a.order_id) AS jumlah_transaksi,
+        //                     sum(a.quantity) AS quantity,
+        //                     ( sum(a.sku_subtotal_before_discount) - sum(a.sku_seller_discount) ) AS amount_hjp,
+        //                     0 AS total_settlement_amount
+        //                 FROM tiktok a
+        //                 WHERE sku_quantity_of_return = 0 AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+        //                 GROUP BY 1
+        //                 UNION ALL			
+        //                 SELECT 
+        //                     order_created_time_utc AS created_time, 
+        //                     0 AS jumlah_transaksi,
+        //                     0 AS quantity,
+        //                     0 AS amount_hjp,
+        //                     sum(total_settlement_amount) AS total_settlement_amount 
+        //                 FROM (
+        //                     SELECT
+        //                         DISTINCT a.order_adjustment_id, STR_TO_DATE(a.order_created_time_utc, '%Y/%m/%d') AS order_created_time_utc, a.total_settlement_amount
+        //                     FROM tiktok_income  a
+        //                     WHERE STR_TO_DATE(a.order_created_time_utc, '%Y/%m/%d') BETWEEN '$date_start' AND '$date_end'
+        //                 ) a
+        //                 GROUP BY 1
+        //     )
+        // SQL;
+
         $cte = <<<SQL
-            WITH CTE AS (
+            WITH CTA AS (
                         SELECT
-                            STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
-                            count(DISTINCT a.order_id) AS jumlah_transaksi,
-                            sum(a.quantity) AS quantity,
-                            ( sum(a.sku_subtotal_before_discount) - sum(a.sku_seller_discount) ) AS amount_hjp,
-                            0 AS total_settlement_amount
+                            a.created_time,
+                            a.order_id,
+                            a.quantity,
+                            a.sku_subtotal_before_discount,
+                            a.sku_seller_discount,
+                            a.order_status
                         FROM tiktok a
-                        WHERE sku_quantity_of_return = 0 AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
-                        GROUP BY 1
-                        UNION ALL			
-                        SELECT 
-                            order_created_time_utc AS created_time, 
-                            0 AS jumlah_transaksi,
-                            0 AS quantity,
-                            0 AS amount_hjp,
-                            sum(total_settlement_amount) AS total_settlement_amount 
-                        FROM (
-                            SELECT
-                                DISTINCT a.order_adjustment_id, STR_TO_DATE(a.order_created_time_utc, '%Y/%m/%d') AS order_created_time_utc, a.total_settlement_amount
-                            FROM tiktok_income  a
-                            WHERE STR_TO_DATE(a.order_created_time_utc, '%Y/%m/%d') BETWEEN '$date_start' AND '$date_end'
-                        ) a
-                        GROUP BY 1
+                        WHERE lower (a.order_status) != 'canceled' AND sku_quantity_of_return = 0 AND STR_TO_DATE(a.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+            ), 
+            CTE AS (
+                    SELECT 
+                        STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
+                        count(DISTINCT a.order_id) AS jumlah_transaksi,
+                        sum(a.quantity) AS quantity,
+                        ( sum(a.sku_subtotal_before_discount) - sum(a.sku_seller_discount) ) AS amount_hjp,
+                        0 AS total_settlement_amount
+                    FROM CTA a
+                    GROUP BY 1
+                    UNION ALL
+                    SELECT
+                        STR_TO_DATE(a.created_time, '%d/%m/%Y') AS created_time,
+                        0 AS jumlah_transaksi,
+                        0 AS quantity,
+                        0 AS amount_hjp,
+                        sum(total_settlement_amount) AS total_settlement_amount
+                    FROM (
+                            SELECT DISTINCT b.created_time, a.total_settlement_amount
+                            FROM tiktok_income a
+                            INNER JOIN tiktok b ON b.order_id = a.order_adjustment_id
+                            WHERE STR_TO_DATE(b.created_time, '%d/%m/%Y') BETWEEN '$date_start' AND '$date_end'
+                    ) a
+                    GROUP BY 1
             )
         SQL;
 
