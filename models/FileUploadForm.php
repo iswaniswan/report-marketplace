@@ -1139,6 +1139,51 @@ class FileUploadForm extends Model
                 'id_file_source' => $this->id_file_source
             ]);
         }
+
+        // sterilize column according to table column name
+        foreach ($worksheet->getRowIterator(1) as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false);
+            
+            $columnIndex = 1; // Start from the first column
+            while ($columnIndex <= \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($worksheet->getHighestColumn())) {
+                $cell = $worksheet->getCellByColumnAndRow($columnIndex, 1);
+                $headerValue = StringHelper::sanitizeColumnName($cell->getValue());
+
+                if (!in_array($headerValue, $this->allColumnLazadaIncome)) {
+
+                    $renamed = false;
+                    // rename the column for crutial data
+                    switch ($headerValue) {
+                        case 'order_no':
+                            $worksheet->setCellValueByColumnAndRow($columnIndex, 1, 'order_number');
+                            $renamed = true;
+                            break;
+                        case 'amount':
+                            $worksheet->setCellValueByColumnAndRow($columnIndex, 1, 'amount_include_tax');
+                            $renamed = true;
+                            break;
+                        case 'vat_in_amount':
+                            $worksheet->setCellValueByColumnAndRow($columnIndex, 1, 'vat_amount');
+                            $renamed = true;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if ($renamed) {
+                        continue;
+                    }
+
+                    // Remove the column if it's not in the allowed list
+                    $worksheet->removeColumnByIndex($columnIndex);
+                    // Skip incrementing columnIndex to re-check the new column at the same position
+                    continue;
+                }
+
+                $columnIndex++; // Increment only if the column is kept
+            }
+        } 
     
         $skippedColumns = [];
         // Read the header row
@@ -1156,13 +1201,18 @@ class FileUploadForm extends Model
                     // $this->emptyColumnCount += 1;
                     // $cellValue = $this->renameEmptyColumnName();
                 }
+
                 // echo '<pre>'; var_dump($cellValue); echo '</pre>';
                 $header[] = StringHelper::sanitizeColumnName($cellValue);
                 $columnIndex++;
             }
         }
             
-        $header[] = 'id_file_source';
+        $header[] = 'id_file_source';        
+            
+        if (@$header['order_creation_date'] == null) {
+            $header[] = 'order_creation_date';
+        }
 
         // Maximum number of rows to insert per batch
         $batchSize = 1000;
@@ -1204,6 +1254,14 @@ class FileUploadForm extends Model
             }
 
             if (!empty($rowData)) {
+                // default value if empty
+                if (@$rowData['order_creation_date'] == null) {
+                    if (@$rowData['transaction_date'] != null && strpos($rowData['transaction_date'], '-') !== false) {
+                        $rowData['transaction_date'] = str_replace('-', ' ', $rowData['transaction_date']);
+                    }
+    
+                    $rowData['order_creation_date'] = @$rowData['transaction_date'];
+                }
                 $data[] = $rowData; // Store the row data
             }
 
